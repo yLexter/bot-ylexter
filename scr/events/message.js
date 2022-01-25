@@ -1,7 +1,6 @@
 const { MessageEmbed, Permissions } = require("discord.js");
 const mongoose = require('mongoose');
 const wait = require('util').promisify(setTimeout);
-const { prefix } = require('./../../config.json')
 const cor = '#4B0082'
 
 module.exports = {

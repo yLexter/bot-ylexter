@@ -7,7 +7,7 @@ module.exports = {
 
         const { MessageEmbed } = require('discord.js');
 
-        const { tocarPlaylist, secondsToText, spotifySearch, vdSearch, ytPlaylist, playCustomSong  } = client.music
+        const { tocarPlaylist, secondsToText, spotifySearch, vdSearch, ytPlaylist , playSong } = client.music
         const s = args.join(" ");
         const spt = s.toLowerCase().includes('spotify.com')
         var resultado = s.toLowerCase().includes('list=');
@@ -111,8 +111,18 @@ module.exports = {
 
             try {
                 const song = await vdSearch(client, msg, item)
-                await playCustomSong(client , msg , song)
-               
+                const queue = client.queues.get(msg.guild.id);
+                if (queue) {
+                    queue.songs.push(song);
+                    client.queues.set(msg.guild.id, queue);
+                    const helpMsg = new MessageEmbed()
+                        .setColor(cor)
+                        .setTitle(`${song.title}`)
+                        .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
+                        .setURL(song.url)
+                        .setDescription(`Duração: **${song.durationFormatted}**`)
+                    return msg.channel.send({ embeds: [helpMsg] })
+                } else return playSong(client, msg, song);
             } catch (e) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)

@@ -110,7 +110,7 @@ const execute = async (client, msg, args, cor) => {
       let shuffle = client.shuffles.get(msg.guild.id)
       const msgContent = m.content.toLowerCase()
       const ownerMsg = () => {
-        return msg.channel.id(`O Dono do jogo é o <@${shuffle.owner}> , Portanto só ele que poderá configurar o jogo.`)
+        return msg.channel.send({content: `O Dono do jogo é o <@${shuffle.owner}> , Portanto só ele que poderá configurar o jogo.`})
       }
 
       const objects = {
@@ -153,7 +153,7 @@ const execute = async (client, msg, args, cor) => {
       const minPlayers = 1
 
       if (shuffle.players.length <= minPlayers || shuffle.status == 'canceled' || !shuffle.status) {
-        msg.channel.send('❌ O Jogo Cancelado!')
+        msg.channel.send({content: '❌ O Jogo Cancelado!'})
         return client.shuffles.delete(msg.guild.id)
       } else return game()
 
@@ -194,16 +194,16 @@ const execute = async (client, msg, args, cor) => {
       }
 
       await wait(1.5 * 1000)
-      msg.channel.send('**A Palavra será lançada em 5s**')
+      msg.channel.send({content: '**A Palavra será lançada em 5s**'})
       await wait(5 * 1000)
-      msg.channel.send('Qual é a palavra? => ' + `\`${palavra_embaralhada}\``)
+      msg.channel.send({content: 'Qual é a palavra? => ' + `\`${palavra_embaralhada}\``})
 
       collector.on('collect', m => {
 
         let shuffle = client.shuffles.get(msg.guild.id)
         let { players } = shuffle
         const player = players.find(element => element.id == m.author.id)
-        msg.channel.send(`O Player **${m.author.username}** acertou a palavra que era => ` + `\`${palavra_aleatoria}\``);
+        msg.channel.send({content: `O Player **${m.author.username}** acertou a palavra que era => ` + `\`${palavra_aleatoria}\``});
         player.pontos++
         shuffle.rodada++
         client.shuffles.set(msg.guild.id, shuffle)
@@ -250,7 +250,7 @@ const execute = async (client, msg, args, cor) => {
 
     } // End game()
 
-  } catch (e) { msg.channel.send(`\`${e}\``) }
+  } catch (e) { msg.channel.send({content: `\`${e}\``}) }
 
 }
 

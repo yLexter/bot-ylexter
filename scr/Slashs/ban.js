@@ -34,18 +34,19 @@ module.exports = {
         }
 
 
-      /*   try {
+        try {
             await memberBanido.ban({ reason: `${reason}` })
         } catch (e) {
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| Erro ao Banir o User`, iconURL: interaction.user.displayAvatarURL() })
                 .addFields({ name: 'Sem Permissão', value: 'Não tenho permissão Para Banir o membro' },
-                    { name: 'Role abaixo do user', value: 'Minha role possa estar abaixo do user ou em ultimo , suba ela para cima para que eu consigar kickar' }, 
-                    { name: 'Cargo Superior', value: 'O User Informado possa ter mais cargo que eu.'
-                })
+                    { name: 'Role abaixo do user', value: 'Minha role possa estar abaixo do user ou em ultimo , suba ela para cima para que eu consigar kickar' },
+                    {
+                        name: 'Cargo Superior', value: 'O User Informado possa ter mais cargo que eu.'
+                    })
             return interaction.editReply({ embeds: [helpMsg], ephemeral: true }).catch(() => { })
-        } */
+        }
 
         let objectBan = {
             logid: "ban",
@@ -59,7 +60,7 @@ module.exports = {
 
         const { autor, nome, motivo, id } = objectBan
 
-        //  await modelo.findOneAndUpdate({ id: interaction.guildId }, { $push: { logs: objectBan } })
+        await modelo.findOneAndUpdate({ id: interaction.guildId }, { $push: { logs: objectBan } })
 
         const helpMsg = new MessageEmbed()
             .setColor(cor)

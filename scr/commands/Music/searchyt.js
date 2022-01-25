@@ -8,9 +8,9 @@ module.exports = {
   aliase: ["syt"],
   execute: async (client, msg, args, cor) => {
 
-    try {
-      const { playCustomSong } = client.music
+    const { playSong } = client.music
 
+    try {
       msg.delete().catch(() => { })
       const s = args.join(" ");
       if (!s) return;
@@ -56,8 +56,18 @@ module.exports = {
         m.delete().catch(() => { })
         if (m.content.toLowerCase() == "!cancel") return collector.stop();
         const song = listaFiltrado[m]
-        playCustomSong(client , msg , song)
-        collector.stop();
+        const queue = client.queues.get(msg.guild.id);
+        if (queue) {
+          queue.songs.push(song);
+          client.queues.set(msg.guild.id, queue);
+          const helpMsg = new MessageEmbed()
+            .setColor(cor)
+            .setTitle(`${song.title}`)
+            .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
+            .setURL(song.url)
+            .setDescription(`Duração: **${song.durationFormatted}**`)
+          return msg.channel.send({ embeds: [helpMsg] })
+        } else return playSong(client, msg, song);
       });
 
       collector.on('end', collected => {

@@ -59,9 +59,8 @@ const slashsCommands = client.slashs.map(cmd => {
 
 const rest = new REST({ version: '9' }).setToken(token);
 const clientId = '906324795786924082'
-const guildId = '905577677635870813'
 
-rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: slashsCommands })
+rest.put(Routes.applicationCommands(clientId), { body: slashsCommands })
   .then(() => console.log('Sucesso ao registar os comandos slashs'))
   .catch(console.error);
 

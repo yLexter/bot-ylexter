@@ -357,22 +357,6 @@ const titulo_formatado = (string) => {
   return string
 }
 
-const playCustomSong = (client, msg, song) => {
-  const queue = client.queues.get(msg.guild.id);
-  if (queue) {
-    queue.songs.push(song);
-    client.queues.set(msg.guild.id, queue);
-    const helpMsg = new MessageEmbed()
-      .setColor(cor)
-      .setTitle(`${song.title}`)
-      .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
-      .setURL(song.url)
-      .setDescription(`Duração: **${song.durationFormatted}**`)
-    return msg.channel.send({ embeds: [helpMsg] })
-  } else return playSong(client, msg, song);
-}
-
-
 module.exports = {
   vdSearch,
   ytPlaylist,
@@ -384,5 +368,4 @@ module.exports = {
   spotifySearch,
   playSong,
   titulo_formatado,
-  playCustomSong,
 }

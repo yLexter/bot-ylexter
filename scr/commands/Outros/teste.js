@@ -11,7 +11,7 @@ module.exports = {
       try {
 
          msg.delete().catch(() => { })
-         //        if(msg.author.id != '288871181514440706') return;
+         if(msg.author.id != '288871181514440706') return;
          const { modelo, dados } = await client.db.fecthGuild(client, msg)
          const mongoose = require('mongoose');
          const Youtube = require("youtube-sr").default;

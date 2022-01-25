@@ -33,7 +33,7 @@ module.exports = {
             return interaction.editReply({ embeds: [helpMsg], ephemeral: true, fecthReply: true, components: [] }).catch(() => { })
         }
 
-       /*  try {
+         try {
             await memberBanido.kick(`${reason}`)
         } catch (e) {
             const helpMsg = new MessageEmbed()
@@ -44,7 +44,7 @@ module.exports = {
                     { name: 'Cargo Superior', value: 'O User Informado possa ter mais cargo que eu.'
                     })
             return interaction.editReply({ embeds: [helpMsg], ephemeral: true }).catch(() => { })
-        } */
+        } 
 
         let objectBan = {
             logid: "kick",
@@ -58,7 +58,7 @@ module.exports = {
 
         const { autor, nome, motivo, id } = objectBan
 
-        //  await modelo.findOneAndUpdate({ id: interaction.guildId }, { $push: { logs: objectBan } })
+        await modelo.findOneAndUpdate({ id: interaction.guildId }, { $push: { logs: objectBan } })
 
         const helpMsg = new MessageEmbed()
             .setColor(cor)

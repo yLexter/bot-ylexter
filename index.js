@@ -11,8 +11,6 @@ const commandFiles = fs.readdirSync(path.join(__dirname, "./scr/commands"))
 const eventsFiles = fs.readdirSync("./scr/events")
 const slashsFiles = fs.readdirSync(path.join(__dirname, "./scr/Slashs")).filter(file => { return file.endsWith('.js') })
 
-const { token } = require("./config.json")
-
 client.commands = new Collection();
 client.queues = new Map();
 client.shuffles = new Map();

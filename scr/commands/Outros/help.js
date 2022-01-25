@@ -1,5 +1,4 @@
 const { MessageEmbed } = require("discord.js");
-const {prefix} = require("./../../../config.json")
 
 const execute = async (client, msg, args, cor) => {
 

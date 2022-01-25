@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { prefix , mongoUrl } = require("./../../config.json")
 // De Darius | ${prefix}Help
 
 module.exports = {

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { prefix } = require('./../../../config.json')
 
 const schemaGuild = new mongoose.Schema({
     id: {

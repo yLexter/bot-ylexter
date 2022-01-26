@@ -6,6 +6,7 @@ const path = require('path')
 
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
+require('dotenv').config()
 
 const commandFiles = fs.readdirSync(path.join(__dirname, "./scr/commands"))
 const eventsFiles = fs.readdirSync("./scr/events")
@@ -18,7 +19,7 @@ client.db = require('./scr/Database/moongose')
 client.slashs = new Collection();
 client.music = require('./scr/Functions/music')
 
-client.login(token)
+client.login(process.env.TOKEN)
 
 for (let filename of commandFiles) {
   const stat = fs.statSync(`./scr/commands/${filename}`)
@@ -55,10 +56,11 @@ const slashsCommands = client.slashs.map(cmd => {
 })
 
 
-const rest = new REST({ version: '9' }).setToken(token);
+const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 const clientId = '906324795786924082'
+const guildId = '905577677635870813'
 
-rest.put(Routes.applicationCommands(clientId), { body: slashsCommands })
+rest.put(Routes.applicationGuildCommands(clientId , guildId), { body: slashsCommands })
   .then(() => console.log('Sucesso ao registar os comandos slashs'))
   .catch(console.error);
 

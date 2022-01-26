@@ -15,7 +15,7 @@ module.exports = {
       // const xpziho = await atribuirXp()
       const { dados, modelo } = await client.db.fecthGuild(client, msg)
       const customPrefix = dados.prefix
-      const prefixBot = customPrefix || prefix
+      const prefixBot = customPrefix || process.env.PREFIX
 
       if (!msg.content.startsWith(prefixBot) || msg.channel.type === 'dm') return;
 

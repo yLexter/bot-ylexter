@@ -140,21 +140,18 @@ module.exports = {
                         }
                     }
 
-                    await wait(1 * 1000)
-                    await buttons[i.customId]()
                     await i.deferUpdate()
+                    await buttons[i.customId]()
 
-                } catch (e) { return collector.stop() }
+                } catch (e) { return  }
             })
 
 
             collector.on('end', async collected => {
-                let randomTime = Math.floor(Math.random() * 25 + 5)
-                await wait(randomTime * 1000)
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setAuthor({ name: `| Comando Cancelado por não existir música tocando ou tempo de uso atingido.`, iconURL: interaction.user.displayAvatarURL() })
-                return interaction.editReply({ embeds: [helpMsg], ephemeral: true, fecthReply: true, components: [] }).catch(() => { })
+                return await interaction.editReply({ embeds: [helpMsg], ephemeral: true, fecthReply: true, components: [] }).catch(e => console.log(e))
             })
 
         } catch (e) { return }

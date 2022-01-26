@@ -7,7 +7,7 @@ const schemaGuild = new mongoose.Schema({
     },
     prefix: {
         type: String,
-        default: prefix
+        default: process.env.PREFIX
     },
     channelMusic: {
         type: String,

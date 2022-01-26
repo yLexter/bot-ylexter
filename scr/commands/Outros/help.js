@@ -8,7 +8,7 @@ const execute = async (client, msg, args, cor) => {
     var contador_msc = contador_otrs = contador_adm = 0
 
     const { dados , modelo} = await client.db.fecthGuild(client, msg)
-    const customPrefix = dados.prefix || prefix
+    const customPrefix = dados.prefix || process.env.PREFIX
     const s = args.join(" ")
     const info = client.commands.find(y => y.name == s.toLowerCase()) || client.commands.find(x => x.aliase.find(y => y.toLowerCase() == s.toLowerCase()))
 

@@ -94,8 +94,8 @@ module.exports = {
                     const queue = client.queues.get(interaction.guild.id);
 
                     if (!queue || queue.songs.length == 0) {
-                        collector.stop()
-                        return await i.deferUpdate();
+                        await i.deferUpdate();
+                        return collector.stop()
                     }
 
                     const { songs } = queue
@@ -115,7 +115,10 @@ module.exports = {
                         return mudarMsg(1)
                     }
 
-                    if (contador > pagsTotal) firstPag();
+                    if (contador > pagsTotal) {
+                        await i.deferUpdate()
+                        return firstPag()
+                    }
 
                     const buttons = {
                         'reload': () => {
@@ -141,9 +144,10 @@ module.exports = {
                     }
 
                     await i.deferUpdate()
+                    await wait(0.5 * 1000)
                     await buttons[i.customId]()
 
-                } catch (e) { return  }
+                } catch (e) { return }
             })
 
 

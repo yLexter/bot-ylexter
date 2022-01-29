@@ -26,7 +26,7 @@ module.exports = {
       try {
         await memberM.kick(reason)
       } catch (e) {
-        return msg.reply('Não consigo Kickar este user.')
+        return msg.reply({ content: 'Não consigo Kickar este user.'})
       }
 
       let objectBan = {
@@ -39,7 +39,7 @@ module.exports = {
         data: data
       }
 
-      const save = await modelo.findOneAndUpdate({ id: msg.guild.id }, { $push: { logs: objectBan } })
+      await modelo.findOneAndUpdate({ id: msg.guild.id }, { $push: { logs: objectBan } })
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)

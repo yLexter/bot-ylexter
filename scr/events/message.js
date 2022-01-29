@@ -13,10 +13,23 @@ module.exports = {
       if (msg.author.bot) return;
 
       // const xpziho = await atribuirXp()
-      const { dados, modelo } = await client.db.fecthGuild(client, msg)
+      const { dados } = await client.db.fecthGuild(client, msg)
       const customPrefix = dados.prefix
-      const prefixBot = customPrefix || process.env.PREFIX
 
+      const verify = msg.mentions.members.first()
+
+      if (verify && verify.user.id == client.user.id) {
+        const msgHelp = new MessageEmbed()
+          .setColor(cor)
+          .setDescription(`📥 Quer me Colocar no Seu Server? Clique [Aqui](https://discord.com/oauth2/authorize?client_id=906324795786924082&scope=bot&permissions=8)`)
+          .setAuthor({ name: `| Olá ${msg.author.tag}.`, iconURL: msg.author.displayAvatarURL() })
+          .addFields({ name: 'Meu ID', value: `${client.user.id}` },
+            { name: 'Prefix Atual do Server', value: `${customPrefix} || Padrão: ${process.env.PREFIX}` },
+            { name: 'Criador do Bot', value: `yLexter#1687` })
+        return msg.reply({ embeds: [msgHelp] });
+      }
+
+      const prefixBot = customPrefix || process.env.PREFIX
       if (!msg.content.startsWith(prefixBot) || msg.channel.type === 'dm') return;
 
       const args = msg.content.slice(prefixBot.length).split(" ")
@@ -33,8 +46,7 @@ module.exports = {
         admin: Administrador
       }
 
-      typesCommands[command.type]();
-
+      typesCommands[command.type] ? typesCommands[command.type]() : executeCommand()
 
       function executeCommand() {
 
@@ -83,7 +95,7 @@ module.exports = {
         const verify = nivelAtual == newNivel
 
         if (!verify) {
-          return msg.reply(`Parabéns ${username} , você subiu para o nivel: ${newNivel} -  ${newXp}`)
+          return msg.reply({ content: `Parabéns ${username} , você subiu para o nivel: ${newNivel} -  ${newXp}` })
         }
       }
 

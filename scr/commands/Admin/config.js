@@ -15,7 +15,7 @@ module.exports = {
       const options = {
 
         stcmusic: async () => {
-          const doc = await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: canalId })
+          await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: canalId })
           const helpMsg = new MessageEmbed()
             .setColor('#B22222')
             .setDescription(`O Canal de música foi setado para: <#${canalId}>`)
@@ -23,7 +23,7 @@ module.exports = {
           return msg.channel.send({ embeds: [helpMsg] })
         },
         rcmusic: async () => {
-          const doc = await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: null })
+          await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: null })
           const helpMsg = new MessageEmbed()
             .setColor('#B22222')
             .setAuthor({ name: 'Canal de Música removido', iconURL: msg.author.displayAvatarURL() })
@@ -35,7 +35,7 @@ module.exports = {
       try {
         await options[opcao]()
       } catch (e) {
-        msg.reply('Parâmetro invalido , use o help + config para ver os parâmetros válidos')
+        msg.reply({ content: 'Parâmetro invalido , use o help + config para ver os parâmetros válidos' })
       }
 
     } catch (e) { return }

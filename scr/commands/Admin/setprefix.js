@@ -14,14 +14,14 @@ module.exports = {
                const newPrefix = args.join(" ")
 
                if (!newPrefix || newPrefix.length > 3 || newPrefix.startsWith("/")) {
-                    return msg.reply("Insira um prefix valido menor q 3 caracteres.")
+                    return msg.reply({ content: "Insira um prefix valido menor q 3 caracteres." })
                }
 
-               const doc = await modelo.findOneAndUpdate({ id: msg.guild.id }, { prefix: newPrefix })
+               await modelo.findOneAndUpdate({ id: msg.guild.id }, { prefix: newPrefix })
 
                const helpMsg = new MessageEmbed()
-                    .setColor('#B22222')
-                    .setAuthor({ name: `| ✔️ | Prefixo mudado para: ${newPrefix} `, iconURL: msg.author.displayAvatarURL() })
+                    .setColor(cor)
+                    .setAuthor({ name: `| ✔️ Prefixo mudado para: ${newPrefix} `, iconURL: msg.author.displayAvatarURL() })
                return msg.channel.send({ embeds: [helpMsg] })
 
           } catch (e) { console.log(e) }

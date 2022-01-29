@@ -153,7 +153,7 @@ const execute = async (client, msg, args, cor) => {
       const minPlayers = 1
 
       if (shuffle.players.length <= minPlayers || shuffle.status == 'canceled' || !shuffle.status) {
-        msg.channel.send({content: '❌ O Jogo Cancelado!'})
+        msg.channel.send({content: '❌ O Jogo foi Cancelado!'})
         return client.shuffles.delete(msg.guild.id)
       } else return game()
 

@@ -132,7 +132,7 @@ const tocarPlaylist = async (client, msg, item) => {
       queue.songs.shift()
       client.queues.set(msg.guild.id, queue)
     }
-  } catch (e) { retur }
+  } catch (e) { return }
 }
 
 const secondsToText = (segundos) => {

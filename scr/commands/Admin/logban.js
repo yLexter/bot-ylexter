@@ -13,7 +13,7 @@ module.exports = {
       const user = dados.logs.find(x => { return `${msg.guild.id}-${userId}`})
       let string = ''
 
-      if(dados.logs.length == 0) return msg.reply('Os logs estão vazios')
+      if(dados.logs.length == 0) return msg.reply({content: 'Os logs estão vazios'})
 
       if (user) {
         const { idGuild, nome, id, motivo, autor, data } = user

@@ -3,7 +3,7 @@ module.exports = {
   help: "Cores: [ red , yellow ,  green , blue , orange , black , darkblue ] |  Use: say + cor + mensagem , para digitar colorido.",
   type: "others",
   aliase: [],
-  execute: (client, msg, args, cor) => {
+  execute: async (client, msg, args, cor) => {
 
     const { MessageEmbed } = require('discord.js')
 
@@ -11,7 +11,7 @@ module.exports = {
 
       var msg_user = args.join(" ")
       var corMsg = args[0].toLowerCase()
-      var Msg_args = args.slice(1).join(' ')
+      var Msg_args = args.slice(1).join(' ') + `\n ${msg.author.tag}`
       msg.delete().catch(() => { })
 
       if (msg_user.length > 100 || !msg_user) return msg.reply('Você não digitou **nada** ou o **limite** de caracteres foi excedido!');
@@ -27,7 +27,7 @@ module.exports = {
       }
 
       let msg_final = selectCor[corMsg]
-      msg_final && Msg_args ? msg.channel.send(msg_final) : msg.channel.send(`\`${msg_user}\``)
+      msg_final && Msg_args ? await msg.channel.send(msg_final) : await msg.channel.send(`${msg.msg_user} + \nBy: ${msg.author.tag} `)
 
     } catch (e) { msg.channel.send(`\`${e}\``) };
 

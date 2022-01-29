@@ -9,14 +9,16 @@ module.exports = {
         const { stopMusic } = client.music
 
         try {
-            
+
             const queue = client.queues.get(msg.guild.id);
-            if (!queue || queue.songs.length < 2 ) {
+            let minino = 3
+
+            if (!queue || queue.songs.length <= 3) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
-                    .setDescription('Não existe músicas na queue ou quantidade de músicas menor que 3')
-                    .setAuthor({name: `| ❌  Erro`, iconURL: msg.author.displayAvatarURL()})
-                    msg.channel.send({ embeds: [helpMsg] })
+                    .setDescription(`Não existe músicas na queue ou quantidade de músicas menor que ${minimo}`)
+                    .setAuthor({ name: `| ❌  Erro`, iconURL: msg.author.displayAvatarURL() })
+                return msg.channel.send({ embeds: [helpMsg] })
             }
 
             const firstMusic = queue.songs.shift()
@@ -34,7 +36,6 @@ module.exports = {
 
             await numeros.forEach((element) => {
                 queue.songs.push(backup[element])
-                client.queues.set(msg.guild.id, queue)
             });
 
             queue.songs.unshift(firstMusic)
@@ -42,10 +43,10 @@ module.exports = {
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
-                .setAuthor({name: `| 🔀 Queue Embaralhada`, iconURL: msg.author.displayAvatarURL()})
-                msg.channel.send({ embeds: [helpMsg] })
+                .setAuthor({ name: `| 🔀 Queue Embaralhada`, iconURL: msg.author.displayAvatarURL() })
+            msg.channel.send({ embeds: [helpMsg] })
 
-        } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+        } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
 
     }
 };

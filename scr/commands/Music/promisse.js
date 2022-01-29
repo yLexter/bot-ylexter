@@ -23,7 +23,7 @@ module.exports = {
                         { name: 'Sem músicas:', value: '**Não** existe musicas sendo tocada.' },
                         { name: 'Músicas:', value: 'Quantidade de músicas **insuficiente** para usar o promisse | menor 3.' },
                         { name: "Playlists:", value: "O promissse não aceita playlists de **Spotify** e **Youtube**." })
-                    .setAuthor({ name: `| ❌ Prováveis Erros: `, }, msg.author.displayAvatarURL())
+                    .setAuthor({ name: `| ❌ Prováveis Erros: `, iconURL: msg.author.displayAvatarURL()})
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
@@ -83,7 +83,7 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-        } catch (e) { return msg.reply('`❌ Ocorreu um erro ao usar o promisse , tente novamente.`') };
+        } catch (e) { return msg.reply({content: '`❌ Ocorreu um erro ao usar o promisse , tente novamente.`'}) };
 
     } // execute end
 }

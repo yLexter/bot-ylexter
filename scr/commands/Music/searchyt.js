@@ -1,5 +1,6 @@
 const { MessageEmbed, MessageCollector } = require("discord.js");
 const YouTube = require("youtube-sr").default;
+const wait = require('util').promisify(setTimeout);
 
 module.exports = {
   name: "searchyt",
@@ -52,7 +53,8 @@ module.exports = {
         max: 1
       })
 
-      collector.on('collect', m => {
+      collector.on('collect', async m => {
+        await wait(0.5 * 1000)
         m.delete().catch(() => { })
         if (m.content.toLowerCase() == "!cancel") return collector.stop();
         const song = listaFiltrado[m]

@@ -1,5 +1,5 @@
 const { Client, Intents, Message, User, MessageEmbed, Collection, Collector, } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES , Intents.FLAGS.GUILD_VOICE_STATES] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES , Intents.FLAGS.GUILD_VOICE_STATES , Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 
 const fs = require('fs')
 const path = require('path')
@@ -10,7 +10,7 @@ require('dotenv').config()
 
 const commandFiles = fs.readdirSync(path.join(__dirname, "./scr/commands"))
 const eventsFiles = fs.readdirSync("./scr/events")
-const slashsFiles = fs.readdirSync(path.join(__dirname, "./scr/Slashs")).filter(file => { return file.endsWith('.js') })
+// const slashsFiles = fs.readdirSync(path.join(__dirname, "./scr/Slashs")).filter(file => { return file.endsWith('.js') })
 
 client.commands = new Collection();
 client.queues = new Map();
@@ -46,12 +46,12 @@ for (let eventFile of eventsFiles) {
   }
 }
 
-for (let file of slashsFiles) {
+/* for (let file of slashsFiles) {
   const command = require(`./scr/Slashs/${file}`);
   client.slashs.set(command.name, command)
 }
 
-const slashsCommands = client.slashs.map(cmd => {
+ const slashsCommands = client.slashs.map(cmd => {
   return cmd.data.toJSON()
 })
 
@@ -62,7 +62,7 @@ const guildId = '905577677635870813'
 
 rest.put(Routes.applicationGuildCommands(clientId , guildId), { body: slashsCommands })
   .then(() => console.log('Sucesso ao registar os comandos slashs'))
-  .catch(console.error);
+  .catch(console.error);  */
 
 
 

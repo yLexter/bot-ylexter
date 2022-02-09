@@ -16,7 +16,7 @@ module.exports = {
       if (!queue || skipTO >= queue.songs.length || skipTO <= 1 || isNaN(skipTO) || !skipTO) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setDescription('Não existe musicas sendo tocada.')
+          .setDescription('Não existe musicas sendo tocada ou parâmetro invalido.')
           .setAuthor({ name: `|Erro`, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }

@@ -24,7 +24,7 @@ module.exports = {
       var looping = !queue.loop ? true : false;
       var setlooping = looping ? queue.loop = true : queue.loop = null;
       var loopingatual = queue.loop ? 'Ativado.' : 'Desativado.'
-      client.queues.set(msg.member.guild.id, queue);
+      client.queues.set(msg.guild.id, queue);
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)

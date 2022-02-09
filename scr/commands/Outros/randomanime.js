@@ -1,0 +1,108 @@
+const { MessageEmbed } = require("discord.js");
+const fetch = require('node-fetch');
+
+module.exports = {
+    name: "randomanime",
+    help: "O Darius irá recomendar um anime para você.",
+    type: "anime",
+    aliase: ["ranime"],
+    execute: async (client, msg, args, cor) => {
+
+        const helpMsg1 = new MessageEmbed()
+            .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
+        let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
+
+        try {
+
+            const finishCommmand = 600
+            const filter = (reaction, user) => {
+                return reaction.emoji.name == '🔁' && user.id == msg.author.id
+            };
+
+            async function getInfoAnimes() {
+                const urlTopAnimes = 'https://api.jikan.moe/v4/random/anime'
+                const data = await fetch(urlTopAnimes).then(response => response.json())
+                return data
+            }
+
+            function msgEmbedAnime(data) {
+                const {
+                    title, episodes, status, duration,
+                    synopsis, year, rating, images, genres, trailer, score,
+                    aired, type , url
+                } = data
+                const msgError = '???'
+                const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
+                const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
+                    return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
+                }).join("\n") : msgError
+                const urlTrailer = trailer.url
+                const urlMAL = url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                const helpMsg = new MessageEmbed()
+                    .setColor(cor)
+                    .setTitle(`${title || msgError}`)
+                    .setDescription(`${synopsis || msgError}`)
+                    .addFields(
+                        { name: 'Ano', value: `${year || msgError}`, inline: true },
+                        { name: 'Status', value: `${status || msgError}`, inline: true },
+                        { name: 'Idade', value: `${rating || msgError}`, inline: true },
+                        { name: "Duração", value: `${duration || msgError}`, inline: true },
+                        { name: 'Episodios', value: `${episodes || msgError}`, inline: true },
+                        { name: 'Nota', value: `${score || msgError}/10`, inline: true },
+                        { name: 'Gêneros', value: `${generos}`, inline: true },
+                        { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
+                        { name: 'Type', value: `${type || msgError}`, inline: true },
+                        
+                    )
+                    .setAuthor({ name: `| 🏆 Recomendação do ${client.user.username} `, iconURL: msg.author.displayAvatarURL() })
+                    .setURL(urlMAL)
+                if (imagem) helpMsg.setThumbnail(imagem);
+                if (urlTrailer) helpMsg1.setURL(urlTrailer)
+                return helpMsg
+            }
+
+            async function mudarMsgEmbed() {
+                const infoAnime = await getInfoAnimes()
+                if (!infoAnime.data) throw new Error('Not Found')
+                const Anime = msgEmbedAnime(infoAnime.data)
+                return msg_embed.edit({ embeds: [Anime] }).catch(() => { })
+            }
+
+            await mudarMsgEmbed()
+            await msg_embed.react('🔁')
+
+            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 });
+
+            collector.on('collect', async (reaction, user) => {
+                const reactions = {
+                    '🔁': () => {
+                        return mudarMsgEmbed()
+                    }
+                }
+                try {
+                    await reactions[reaction.emoji.name]()
+                    await reaction.users.remove(user.id)
+                } catch (e) {
+                    return
+                }
+            })
+
+        } catch (e) {
+            console.log(e)
+            const helpMsg = new MessageEmbed()
+                .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
+            return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
+        }
+    }
+};
+
+
+
+
+
+
+
+
+
+
+

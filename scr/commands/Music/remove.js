@@ -22,24 +22,18 @@ module.exports = {
             { name: " Queue:", value: "`Não existe músicas tocando atualmente`" },
             { name: "Parâmetro Vazio", value: "`Nenhum parametro foi fornecido`" })
           .setAuthor({ name: `| ❌ Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
-        let erro = await msg.channel.send({ embeds: [helpMsg] })
-        await wait(15 * 1000)
-        msg.delete().catch(() => { })
-        return erro.delete().catch(() => { });
+       return msg.channel.send({ embeds: [helpMsg] })
       }
 
       const songRemovida = queue.songs[removeTo]
 
-      if (!songRemovida) {
+      if (!songRemovida || removeTo == 0) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
           .addFields(
-            { name: "Parâmetro Invalido", value: "`Nenhum parametro valido foi fornecido`" })
+            { name: "Parâmetro Invalido", value: "`Nenhum parametro válido foi fornecido`" })
           .setAuthor({ name: `| ❌ Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
-        let erro = await msg.channel.send({ embeds: [helpMsg] })
-        await wait(15 * 1000)
-        msg.delete().catch(() => { })
-        return erro.delete().catch(() => { });
+       return msg.channel.send({ embeds: [helpMsg] })
       }
 
       queue.songs.splice(removeTo, 1)
@@ -51,7 +45,7 @@ module.exports = {
         .setAuthor({ name: `| ✔️ Removida:`, iconURL: msg.author.displayAvatarURL() })
       msg.channel.send({ embeds: [helpMsg] })
 
-    } catch (e) { console.log(e), stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) };
+    } catch (e) { console.log(e), stopMusic(client, msg, cor) };
 
   }
 }

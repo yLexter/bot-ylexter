@@ -15,21 +15,20 @@ module.exports = {
       // const xpziho = await atribuirXp()
       const { dados } = await client.db.fecthGuild(client, msg)
       const customPrefix = dados.prefix
-
+      const prefixBot = customPrefix || process.env.PREFIX
       const verify = msg.mentions.members.first()
 
       if (verify && verify.user.id == client.user.id) {
+        const canalMusic = dados.channelMusic ? `<#${dados.channelMusic}>` : '`Não Definido`'
         const msgHelp = new MessageEmbed()
           .setColor(cor)
-          .setDescription(`📥 Quer me Colocar no Seu Server? Clique [Aqui](https://discord.com/oauth2/authorize?client_id=906324795786924082&scope=bot&permissions=8)`)
+          .setTitle('Infos e Configurações do Server')
+          .setDescription(`Prefix atual: \`${prefixBot}\` \nMeu ID: \`${client.user.id}\`\nCanal de Música: ${canalMusic}`)
           .setAuthor({ name: `| Olá ${msg.author.tag}.`, iconURL: msg.author.displayAvatarURL() })
-          .addFields({ name: 'Meu ID', value: `${client.user.id}` },
-            { name: 'Prefix Atual do Server', value: `${customPrefix} || Padrão: ${process.env.PREFIX}` },
-            { name: 'Criador do Bot', value: `yLexter#1687` })
+          .setFooter({ text: '| Criador do Bot: yLexter#1687', iconURL: "https://cdn.discordapp.com/avatars/288871181514440706/217633420a296c18f5d5f3bbf2ca0544.webp" })
         return msg.reply({ embeds: [msgHelp] });
       }
 
-      const prefixBot = customPrefix || process.env.PREFIX
       if (!msg.content.startsWith(prefixBot) || msg.channel.type === 'dm') return;
 
       const args = msg.content.slice(prefixBot.length).split(" ")

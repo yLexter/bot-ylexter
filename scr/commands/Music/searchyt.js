@@ -57,8 +57,9 @@ module.exports = {
         await wait(0.5 * 1000)
         m.delete().catch(() => { })
         if (m.content.toLowerCase() == "!cancel") return collector.stop();
-        const song = listaFiltrado[m]
+        
         const queue = client.queues.get(msg.guild.id);
+        const song = listaFiltrado[m]
         if (queue) {
           queue.songs.push(song);
           client.queues.set(msg.guild.id, queue);

@@ -10,7 +10,7 @@ const {
   joinVoiceChannel,
 } = require('@discordjs/voice');
 
-const playSong = async (client, msg, song) => {
+async function playSong(client, msg, song) {
 
   const { stopMusic, tocarPlaylist, backMusic } = client.music
   const cor = '#4B0082'
@@ -91,12 +91,13 @@ const playSong = async (client, msg, song) => {
     client.queues.set(msg.guild.id, queue);
 
   } catch (e) {
+    console.log(e)
     stopMusic(client, msg, cor)
   }
 
 };
 
-const stopMusic = (client, msg, cor) => {
+function stopMusic(client, msg, cor) {
   try {
     let queue = client.queues.get(msg.guild.id)
     if (queue) {
@@ -110,7 +111,7 @@ const stopMusic = (client, msg, cor) => {
   } catch (e) { return }
 }
 
-const tocarPlaylist = async (client, msg, item) => {
+async function tocarPlaylist(client, msg, item) {
   try {
     function videosInject(x) {
       const queue = client.queues.get(msg.guild.id);
@@ -135,7 +136,7 @@ const tocarPlaylist = async (client, msg, item) => {
   } catch (e) { return }
 }
 
-const secondsToText = (segundos) => {
+function secondsToText(segundos) {
   dia = Math.floor(segundos / 86400)
   restoDia = Math.floor(segundos % 86400)
   horas = Math.floor(restoDia / 3600)
@@ -153,7 +154,7 @@ const secondsToText = (segundos) => {
   return capsula2.join(':')
 }
 
-const backMusic = (client, msg) => {
+function backMusic(client, msg) {
   try {
     let queue = client.queues.get(msg.member.guild.id)
     if (queue) {
@@ -162,10 +163,10 @@ const backMusic = (client, msg) => {
       client.queues.set(msg.member.guild.id, queue);
       return saved
     }
-  } catch (e) { retur }
+  } catch (e) { return }
 }
 
-const textToSeconds = async (text) => {
+async function textToSeconds(text) {
 
   async function formatar(y) {
     const ok = y.split(":").map(x => { return Number(x) })
@@ -211,11 +212,11 @@ const textToSeconds = async (text) => {
 
 }
 
-const spotifySearch = async (client, msg, list) => {
+async function spotifySearch(client, msg, list) {
 
   async function search_yt(msc) {
     const result = await YouTube.search(msc, { limit: 3, safeSearch: true })
-    if (result[0]) return result[0]
+    return result[0] ? result[0] : null
   };
 
   const spotify = await getTracks(list)
@@ -285,7 +286,7 @@ const spotifySearch = async (client, msg, list) => {
 
 }
 
-const vdSearch = async (client, msg, item) => {
+async function vdSearch(client, msg, item) {
 
   const busca = await YouTube.search(item, { limit: 3, safeSearch: false })
   var song = busca[0]
@@ -306,7 +307,7 @@ const vdSearch = async (client, msg, item) => {
 
 }
 
-const ytPlaylist = async (client, msg, item) => {
+async function ytPlaylist(client, msg, item) {
 
   const lista1 = await YouTube.getPlaylist(item)
   const lista2 = await lista1.fetch()
@@ -341,7 +342,7 @@ const ytPlaylist = async (client, msg, item) => {
 
 }
 
-const titulo_formatado = (string) => {
+function titulo_formatado(string) {
   let remover = ["Oficial", "oficial", '[', ']'
     , '(', ')', "Music", 'music',
     "Official", "Video", "Soundtrack",

@@ -27,7 +27,6 @@ module.exports = {
             joinVoiceChannel,
          } = require('@discordjs/voice');
 
-
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
          console.log(resultado_ok)
 

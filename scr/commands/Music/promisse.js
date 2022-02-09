@@ -14,7 +14,7 @@ module.exports = {
             const s = args.join(" ")
             const incluso = (x) => { return s.toLowerCase().includes(x) }
             const spt = incluso("spotify.com/track")
-            const ytb = isNaN(s) && queue.songs.length >= 2
+            const ytb = isNaN(s) && queue.songs.length > 1
 
             if (!queue || incluso("list") && incluso('.com')) {
                 const helpMsg = new MessageEmbed()
@@ -55,7 +55,7 @@ module.exports = {
                 let limite = queue.songs.length - 1
                 let music = queue.songs[Number(x)]
 
-                if (!music) {
+                if (!music || x <= 1 || queue.songs.length <= 1) {
                     const helpMsg = new MessageEmbed()
                         .setColor(cor)
                         .addFields(

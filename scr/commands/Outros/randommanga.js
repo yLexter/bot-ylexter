@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
+const Otaku = require('./../../Functions/animes')
 
 module.exports = {
     name: "randommanga",
@@ -18,12 +18,6 @@ module.exports = {
             const filter = (reaction, user) => {
                 return reaction.emoji.name == '🔁' && user.id == msg.author.id
             };
-
-            async function getInfoAnimes() {
-                const urlManga = 'https://api.jikan.moe/v4/random/manga'
-                const data = await fetch(urlManga).then(response => response.json())
-                return data
-            }
 
             function msgEmbedManga(info) {
                 const msgError = '???'
@@ -56,9 +50,8 @@ module.exports = {
             }
 
             async function mudarMsgEmbed() {
-                const infoManga = await getInfoAnimes()
-                if (!infoManga.data) throw new Error('Not Found')
-                const manga = msgEmbedManga(infoManga.data)
+                const infoManga = await Otaku.getRandomManga()
+                const manga = msgEmbedManga(infoManga)
                 return msg_embed.edit({ embeds: [manga] }).catch(() => { })
             }
 

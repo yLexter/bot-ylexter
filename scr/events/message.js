@@ -70,12 +70,9 @@ module.exports = {
         } else {
           const msgHelp = new MessageEmbed()
             .setColor(cor)
-            .setAuthor({ name: `| ❌ Erro:`, iconURL: msg.author.displayAvatarURL() })
+            .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
             .setDescription(`Esse comando só é permitido no canal <#${idChannel}>`)
           let error_msc = await msg.reply({ embeds: [msgHelp] });
-          await wait(8 * 1000)
-          error_msc.delete().catch(() => { })
-          msg.delete().catch(() => { })
         }
       }
 

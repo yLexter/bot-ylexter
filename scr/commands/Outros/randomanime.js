@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
+const Otaku = require('./../../Functions/animes')
 
 module.exports = {
     name: "randomanime",
@@ -19,12 +19,6 @@ module.exports = {
                 return reaction.emoji.name == '🔁' && user.id == msg.author.id
             };
 
-            async function getInfoAnimes() {
-                const urlTopAnimes = 'https://api.jikan.moe/v4/random/anime'
-                const data = await fetch(urlTopAnimes).then(response => response.json())
-                return data
-            }
-
             function msgEmbedAnime(data) {
                 const {
                     title, episodes, status, duration,
@@ -36,8 +30,7 @@ module.exports = {
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("\n") : msgError
-                const urlTrailer = trailer.url
-                const urlMAL = url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                const urlMAL = trailer.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(`${title || msgError}`)
@@ -52,19 +45,16 @@ module.exports = {
                         { name: 'Gêneros', value: `${generos}`, inline: true },
                         { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
                         { name: 'Type', value: `${type || msgError}`, inline: true },
-                        
                     )
                     .setAuthor({ name: `| 🏆 Recomendação do ${client.user.username} `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlMAL)
                 if (imagem) helpMsg.setThumbnail(imagem);
-                if (urlTrailer) helpMsg1.setURL(urlTrailer)
                 return helpMsg
             }
 
             async function mudarMsgEmbed() {
-                const infoAnime = await getInfoAnimes()
-                if (!infoAnime.data) throw new Error('Not Found')
-                const Anime = msgEmbedAnime(infoAnime.data)
+                const infoAnime = await Otaku.getRandomAnime()
+                const Anime = msgEmbedAnime(infoAnime)
                 return msg_embed.edit({ embeds: [Anime] }).catch(() => { })
             }
 

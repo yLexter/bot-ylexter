@@ -215,7 +215,7 @@ async function textToSeconds(text) {
 async function spotifySearch(client, msg, list) {
 
   async function search_yt(msc) {
-    const result = await YouTube.search(msc, { limit: 3, safeSearch: true })
+    const result = await YouTube.search(msc, { limit: 3 })
     return result[0] ? result[0] : null
   };
 
@@ -288,11 +288,14 @@ async function spotifySearch(client, msg, list) {
 
 async function vdSearch(client, msg, item) {
 
-  const busca = await YouTube.search(item, { limit: 3, safeSearch: false })
-  var song = busca[0]
-
-  if (busca && busca.length == 0) {
-    throw new Error('Música não encontrada')
+  if (item.includes('watch?')) {
+    var song = await YouTube.getVideo(item)
+  } else {
+    const busca = await YouTube.search(item, { limit: 3 })
+    var song = busca[0]
+    if (busca && busca.length == 0) {
+      throw new Error('Música não encontrada')
+    }
   }
 
   const { id, url, duration, durationFormatted, title } = song
@@ -308,6 +311,17 @@ async function vdSearch(client, msg, item) {
 }
 
 async function ytPlaylist(client, msg, item) {
+
+  const formatar = item.split("list=")
+  let idPlaylist = formatar[1]
+  let stringIndex = '&index'
+
+  if (idPlaylist.includes(stringIndex)) {
+    let formatar2 = idPlaylist.split(stringIndex)
+    idPlaylist = formatar2[0]
+  }
+
+  item = `https://www.youtube.com/playlist?list=${idPlaylist}`
 
   const lista1 = await YouTube.getPlaylist(item)
   const lista2 = await lista1.fetch()

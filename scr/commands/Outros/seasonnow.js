@@ -1,12 +1,12 @@
 const { MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
 const wait = require('util').promisify(setTimeout);
+const Otaku = require('../../Functions/animes')
 
 module.exports = {
-    name: "nextseason",
-    help: "Mostra a lista dos  Animes da proxíma temporada.",
+    name: "seasonnow",
+    help: "Mostra a lista dos animes da temporada atual.",
     type: "anime",
-    aliase: [],
+    aliase: ["snow"],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
@@ -14,58 +14,56 @@ module.exports = {
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
         try {
-            let contador = 1
-            const urlTopAnimes = 'https://api.jikan.moe/v4/seasons/upcoming'
-            const fecthUrl = await fetch(urlTopAnimes).then(response => response.json())
-            const topAnimes = fecthUrl.data
+            let contador = 0
+            const topAnimes = await Otaku.getSeasonNow()
             const msgError = '???'
             const finishCommmand = 300
             const pagsTotal = topAnimes.length - 1
-            const infoFirstPosition = getAnimeByPosition(0)
-            const firstPagina = msgEmbedAnime(infoFirstPosition)
-            const msg_principal = await msg_embed.edit({ embeds: [firstPagina] })
-
+           
             function getAnimeByPosition(number) {
                 return topAnimes[number]
             }
 
             function msgEmbedAnime(info) {
+                const contadorEmbed = contador + 1
+                const pagstotalEmbed = pagsTotal + 1 
                 const {
                     title, status, type , 
-                    synopsis, year, images, genres, trailer , rating , favorites
+                    synopsis, images, genres, trailer , rating ,
+                    score , aired
                 } = info
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("\n") : msgError
                 const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
-                const urlTrailer = trailer.url
+                const urlTrailer = trailer.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: 'Ano', value: `${year || msgError}`, inline: true },
                         { name: 'Status', value: `${status || msgError}`, inline: true },
                         { name: 'Type', value: `${type || msgError}`, inline: true },
-                        { name: 'Favoritos', value: `${favorites || msgError}`, inline: true },
+                        { name: 'Nota', value: `${score || msgError}/10`, inline: true },
                         { name: 'Idade', value: `${rating || msgError}`, inline: true },
+                        { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
                         { name: 'Gêneros', value: `${generos}`, inline: true },
                         )
-                    .setAuthor({ name: `| 🏆 Próxima Season `, iconURL: msg.author.displayAvatarURL() })
-                    .setFooter({ text: ` Pag's ${contador}/${pagsTotal}` })
+                    .setAuthor({ name: `| 🏆 Season Atual `, iconURL: msg.author.displayAvatarURL() })
+                    .setURL(urlTrailer)
+                    .setFooter({ text: ` Pag's ${contadorEmbed}/${pagstotalEmbed}` })
                 if (imagem) helpMsg.setThumbnail(imagem);
-                if (urlTrailer) helpMsg.setURL(urlTrailer);
                 return helpMsg
             }
 
             function mudarMsg(number) {
                 const atualAnime = getAnimeByPosition(number)
                 const pagAtual = msgEmbedAnime(atualAnime)
-                return msg_principal.edit({ embeds: [pagAtual] }).catch(() => { })
+                return msg_embed.edit({ embeds: [pagAtual] }).catch(() => { })
             }
 
             function firstPag() {
-                contador = 1
+                contador = 0
                 return mudarMsg(0)
             }
 
@@ -73,22 +71,25 @@ module.exports = {
                 return (reaction.emoji.name == '⏪' || reaction.emoji.name == '🔁' || reaction.emoji.name == '⏩') && user.id == msg.author.id
             };
 
-            await msg_principal.react('⏪');
-            await msg_principal.react('⏩');
-            const collector = await msg_principal.createReactionCollector({ filter, time: finishCommmand * 1000 });
+            await firstPag();
+            await msg_embed.react('⏪');
+            await msg_embed.react('⏩');
+
+            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 });
+            
             collector.on('collect', async (reaction, user) => {
                 try {
                     await wait(0.5 * 1000)
                     const reactions = {
                         '⏩': () => {
-                            if (pagsTotal == 1) return;
+                            if (pagsTotal == 0) return;
                             if (contador == pagsTotal) return firstPag();
                             contador++
                             return mudarMsg(contador)
                         },
                         '⏪': () => {
-                            if (pagsTotal == 1) return;
-                            if (contador == 1) {
+                            if (pagsTotal == 0) return;
+                            if (contador == 0) {
                                 contador = pagsTotal
                                 return mudarMsg(pagsTotal);
                             }
@@ -102,8 +103,9 @@ module.exports = {
                     return console.log(e)
                 }
             });
+            
             collector.on('end', collected => {
-                msg_principal.delete().catch(() => { })
+                msg_embed.delete().catch(() => { })
             })
 
         } catch (e) {

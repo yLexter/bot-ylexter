@@ -17,7 +17,7 @@ module.exports = {
       if (!s) return;
       let string = '';
       const queueSyt = client.queues.get(`${msg.guild.id}.YT`)
-      const listResult = await YouTube.search(s, { limit: 11, safeSearch: true });
+      const listResult = await YouTube.search(s, { limit: 11 });
       const listaFiltrado = listResult.filter(m => { return m.duration > 0 })
       const maxTempo = 30
 

@@ -28,6 +28,7 @@ module.exports = {
          } = require('@discordjs/voice');
 
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
+         return
          console.log(resultado_ok)
 
          const resultado = JSON.stringify(resultado_ok, null, '\t')

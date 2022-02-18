@@ -31,7 +31,9 @@ module.exports = {
         queue.songs.unshift(firstMusic)
         client.queues.set(msg.guild.id, queue)
 
-        playSong(client, msg, queue.songs[0]);
+        const song = queue.songs[0]
+
+        playSong(client, msg, song);
 
         if (queue.songs.length > 0) {
           const helpMsg = new MessageEmbed()

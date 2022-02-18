@@ -11,9 +11,9 @@ module.exports = {
 
         try {
             const queue = client.queues.get(msg.guild.id);
-            const minino = 3
+            const minimo = 3
 
-            if (!queue || queue.songs.length <= minino) {
+            if (!queue || queue.songs.length <= minimo) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`Não existe músicas na queue ou quantidade de músicas menor que ${minimo}`)

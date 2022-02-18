@@ -6,6 +6,7 @@ module.exports = {
     name: "setchannelmusic",
     help: "Seta um canal para ser o canal de música , use <command> + menção de um canal usando #",
     type: "admin",
+    cooldown: 20,
     aliase: ["stmusic"],
     execute: async (client, msg, args, cor) => {
         try {

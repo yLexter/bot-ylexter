@@ -6,6 +6,7 @@ module.exports = {
     name: "removechannelmusic",
     help: "Remove o canal canal de música",
     type: "admin",
+    cooldown: 20,
     aliase: ["rcmusic"],
     execute: async (client, msg, args, cor) => {
         try {

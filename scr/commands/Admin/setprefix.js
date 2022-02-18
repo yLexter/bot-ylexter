@@ -6,6 +6,7 @@ module.exports = {
      name: "setprefix",
      help: "Muda o prefixo do bot",
      type: "admin",
+     cooldown: 25,
      aliase: [],
      execute: async (client, msg, args, cor) => {
 

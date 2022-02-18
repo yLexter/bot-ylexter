@@ -208,6 +208,7 @@ async function textToSeconds(text) {
     }
   }
 
+  if(!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');
   return await Math.floor(objects[quantidade]())
 
 }

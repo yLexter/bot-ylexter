@@ -2,8 +2,8 @@ const { MessageEmbed, Permissions } = require("discord.js");
 const Database = require("../Database/moongose")
 const mongoose = require('mongoose');
 const wait = require('util').promisify(setTimeout);
-const cooldown = new Set();
-const cor = '#4B0082'
+const cooldown = new Map();
+const cor = process.env.COR
 
 module.exports = {
   name: 'messageCreate',
@@ -12,7 +12,7 @@ module.exports = {
 
     try {
 
-      if (msg.author.bot) return;
+      if (msg.author.bot || msg.channel.type === 'dm') return;
 
       // const xpziho = await atribuirXp()
       const { dados } = await Database.fecthGuild(client, msg)
@@ -31,15 +31,17 @@ module.exports = {
         return msg.reply({ embeds: [msgHelp] });
       }
 
-      if (!msg.content.startsWith(prefixBot) || msg.channel.type === 'dm') return;
+      if (!msg.content.startsWith(prefixBot)) return;
 
       const args = msg.content.slice(prefixBot.length).split(" ")
       const commandName = args.shift().toLowerCase()
-      const cmd_aliase = client.commands.find(x => x.aliase.find(y => y == commandName))
-      const command = client.commands.get(commandName) ? client.commands.get(commandName) : cmd_aliase
-      const idChannel = dados.channelMusic || null
+      const command = client.commands.get(commandName) ? client.commands.get(commandName) : client.commands.find(x => x.aliase.find(y => y == commandName))
 
       if (!command) return;
+
+      const idChannel = dados.channelMusic || null
+      const defaultTimeCD = command.cooldown || 2
+      const commandCooldown = `${msg.guild.id}-${command.name}`
 
       const typesCommands = {
         music: musica,
@@ -50,10 +52,7 @@ module.exports = {
       typesCommands[command.type] ? typesCommands[command.type]() : executeCommand()
 
       function executeCmd() {
-        const cooldownDefault = 2
-        const commandCooldown = `${msg.guild.id}-${command.name}`
-        const defaultTimeCD = command.cooldown || cooldownDefault
-        cooldown.add(commandCooldown, command)
+        cooldown.set(commandCooldown, Date.now() / 1000)
         setTimeout(() => {
           cooldown.delete(commandCooldown)
         }, defaultTimeCD * 1000)
@@ -61,8 +60,10 @@ module.exports = {
       }
 
       function executeCommand() {
-        if (cooldown.has(`${msg.guild.id}-${command.name}`)) {
-          return msg.reply({ content: 'Este comando está em Cooldown , Aguarde.' }).catch(() => { })
+        const cdCommand = cooldown.get(commandCooldown)
+        if (cdCommand) {
+          const time = defaultTimeCD - Math.floor(Date.now() / 1000 - cdCommand) || '??'
+          return msg.reply({ content: `Este comando está em Cooldown , Aguarde ${time}(s).`}).catch(() => { })
         }
 
         if (command.onlyOwner) {
@@ -86,7 +87,7 @@ module.exports = {
             .setColor(cor)
             .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
             .setDescription(`Esse comando só é Permitido no canal <#${idChannel}>`)
-          msg.reply({ embeds: [msgHelp] }).catch(() => {})
+          msg.reply({ embeds: [msgHelp] }).catch(() => { })
         }
       }
 
@@ -96,7 +97,7 @@ module.exports = {
       }
 
       async function atribuirXp() {
-        const { xp, username, id, warns, minigames, outros } = await client.db.fecthUser(client, msg)
+        const { xp, username, id, warns, minigames, outros } = await Database.fecthUser(client, msg)
         const randomXp = Math.floor(Math.random() * maxXp)
         const nivelAtual = Math.floor(xp / 1000)
         const newXp = xp + randomXp

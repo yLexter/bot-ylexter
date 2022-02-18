@@ -5,10 +5,12 @@ module.exports = {
     name: "randomanime",
     help: "O Darius irá recomendar um anime para você.",
     type: "anime",
+    cooldown: 10,
     aliase: ["ranime"],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
+            .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
@@ -22,21 +24,20 @@ module.exports = {
             function msgEmbedAnime(data) {
                 const {
                     title, episodes, status, duration,
-                    synopsis, year, rating, images, genres, trailer, score,
-                    aired, type , url
+                    synopsis, rating, images, genres, score,
+                    aired, type, url
                 } = data
                 const msgError = '???'
                 const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("\n") : msgError
-                const urlMAL = trailer.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                const urlMAL = url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: 'Ano', value: `${year || msgError}`, inline: true },
                         { name: 'Status', value: `${status || msgError}`, inline: true },
                         { name: 'Idade', value: `${rating || msgError}`, inline: true },
                         { name: "Duração", value: `${duration || msgError}`, inline: true },
@@ -72,14 +73,12 @@ module.exports = {
                 try {
                     await reactions[reaction.emoji.name]()
                     await reaction.users.remove(user.id)
-                } catch (e) {
-                    return
-                }
+                } catch (e) { return }
             })
 
         } catch (e) {
-            console.log(e)
             const helpMsg = new MessageEmbed()
+                .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }

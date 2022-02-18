@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   name: "stop",
@@ -7,7 +8,6 @@ module.exports = {
   execute: (client, msg, args, cor) => {
 
     const { stopMusic } = client.music
-    const { MessageEmbed } = require("discord.js");
 
     try {
 

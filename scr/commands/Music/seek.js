@@ -1,3 +1,15 @@
+const { MessageEmbed, MessageCollector } = require("discord.js");
+const {
+    AudioPlayerStatus,
+    StreamType,
+    createAudioPlayer,
+    createAudioResource,
+    joinVoiceChannel,
+} = require('@discordjs/voice');
+
+const Youtube = require("youtube-sr").default;
+const play = require('play-dl')
+
 module.exports = {
     name: "seek",
     help: "Avança ou retrocede para minutagem desejada , use Horas:Minutos:Segundos",
@@ -5,21 +17,9 @@ module.exports = {
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
-        const { MessageEmbed, MessageCollector } = require("discord.js");
-        const {
-            AudioPlayerStatus,
-            StreamType,
-            createAudioPlayer,
-            createAudioResource,
-            joinVoiceChannel,
-        } = require('@discordjs/voice');
-
-        const Youtube = require("youtube-sr").default;
-        const play = require('play-dl')
         const { textToSeconds } = client.music
 
         try {
-
             const queue = client.queues.get(msg.guild.id);
 
             if (!queue || !args[0]) {
@@ -35,32 +35,17 @@ module.exports = {
                 .setAuthor({ name: `| Seeking... `, iconURL: msg.author.displayAvatarURL() })
             var msgPrincipal = await msg.channel.send({ embeds: [helpMsg] })
 
-
-            try {
-                var secondsFinal = await textToSeconds(args[0])
-            } catch (e) {
-                const helpMsg = new MessageEmbed()
-                    .setColor(cor)
-                    .setAuthor({ name: `| Informe Corretamente => HH:MM:SS `, iconURL: msg.author.displayAvatarURL() })
-                return msgPrincipal.edit({ embeds: [helpMsg] }).catch(e => { })
-            }
-
+            const secondsFinal = await textToSeconds(args[0])
             const song = queue.songs[0]
 
-            if (secondsFinal >= song.duration / 1000) {
-                const helpMsg = new MessageEmbed()
-                    .setColor(cor)
-                    .setAuthor({ name: `| Valor maior que o da música`, iconURL: msg.author.displayAvatarURL() })
-                return msgPrincipal.edit({ embeds: [helpMsg] }).catch(e => { })
-            }
-
+            if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
+           
             const stream = await play.stream(song.id, { seek: secondsFinal, quality: 3 })
             const resource = await createAudioResource(stream.stream, { inputType: StreamType.Opus });
             queue.dispatcher.play(resource);
             queue.connection.subscribe(queue.dispatcher)
 
         } catch (e) {
-            console.log(e)
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| ${e} `, iconURL: msg.author.displayAvatarURL() })

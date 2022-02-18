@@ -1,6 +1,8 @@
 const { MessageEmbed, Permissions } = require("discord.js");
+const Database = require("../Database/moongose")
 const mongoose = require('mongoose');
 const wait = require('util').promisify(setTimeout);
+const cooldown = new Set();
 const cor = '#4B0082'
 
 module.exports = {
@@ -13,7 +15,7 @@ module.exports = {
       if (msg.author.bot) return;
 
       // const xpziho = await atribuirXp()
-      const { dados } = await client.db.fecthGuild(client, msg)
+      const { dados } = await Database.fecthGuild(client, msg)
       const customPrefix = dados.prefix
       const prefixBot = customPrefix || process.env.PREFIX
       const verify = msg.mentions.members.first()
@@ -23,7 +25,7 @@ module.exports = {
         const msgHelp = new MessageEmbed()
           .setColor(cor)
           .setTitle('Infos e Configurações do Server')
-          .setDescription(`Prefix atual: \`${prefixBot}\` \nMeu ID: \`${client.user.id}\`\nCanal de Música: ${canalMusic}`)
+          .setDescription(`Prefix atual: \`${prefixBot}\` \nMeu ID: \`${client.user.id}\`\nCanal de Música: ${canalMusic}\nLink de Convite: [Aqui](https://discord.com/oauth2/authorize?client_id=906324795786924082&scope=bot&permissions=8)`)
           .setAuthor({ name: `| Olá ${msg.author.tag}.`, iconURL: msg.author.displayAvatarURL() })
           .setFooter({ text: '| Criador do Bot: yLexter#1687', iconURL: "https://cdn.discordapp.com/avatars/288871181514440706/217633420a296c18f5d5f3bbf2ca0544.webp" })
         return msg.reply({ embeds: [msgHelp] });
@@ -47,10 +49,20 @@ module.exports = {
 
       typesCommands[command.type] ? typesCommands[command.type]() : executeCommand()
 
-      function executeCommand() {
+      function executeCmd() {
+        const cooldownDefault = 2
+        const commandCooldown = `${msg.guild.id}-${command.name}`
+        const defaultTimeCD = command.cooldown || cooldownDefault
+        cooldown.add(commandCooldown, command)
+        setTimeout(() => {
+          cooldown.delete(commandCooldown)
+        }, defaultTimeCD * 1000)
+        return client.commands.get(command.name).execute(client, msg, args, cor)
+      }
 
-        function executeCmd() {
-          return client.commands.get(command.name).execute(client, msg, args, cor)
+      function executeCommand() {
+        if (cooldown.has(`${msg.guild.id}-${command.name}`)) {
+          return msg.reply({ content: 'Este comando está em Cooldown , Aguarde.' }).catch(() => { })
         }
 
         if (command.onlyOwner) {
@@ -58,21 +70,23 @@ module.exports = {
           return dono ? executeCmd() : msg.delete().catch(() => { });
         }
 
-        executeCmd()
+        return executeCmd()
       }
 
       async function musica() {
         if (!idChannel || idChannel == msg.channel.id) {
           let queue = client.queues.get(msg.member.guild.id);
-          return !queue ? executeCommand() :
-            queue.connection.joinConfig.channelId == msg.member.voice.channel.id ? executeCommand() :
-              msg.delete().catch(() => { })
+          if (queue) {
+            if (queue.dispatcher._state.status == 'idle') return;
+            return queue.connection.joinConfig.channelId == msg.member.voice.channel.id ? executeCommand() : msg.delete().catch(() => { })
+          }
+          return executeCommand()
         } else {
           const msgHelp = new MessageEmbed()
             .setColor(cor)
             .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
-            .setDescription(`Esse comando só é permitido no canal <#${idChannel}>`)
-          let error_msc = await msg.reply({ embeds: [msgHelp] });
+            .setDescription(`Esse comando só é Permitido no canal <#${idChannel}>`)
+          msg.reply({ embeds: [msgHelp] }).catch(() => {})
         }
       }
 

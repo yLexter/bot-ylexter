@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
     name: "promisse",
     help: "Coloca uma musica da Queue/Pesquisa do Yt/Urls de músicas de Yt e Spotify em Primeiro Lugar da Queue",
@@ -6,7 +8,6 @@ module.exports = {
     execute: async (client, msg, args, cor) => {
 
         const { vdSearch, spotifySearch } = client.music
-        const { MessageEmbed } = require("discord.js");
 
         try {
 
@@ -64,7 +65,6 @@ module.exports = {
                         .setAuthor({ name: `| Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
                     if (x > limite) helpMsg.addFields({ name: "Número Incorreto", value: ` Você só pode colocar números > **1** e =< **${limite}**.` });
                     return msg.channel.send({ embeds: [helpMsg] })
-
                 } else {
                     embed(queue.songs[x])
                     await firstMusic(queue.songs[x])

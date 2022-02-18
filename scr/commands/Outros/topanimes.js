@@ -7,9 +7,11 @@ module.exports = {
     help: "Mostra a lista dos Top Animes do MyAnimeList.",
     type: "anime",
     aliase: ["tanime"],
+    cooldown: 10,
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
+            .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
@@ -19,6 +21,7 @@ module.exports = {
             const msgError = '???'
             const finishCommmand = 300
             const pagsTotal = topAnimes.length - 1
+            const firstPosition = 0
          
             function getAnimeByPosition(number) {
                 return topAnimes[number]
@@ -62,8 +65,8 @@ module.exports = {
             }
 
             function firstPag() {
-                contador = 0
-                return mudarMsg(0)
+                contador = firstPosition
+                return mudarMsg(firstPosition)
             }
 
             const filter = (reaction, user) => {
@@ -82,14 +85,14 @@ module.exports = {
                 
                     const reactions = {
                         '⏩': () => {
-                            if (pagsTotal == 0) return;
+                            if (pagsTotal == firstPosition) return;
                             if (contador == pagsTotal) return firstPag();
                             contador++
                             return mudarMsg(contador)
                         },
                         '⏪': () => {
-                            if (pagsTotal == 0) return;
-                            if (contador == 0) {
+                            if (pagsTotal == firstPosition) return;
+                            if (contador == firstPosition) {
                                 contador = pagsTotal
                                 return mudarMsg(pagsTotal);
                             }
@@ -111,6 +114,7 @@ module.exports = {
 
         } catch (e) {
             const helpMsg = new MessageEmbed()
+                .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }

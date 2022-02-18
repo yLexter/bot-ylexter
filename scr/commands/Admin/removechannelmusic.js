@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const mongoose = require('mongoose');
+const Database = require('../../Database/moongose')
 
 module.exports = {
     name: "removechannelmusic",
@@ -9,7 +10,7 @@ module.exports = {
     execute: async (client, msg, args, cor) => {
         try {
 
-            const { dados, modelo } = await client.db.fecthGuild(client, msg)
+            const { dados, modelo } = await Database.fecthGuild(client, msg)
 
             if (!dados.channelMusic) {
                 const helpMsg = new MessageEmbed()

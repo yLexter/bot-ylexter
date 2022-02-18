@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
     name: "shuffle",
     help: "Embaralha a queue atual",
@@ -5,15 +7,13 @@ module.exports = {
     aliase: ["sh"],
     execute: async (client, msg, args, cor) => {
 
-        const { MessageEmbed } = require("discord.js");
         const { stopMusic } = client.music
 
         try {
-
             const queue = client.queues.get(msg.guild.id);
-            let minino = 3
+            const minino = 3
 
-            if (!queue || queue.songs.length <= 3) {
+            if (!queue || queue.songs.length <= minino) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`Não existe músicas na queue ou quantidade de músicas menor que ${minimo}`)

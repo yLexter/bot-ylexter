@@ -1,25 +1,26 @@
-module.exports = {
+const { MessageEmbed } = require("discord.js");
+const mongoose = require('mongoose');
+const moment = require('moment');
+const Database = require('../../Database/moongose')
 
+module.exports = {
   name: "ban",
   help: "Bane um usuário do servidor , use: @user + Reason",
   aliase: ['b'],
   type: "admin",
   execute: async (client, msg, args, cor) => {
-    const { MessageEmbed } = require("discord.js");
-    const mongoose = require('mongoose');
-    const moment = require('moment');
-
+   
     try {
       const local = moment.locale('pt-br');
       const memberM = msg.mentions.members.first()
-      const reason = args.slice(1).join(' ');
+      const reason = args.slice(1).join(' ') ? args.slice(1).join(' ') : 'Não Informada.' 
       const data = moment().format("LLLL")
-      const { modelo, dados } = await client.db.fecthGuild(client, msg)
+      const { modelo, dados } = await Database.fecthGuild(client, msg)
 
-      if (!memberM || !reason) {
+      if (!memberM) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setDescription(`Por Favor use: **Ban** + **@[Usuário]** + **[Reason]** `)
+          .setDescription('Por Favor , Mencione um usuário.')
           .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
           return msg.channel.send({ embeds: [helpMsg] })
         }

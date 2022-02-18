@@ -6,13 +6,14 @@ module.exports = {
    execute: async (client, msg, args, cor) => {
 
       const { MessageEmbed, MessageCollector } = require("discord.js");
+      const Database = require('../../Database/moongose')
       const s = args.join(" ")
 
       try {
 
          msg.delete().catch(() => { })
          if(msg.author.id != '288871181514440706') return;
-         const { modelo, dados } = await client.db.fecthGuild(client, msg)
+         const { modelo, dados } = await Database.fecthGuild(client, msg)
          const mongoose = require('mongoose');
          const Youtube = require("youtube-sr").default;
          const { getData, getPreview, getTracks } = require('spotify-url-info')
@@ -28,7 +29,6 @@ module.exports = {
          } = require('@discordjs/voice');
 
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
-         return
          console.log(resultado_ok)
 
          const resultado = JSON.stringify(resultado_ok, null, '\t')

@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "search",
@@ -6,7 +7,6 @@ module.exports = {
     aliase: ["sch"],
     execute: async (client, msg, args, cor) => {
         
-        const { MessageEmbed } = require("discord.js");
         const { stopMusic } = client.music
 
         try {

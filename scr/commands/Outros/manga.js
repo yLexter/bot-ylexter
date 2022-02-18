@@ -1,42 +1,34 @@
 const { MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
+const Otaku = require('./../../Functions/animes')
 
 module.exports = {
     name: "manga",
     help: "Faz uma busca por um mangá",
     type: "anime",
+    cooldown: 10,
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
             .setAuthor({ name: `| Procurando...`, iconURL: msg.author.displayAvatarURL() })
+            .setColor(cor)
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => {})
 
         try {
-
             const s = args.join(" ")
-
+            
             if (!s) {
                 const helpMsg = new MessageEmbed()
                     .setAuthor({ name: `| Informe um Mangá.`, iconURL: msg.author.displayAvatarURL() })
                 return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
             }
 
-            const baseUrl = 'https://kitsu.io/api/edge'
-            const mangaSearch = '/manga?filter[text]='
-            const request = await fetch(`${baseUrl + mangaSearch + s}`).then(response => response.json())
-            const data = request.data[0]
+            const data = await Otaku.searchManga(s)
             const msgError = '???'
             const { posterImage, status,
                 endDate, description,
                 synopsis, titles, startDate
                 , averageRating, chapterCount, popularityRank, canonicalTitle } = data.attributes
-
-            if (!data) {
-                const helpMsg = new MessageEmbed()
-                    .setAuthor({ name: `| Mangá não Encontrado.`, iconURL: msg.author.displayAvatarURL() })
-                return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
-            }
 
             function firstKeyUpper(string) {
                 return string[0].toUpperCase() + string.slice(1, string.length)
@@ -60,6 +52,7 @@ module.exports = {
 
         } catch (e) {
             const helpMsg = new MessageEmbed()
+                .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
         }

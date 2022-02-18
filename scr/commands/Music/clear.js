@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
      name: "clear",
      help: "Limpa todas as musicas da queue",
@@ -5,7 +7,6 @@ module.exports = {
      aliase: ["c"],
      execute: (client, msg, args, cor) => {
 
-          const { MessageEmbed } = require("discord.js");
           const { stopMusic } = client.music
 
           try {

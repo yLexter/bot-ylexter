@@ -1,4 +1,5 @@
-
+const { MessageEmbed } = require("discord.js");
+const wait = require('util').promisify(setTimeout);
 
 module.exports = {
   name: "remove",
@@ -7,35 +8,23 @@ module.exports = {
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
-    const { MessageEmbed } = require("discord.js");
     const { stopMusic } = client.music
-    const wait = require('util').promisify(setTimeout);
 
     try {
       const queue = client.queues.get(msg.member.guild.id);
       const removeTo = Math.floor(Number(args[0]))
 
-      if (!queue || !removeTo) {
+      if (!queue || removeTo == 0 || !queue.songs[removeTo]) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
           .addFields(
-            { name: " Queue:", value: "`Não existe músicas tocando atualmente`" },
-            { name: "Parâmetro Vazio", value: "`Nenhum parametro foi fornecido`" })
-          .setAuthor({ name: `| ❌ Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
-       return msg.channel.send({ embeds: [helpMsg] })
+            { name: " Queue", value: "Não existe músicas tocando atualmente", inline: true },
+            { name: "Parâmetro Inválido", value: "Nenhum parametro válido foi fornecido", inline: true})
+          .setAuthor({ name: `| ❌ Possiveis Erros`, iconURL: msg.author.displayAvatarURL() })
+        return msg.channel.send({ embeds: [helpMsg] })
       }
 
       const songRemovida = queue.songs[removeTo]
-
-      if (!songRemovida || removeTo == 0) {
-        const helpMsg = new MessageEmbed()
-          .setColor(cor)
-          .addFields(
-            { name: "Parâmetro Invalido", value: "`Nenhum parametro válido foi fornecido`" })
-          .setAuthor({ name: `| ❌ Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
-       return msg.channel.send({ embeds: [helpMsg] })
-      }
-
       queue.songs.splice(removeTo, 1)
       client.queues.set(msg.guild.id, queue)
 

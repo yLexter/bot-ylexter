@@ -1,11 +1,12 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
     name: "kiss",
     help: "Exibe um mensagem de beijo com alguem aleatório(mucho cringe)",
-    type: "others",
+    type: "fun",
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
-        const { MessageEmbed, MessageCollector } = require("discord.js");
         const fetch = require('node-fetch');
 
         try {

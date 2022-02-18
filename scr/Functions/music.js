@@ -105,7 +105,7 @@ function stopMusic(client, msg, cor) {
       client.queues.delete(msg.guild.id)
       const helpMsg = new MessageEmbed()
         .setColor(cor)
-        .setAuthor({ name: ' | ⏹️ Stopped queue ', iconURL: client.user.displayAvatarURL() })
+        .setAuthor({ name: ' | ⏹️ Stopped Queue.', iconURL: client.user.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
     }
   } catch (e) { return }
@@ -171,7 +171,7 @@ async function textToSeconds(text) {
   async function formatar(y) {
     const ok = y.split(":").map(x => { return Number(x) })
     for (let number of ok) {
-      if (isNaN(number)) throw new Error('Padrão Invalido , use Horas:Minutos:Segundos');
+      if (isNaN(number)) throw new Error('Use Horas:Minutos:Segundos.');
     }
     if (ok[0] == '00') ok.shift()
     if (ok[0] == '00') ok.shift()
@@ -288,7 +288,7 @@ async function spotifySearch(client, msg, list) {
 
 async function vdSearch(client, msg, item) {
 
-  if (item.includes('watch?')) {
+  if (item.includes('youtube.com/watch?')) {
     var song = await YouTube.getVideo(item)
   } else {
     const busca = await YouTube.search(item, { limit: 3 })
@@ -372,6 +372,21 @@ function titulo_formatado(string) {
   return string
 }
 
+function PushAndPlaySong(client, msg, cor , song) {
+  const queue = client.queues.get(msg.guild.id);
+  if (queue) {
+    queue.songs.push(song);
+    client.queues.set(msg.guild.id, queue);
+    const helpMsg = new MessageEmbed()
+      .setColor(cor)
+      .setTitle(`${song.title}`)
+      .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
+      .setURL(song.url)
+      .setDescription(`Duração: **${song.durationFormatted}**`)
+    return msg.channel.send({ embeds: [helpMsg] })
+  } else return playSong(client, msg, song);
+}
+
 module.exports = {
   vdSearch,
   ytPlaylist,
@@ -383,4 +398,5 @@ module.exports = {
   spotifySearch,
   playSong,
   titulo_formatado,
+  PushAndPlaySong
 }

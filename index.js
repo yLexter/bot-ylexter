@@ -15,7 +15,6 @@ const eventsFiles = fs.readdirSync("./scr/events")
 client.commands = new Collection();
 client.queues = new Map();
 client.shuffles = new Map();
-client.db = require('./scr/Database/moongose')
 client.slashs = new Collection();
 client.music = require('./scr/Functions/music')
 

@@ -5,10 +5,12 @@ module.exports = {
     name: "randommanga",
     help: "O Darius irá recomendar um anime para você.",
     type: "anime",
+    cooldown: 10,
     aliase: ["rmanga"],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
+            .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
@@ -23,14 +25,14 @@ module.exports = {
                 const msgError = '???'
                 const {
                     title, chapters, status, published,
-                    synopsis, images, genres, scored, type , url
+                    synopsis, images, genres, scored, type, url
                 } = info
 
                 const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("\n") : msgError
-                let urlMAL = url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                const urlMAL = url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(`${title || msgError}`)
@@ -75,8 +77,8 @@ module.exports = {
             })
 
         } catch (e) {
-            console.log(e)
             const helpMsg = new MessageEmbed()
+                .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }

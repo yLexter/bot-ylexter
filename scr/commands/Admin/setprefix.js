@@ -1,3 +1,7 @@
+const { MessageEmbed } = require("discord.js");
+const mongoose = require('mongoose');
+const Database = require('../../Database/moongose')
+
 module.exports = {
      name: "setprefix",
      help: "Muda o prefixo do bot",
@@ -5,12 +9,8 @@ module.exports = {
      aliase: [],
      execute: async (client, msg, args, cor) => {
 
-          const { MessageEmbed } = require("discord.js");
-          const mongoose = require('mongoose');
-
           try {
-
-               const { modelo, dados } = await client.db.fecthGuild(client, msg)
+               const { modelo, dados } = await Database.fecthGuild(client, msg)
                const newPrefix = args.join(" ")
 
                if (!newPrefix || newPrefix.length > 3 || newPrefix.startsWith("/")) {

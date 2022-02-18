@@ -1,3 +1,5 @@
+const { MessageEmbed } = require('discord.js');
+
 module.exports = {
     name: "play",
     help: "Reproduz a música desejada no canal atual do usuário",
@@ -5,9 +7,7 @@ module.exports = {
     aliase: ["p"],
     execute: (client, msg, args, cor) => {
 
-        const { MessageEmbed } = require('discord.js');
-
-        const { tocarPlaylist, secondsToText, spotifySearch, vdSearch, ytPlaylist , playSong } = client.music
+        const { tocarPlaylist, secondsToText, spotifySearch, vdSearch, ytPlaylist , PushAndPlaySong } = client.music
         const s = args.join(" ");
         const spt = s.toLowerCase().includes('spotify.com')
         var resultado = s.toLowerCase().includes('list=');
@@ -16,7 +16,7 @@ module.exports = {
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setDescription('Você precisa digitar algo para por músicas ou entrar em um canal de voz primeiro.')
-                .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
+                .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
             return msg.channel.send({ embeds: [helpMsg] })
         }
 
@@ -35,7 +35,6 @@ module.exports = {
             }
 
             try {
-
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`⏯️ Carregando Song(s)`)
@@ -57,14 +56,9 @@ module.exports = {
                     },
 
                     'track': async () => {
-                        const track = [spotify]
-                        const helpMsg100 = new MessageEmbed()
-                            .setColor(cor)
-                            .setTitle(track[0].title)
-                            .setURL(track[0].url)
-                            .setAuthor({ name: '| 🎶 Track adicionada', iconURL: msg.author.displayAvatarURL() })
-                        await tocarPlaylist(client, msg, track)
-                        return msg_embed.edit({ embeds: [helpMsg100] }).catch(() => { })
+                        const track = spotify
+                        await PushAndPlaySong(client, msg, cor , track)
+                        return msg_embed.delete().catch(() => {})
                     }
                 }
 
@@ -79,7 +73,6 @@ module.exports = {
         async function tocarPlaylistYt(item) {
 
             try {
-                const queue = client.queues.get(msg.guild.id);
                 const lista2 = await ytPlaylist(client, msg, item)
                 const { title, videoCount, views, channel, url, songs, total } = lista2
 
@@ -111,19 +104,10 @@ module.exports = {
 
             try {
                 const song = await vdSearch(client, msg, item)
-                const queue = client.queues.get(msg.guild.id);
-                if (queue) {
-                    queue.songs.push(song);
-                    client.queues.set(msg.guild.id, queue);
-                    const helpMsg = new MessageEmbed()
-                        .setColor(cor)
-                        .setTitle(`${song.title}`)
-                        .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
-                        .setURL(song.url)
-                        .setDescription(`Duração: **${song.durationFormatted}**`)
-                    return msg.channel.send({ embeds: [helpMsg] })
-                } else return playSong(client, msg, song);
+                PushAndPlaySong(client , msg , cor , song)
+               
             } catch (e) {
+                console.log(e)
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription('Não achei oque você procura')

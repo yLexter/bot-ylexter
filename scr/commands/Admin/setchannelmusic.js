@@ -1,9 +1,10 @@
 const { MessageEmbed } = require("discord.js");
 const mongoose = require('mongoose');
+const Database = require('../../Database/moongose')
 
 module.exports = {
     name: "setchannelmusic",
-    help: "Seta um canal para ser o canal de música",
+    help: "Seta um canal para ser o canal de música , use <command> + menção de um canal usando #",
     type: "admin",
     aliase: ["stmusic"],
     execute: async (client, msg, args, cor) => {
@@ -18,7 +19,7 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            const { modelo } = await client.db.fecthGuild(client, msg)
+            const { modelo } = await Database.fecthGuild(client, msg)
 
             await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: channel.id })
 

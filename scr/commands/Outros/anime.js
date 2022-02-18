@@ -1,15 +1,17 @@
 const { MessageEmbed } = require("discord.js");
-const fetch = require('node-fetch');
+const Otaku = require('./../../Functions/animes')
 
 module.exports = {
   name: "anime",
   help: "az uma busca por um anime",
   type: "anime",
+  cooldown: 10,
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
     const helpMsg1 = new MessageEmbed()
       .setAuthor({ name: `| Procurando...`, iconURL: msg.author.displayAvatarURL() })
+      .setColor(cor)
     let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
     try {
@@ -19,20 +21,12 @@ module.exports = {
       if (!s) {
         const helpMsg = new MessageEmbed()
           .setAuthor({ name: `| Informe um Anime.`, iconURL: msg.author.displayAvatarURL() })
+          .setColor(cor)
         return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
       }
 
-      const baseUrl = 'https://kitsu.io/api/edge'
-      const animeSearch = '/anime?filter[text]='
-      const request = await fetch(`${baseUrl + animeSearch + s}`).then(response => response.json())
-      const data = request.data[0]
+      const data = await Otaku.searchAnime(s)
       const msgError = '???'
-
-      if (!data) {
-        const helpMsg = new MessageEmbed()
-          .setAuthor({ name: `| Anime não Encontrado.`, iconURL: msg.author.displayAvatarURL() })
-        return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
-      }
 
       const { episodeCount, averageRating, youtubeVideoId,
         popularityRank, titles,
@@ -63,6 +57,7 @@ module.exports = {
     } catch (e) {
       const helpMsg = new MessageEmbed()
         .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
+        .setColor(cor)
       return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
     }
   }

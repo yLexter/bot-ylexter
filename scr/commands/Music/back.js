@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
   name: "back",
   help: "Volta a tocar a música anterior",
@@ -5,7 +7,6 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { MessageEmbed } = require("discord.js");
     const { stopMusic , playSong } = client.music
 
     try {
@@ -15,7 +16,7 @@ module.exports = {
       if (!queue || !queue.back) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
+          .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
           .setDescription('Não existe músicas para voltar.')
         return msg.channel.send({ embeds: [helpMsg] })
       }
@@ -33,7 +34,7 @@ module.exports = {
       const helpMsg = new MessageEmbed()
         .setColor(cor)
         .setDescription(`[${song.title}](${url}) [${song.durationFormatted}]`)
-        .setAuthor({ name: '| ⏪ Retornada:', iconURL: msg.author.displayAvatarURL() })
+        .setAuthor({ name: '| ⏪ Retornada', iconURL: msg.author.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
 
 

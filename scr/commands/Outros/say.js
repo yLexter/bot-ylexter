@@ -1,7 +1,7 @@
 module.exports = {
   name: "say",
   help: "Cores: [ red , yellow ,  green , blue , orange , black , darkblue ] |  Use: say + cor + mensagem , para digitar colorido.",
-  type: "others",
+  type: "fun",
   aliase: [],
   execute: (client, msg, args, cor) => {
     try {

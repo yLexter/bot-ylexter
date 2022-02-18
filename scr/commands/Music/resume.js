@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
   name: "resume",
   help: "Volta a tocar a música pausada.",
@@ -5,7 +7,6 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { MessageEmbed } = require("discord.js");
     const { stopMusic } = client.music
 
     try {
@@ -24,7 +25,6 @@ module.exports = {
       
       queue.dispatcher.unpause();
      
-
       const helpMsg = new MessageEmbed()
         .setColor(cor)
         .setAuthor({ name: '| ▶️ Voltando a Tocar.', iconURL: msg.author.displayAvatarURL() })

@@ -1,3 +1,6 @@
+const { MessageEmbed } = require("discord.js");
+const Database = require('../../Database/moongose')
+
 module.exports = {
   name: "logs",
   help: "Mostra o registro de ban do server , use logban + id para ver logs de determinado user.",
@@ -5,14 +8,12 @@ module.exports = {
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
-    const { MessageEmbed } = require("discord.js");
-
     try {
 
        return msg.reply('Em manuteção')  
 
       const userId = args[0]
-      const {dados , modelo } = await client.db.fecthGuild(client , msg)
+      const {dados , modelo } = await Database.fecthGuild(client , msg)
       const user = dados.logs.find(x => { return `${msg.guild.id}-${userId}`})
       let string = ''
 

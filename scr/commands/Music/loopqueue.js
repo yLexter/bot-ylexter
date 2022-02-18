@@ -1,3 +1,4 @@
+const { MessageEmbed } = require("discord.js");
 
 module.exports = {
   name: "loopqueue",
@@ -5,7 +6,7 @@ module.exports = {
   type: 'music',
   aliase: ["lpq"],
   execute: (client, msg, args, cor) => {
-    const { MessageEmbed } = require("discord.js");
+
     const { stopMusic } = client.music
 
     try {
@@ -13,7 +14,7 @@ module.exports = {
       if (!queue || queue.songs.length == 1) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL()})
+          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
           .setDescription('Não existe músicas sendo tocada ou só existe uma música na queue')
         return msg.channel.send({ embeds: [helpMsg] })
       }
@@ -30,8 +31,8 @@ module.exports = {
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
-        .setAuthor({name: `| ♾️ LoopQueue ${loopingatual} `, iconURL: msg.author.displayAvatarURL() })
+        .setAuthor({ name: `| ♾️ LoopQueue ${loopingatual} `, iconURL: msg.author.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
-    } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 };

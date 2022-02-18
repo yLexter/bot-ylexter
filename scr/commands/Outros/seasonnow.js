@@ -6,10 +6,12 @@ module.exports = {
     name: "seasonnow",
     help: "Mostra a lista dos animes da temporada atual.",
     type: "anime",
+    cooldown: 10,
     aliase: ["snow"],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
+            .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
@@ -19,18 +21,19 @@ module.exports = {
             const msgError = '???'
             const finishCommmand = 300
             const pagsTotal = topAnimes.length - 1
-           
+            const firstPosition = 0
+
             function getAnimeByPosition(number) {
                 return topAnimes[number]
             }
 
             function msgEmbedAnime(info) {
                 const contadorEmbed = contador + 1
-                const pagstotalEmbed = pagsTotal + 1 
+                const pagstotalEmbed = pagsTotal + 1
                 const {
-                    title, status, type , 
-                    synopsis, images, genres, trailer , rating ,
-                    score , aired
+                    title, status, type,
+                    synopsis, images, genres, trailer, rating,
+                    score, aired
                 } = info
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
@@ -48,7 +51,7 @@ module.exports = {
                         { name: 'Idade', value: `${rating || msgError}`, inline: true },
                         { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
                         { name: 'Gêneros', value: `${generos}`, inline: true },
-                        )
+                    )
                     .setAuthor({ name: `| 🏆 Season Atual `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlTrailer)
                     .setFooter({ text: ` Pag's ${contadorEmbed}/${pagstotalEmbed}` })
@@ -63,8 +66,8 @@ module.exports = {
             }
 
             function firstPag() {
-                contador = 0
-                return mudarMsg(0)
+                contador = firstPosition
+                return mudarMsg(firstPosition)
             }
 
             const filter = (reaction, user) => {
@@ -76,20 +79,20 @@ module.exports = {
             await msg_embed.react('⏩');
 
             const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 });
-            
+
             collector.on('collect', async (reaction, user) => {
                 try {
                     await wait(0.5 * 1000)
                     const reactions = {
                         '⏩': () => {
-                            if (pagsTotal == 0) return;
+                            if (pagsTotal == firstPosition) return;
                             if (contador == pagsTotal) return firstPag();
                             contador++
                             return mudarMsg(contador)
                         },
                         '⏪': () => {
-                            if (pagsTotal == 0) return;
-                            if (contador == 0) {
+                            if (pagsTotal == firstPosition) return;
+                            if (contador == firstPosition) {
                                 contador = pagsTotal
                                 return mudarMsg(pagsTotal);
                             }
@@ -103,13 +106,14 @@ module.exports = {
                     return console.log(e)
                 }
             });
-            
+
             collector.on('end', collected => {
                 msg_embed.delete().catch(() => { })
             })
 
         } catch (e) {
             const helpMsg = new MessageEmbed()
+                .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }

@@ -1,3 +1,5 @@
+const { MessageEmbed } = require("discord.js");
+
 module.exports = {
   name: "loop",
   help: "Deixa a música atual em looping",
@@ -5,7 +7,6 @@ module.exports = {
   aliase: ["lp"],
   execute: (client, msg, args, cor) => {
 
-    const { MessageEmbed } = require("discord.js");
     const { stopMusic } = client.music
 
     try {

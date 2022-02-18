@@ -7,17 +7,19 @@ module.exports = {
   aliase: ['skt'],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic, backMusic , playSong } = client.music
+    const { stopMusic, backMusic, playSong } = client.music
 
     try {
       let queue = client.queues.get(msg.guild.id);
       const skipTO = Math.floor(Number(args[0]))
 
-      if (!queue || skipTO >= queue.songs.length || skipTO <= 1 || isNaN(skipTO) || !skipTO) {
+      if (!queue || skipTO <= 1 || !queue.songs[skipTO]) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setDescription('Não existe musicas sendo tocada ou parâmetro invalido.')
-          .setAuthor({ name: `|Erro`, iconURL: msg.author.displayAvatarURL() })
+          .addFields(
+            { name: " Queue", value: "Não existe músicas tocando atualmente", inline: true },
+            { name: "Parâmetro Inválido", value: "Nenhum parametro válido foi fornecido", inline: true })
+          .setAuthor({ name: `| ❌ Possiveis Erros`, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
@@ -29,23 +31,20 @@ module.exports = {
         queue.songs.unshift(firstMusic)
         client.queues.set(msg.guild.id, queue)
 
-        const song = queue.songs[0]
-        let url = song.url
-        playSong(client, msg, song);
+        playSong(client, msg, queue.songs[0]);
 
         if (queue.songs.length > 0) {
           const helpMsg = new MessageEmbed()
             .setColor(cor)
-            .setDescription(`[${song.title}](${url}) [${song.durationFormatted}]`)
+            .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
             .setAuthor({ name: `| ⏯️ Skipped `, iconURL: msg.author.displayAvatarURL() })
           return msg.channel.send({ embeds: [helpMsg] })
-        } else return;
-
+        } 
       }
 
       !queue.loop ? principal10() : playSong(client, msg, queue.songs[0])
 
-    } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 
 }

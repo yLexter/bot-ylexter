@@ -1,13 +1,14 @@
+const { MessageEmbed } = require("discord.js");
+const wait = require('util').promisify(setTimeout);
+
 module.exports = {
   name: "queue",
   help: "Mostra as músicas da fila",
   type: 'music',
   aliase: [],
   execute: async (client, msg, args, cor) => {
-
-    const { MessageEmbed } = require("discord.js");
+ 
     const { secondsToText } = client.music
-    const wait = require('util').promisify(setTimeout);
 
     try {
       const queue = client.queues.get(msg.member.guild.id);
@@ -134,19 +135,3 @@ module.exports = {
     } catch (e) { console.log(e) }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

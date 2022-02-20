@@ -14,7 +14,6 @@ module.exports = {
 
       if (msg.author.bot || msg.channel.type === 'dm') return;
 
-      // const xpziho = await atribuirXp()
       const { dados } = await Database.fecthGuild(client, msg)
       const customPrefix = dados.prefix
       const prefixBot = customPrefix || process.env.PREFIX
@@ -63,7 +62,7 @@ module.exports = {
         const cdCommand = cooldown.get(commandCooldown)
         if (cdCommand) {
           const time = defaultTimeCD - Math.floor(Date.now() / 1000 - cdCommand) || '??'
-          return msg.reply({ content: `Este comando está em Cooldown , Aguarde ${time}(s).`}).catch(() => { })
+          return msg.reply({ content: `⏰ **Este comando está em Cooldown , Aguarde ${time}s.**` }).catch(() => { })
         }
 
         if (command.onlyOwner) {
@@ -83,31 +82,13 @@ module.exports = {
           }
           return executeCommand()
         } else {
-          const msgHelp = new MessageEmbed()
-            .setColor(cor)
-            .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
-            .setDescription(`Esse comando só é Permitido no canal <#${idChannel}>`)
-          msg.reply({ embeds: [msgHelp] }).catch(() => { })
+          msg.reply({ content: `🚫 **Esse comando só é Permitido no canal <#${idChannel}>**` }).catch(() => { })
         }
       }
 
       function Administrador() {
         let permission = msg.member.permissions.has('ADMINISTRATOR')
         return permission ? executeCommand() : msg.delete().catch(() => { })
-      }
-
-      async function atribuirXp() {
-        const { xp, username, id, warns, minigames, outros } = await Database.fecthUser(client, msg)
-        const randomXp = Math.floor(Math.random() * maxXp)
-        const nivelAtual = Math.floor(xp / 1000)
-        const newXp = xp + randomXp
-        const newNivel = Math.floor(newXp / 1000)
-        const save = await userConfig.modelo.findOneAndUpdate({ id: `${msg.guild.id}-${msg.author.id}` }, { $inc: { xp: randomXp } })
-        const verify = nivelAtual == newNivel
-
-        if (!verify) {
-          return msg.reply({ content: `Parabéns ${username} , você subiu para o nivel: ${newNivel} -  ${newXp}` })
-        }
       }
 
     } catch (e) { return console.log(e) }

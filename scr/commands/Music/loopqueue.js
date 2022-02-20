@@ -14,7 +14,7 @@ module.exports = {
       if (!queue || queue.songs.length == 1) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
+          .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
           .setDescription('Não existe músicas sendo tocada ou só existe uma música na queue')
         return msg.channel.send({ embeds: [helpMsg] })
       }

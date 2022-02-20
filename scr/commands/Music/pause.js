@@ -16,12 +16,11 @@ module.exports = {
       if (!queue) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Não existe músicas para Pausar.')
+          .setAuthor({ name: `| Não existe Músicas sendo Tocada. `, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      if(queue.dispatcher._state.status == 'paused') return msg.delete().catch(() => {});
+      if (queue.dispatcher._state.status == 'paused') return msg.delete().catch(() => { });
 
       queue.dispatcher.pause()
 
@@ -31,6 +30,6 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
 
-    } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 }; // Execute end

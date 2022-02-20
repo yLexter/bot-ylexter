@@ -16,12 +16,11 @@ module.exports = {
       if (!queue) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Não existe músicas na queue.')
+          .setAuthor({ name: `| Não existe Músicas sendo Tocada. `, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      stopMusic(client, msg , cor)
+      stopMusic(client, msg, cor)
 
     } catch (e) { stopMusic(client, msg), msg.channel.send(`\`${e}\``) }
 

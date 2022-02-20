@@ -16,15 +16,14 @@ module.exports = {
             if (!dados.channelMusic) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
-                    .setAuthor({ name: `| ❌ Não existe um canal de música definido. `, iconURL: msg.author.displayAvatarURL() })
+                    .setAuthor({ name: `| ❌ Não existe um Canal de Música Definido. `, iconURL: msg.author.displayAvatarURL() })
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
             await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: null })
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
-                .setDescription(`O Canal de música foi removido.`)
-                .setAuthor({ name: `| ✔️ | Sucesso `, iconURL: msg.author.displayAvatarURL() })
+                .setAuthor({ name: `| ✔️ | Canal de Música foi Removido.`, iconURL: msg.author.displayAvatarURL() })
             return msg.channel.send({ embeds: [helpMsg] })
 
         } catch (e) {

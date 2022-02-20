@@ -42,12 +42,12 @@ module.exports = {
         .setTitle(`${canonicalTitle || titles.en_jp || msgError}`)
         .setDescription(`${synopsis || description || msgError}`)
         .addFields(
-          { name: 'Estreia', value: startDate || msgError, inline: true },
-          { name: 'Encerramento', value: endDate || msgError, inline: true },
-          { name: 'Status', value: firstKeyUpper(status) || msgError, inline: true },
-          { name: 'Popularidade', value: `${popularityRank || msgError}`, inline: true },
-          { name: 'Nota', value: `${averageRating || msgError}/100`, inline: true },
-          { name: 'Episodios', value: `${episodeCount || msgError}`, inline: true },
+          { name: '📅 Estreia', value: startDate || msgError, inline: true },
+          { name: '📅 Encerramento', value: endDate || msgError, inline: true },
+          { name: '🆔 Status', value: firstKeyUpper(status) || msgError, inline: true },
+          { name: '⭐ Popularidade', value: `${popularityRank || msgError}`, inline: true },
+          { name: '💯 Nota', value: `${averageRating || msgError}/100`, inline: true },
+          { name: '🧾 Episodios', value: `${episodeCount || msgError}`, inline: true },
         )
         .setThumbnail(`${posterImage.small || posterImage.medium}`)
         .setURL(`https://www.youtube.com/watch?v=${youtubeVideoId || 'dQw4w9WgXcQ'}`)

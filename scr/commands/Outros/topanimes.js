@@ -44,14 +44,14 @@ module.exports = {
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: 'Ano', value: `${year || msgError}`, inline: true },
-                        { name: 'Status', value: `${status || msgError}`, inline: true },
-                        { name: 'Gêneros', value: `${generos}`, inline: true },
-                        { name: "Duração", value: `${duration || msgError}`, inline: true },
-                        { name: 'Nota', value: `${score || msgError}/10`, inline: true },
-                        { name: 'Episodios', value: `${episodes || msgError}`, inline: true },
+                        { name: '📅 Ano', value: `${year || msgError}`, inline: true },
+                        { name: '🆔 Status', value: `${status || msgError}`, inline: true },
+                        { name: "🕒 Duração", value: `${duration || msgError}`, inline: true },
+                        { name: '📑 Gêneros', value: `${generos}`, inline: true },
+                        { name: '💯 Nota', value: `${score || msgError}/10`, inline: true },
+                        { name: '🧾 Episodios', value: `${episodes || msgError}`, inline: true },
                     )
-                    .setAuthor({ name: `| 🏆 TopAnimes `, iconURL: msg.author.displayAvatarURL() })
+                    .setAuthor({ name: `| 🏆 TopAnimes`, iconURL: msg.author.displayAvatarURL() })
                     .setFooter({ text: ` Pag's ${contadorEmbed}/${pagstotalEmbed}` })
                     .setURL(urlTrailer)
                 if (imagem) helpMsg.setThumbnail(imagem);

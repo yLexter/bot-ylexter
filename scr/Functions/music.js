@@ -208,7 +208,7 @@ async function textToSeconds(text) {
     }
   }
 
-  if(!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');
+  if (!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');
   return await Math.floor(objects[quantidade]())
 
 }
@@ -221,6 +221,7 @@ async function spotifySearch(client, msg, list) {
   };
 
   const spotify = await getTracks(list)
+  const infoSpotify = await getData(list)
 
   const spotifyTypes = {
     'track': async () => {
@@ -238,21 +239,18 @@ async function spotifySearch(client, msg, list) {
       }
     },
     'playlist': async () => {
-      const infoPlaylist = await getData(list)
-      const { owner, external_urls, followers, tracks, images, name, type } = infoPlaylist
-
-      let string = 0
-      for (msc of tracks.items) { string += msc.track.duration_ms }
-
+      const { owner, external_urls, followers, tracks, images, name, type } = infoSpotify
       const resultado = spotify.map(x => {
         let titulo = `${x.name} - ${x.artists[0].name}`
         return search_yt(titulo)
       });
 
       let result_final = await Promise.all(resultado)
+      let durationTotal = 0
 
       const songs = spotify.map((x, y) => {
         const { name, external_urls, duration_ms } = spotify[y]
+        durationTotal += duration_ms
         return {
           title: name,
           url: external_urls.spotify,
@@ -275,15 +273,52 @@ async function spotifySearch(client, msg, list) {
         type: type,
         likes: followers.total,
         total: tracks.total,
-        duration: secondsToText(string / 1000),
+        duration: secondsToText(durationTotal / 1000),
         images: images
       }
+    },
+    'album': async () => {
 
+      const { name, external_urls, images, type, total_tracks, artists } = infoSpotify
 
+      const resultado = spotify.map(x => {
+        let titulo = `${x.name} - ${x.artists[0].name ? x.artists[0].name : ""}`
+        return search_yt(titulo)
+      });
+
+      const artista = artists && artists.length > 0 ? artists.map((x,y,z) => {
+        return z.length - 1 == y ? `[${x.name}](${x.external_urls.spotify})` : `[${x.name}](${x.external_urls.spotify}), `
+      }) : '??'
+
+      let resultSongsYt = await Promise.all(resultado)
+      let durationTotal = 0
+
+      const songs = spotify.map((x, y) => {
+        const { name, external_urls, duration_ms } = spotify[y]
+        durationTotal += duration_ms
+        return {
+          title: name,
+          url: external_urls.spotify,
+          durationFormatted: secondsToText(duration_ms / 1000),
+          duration: duration_ms,
+          id: resultSongsYt[y].id
+        }
+      })
+
+      return {
+        artista,
+        name,
+        type,
+        total: total_tracks,
+        url: external_urls.spotify,
+        images,
+        songs,
+        duration: secondsToText(durationTotal / 1000),
+      }
     }
   }
 
-  return spotify.length > 1 ? await spotifyTypes['playlist']() : await spotifyTypes['track']()
+  return spotifyTypes[infoSpotify.type]()
 
 }
 
@@ -373,7 +408,7 @@ function titulo_formatado(string) {
   return string
 }
 
-function PushAndPlaySong(client, msg, cor , song) {
+function PushAndPlaySong(client, msg, cor, song) {
   const queue = client.queues.get(msg.guild.id);
   if (queue) {
     queue.songs.push(song);

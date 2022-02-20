@@ -7,7 +7,7 @@ module.exports = {
      help: "Muda o prefixo do bot",
      type: "admin",
      cooldown: 25,
-     aliase: [],
+     aliase: ["newprefix" , "stprefix" , "setpf"],
      execute: async (client, msg, args, cor) => {
 
           try {

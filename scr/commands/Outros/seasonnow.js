@@ -45,12 +45,12 @@ module.exports = {
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: 'Status', value: `${status || msgError}`, inline: true },
-                        { name: 'Type', value: `${type || msgError}`, inline: true },
-                        { name: 'Nota', value: `${score || msgError}/10`, inline: true },
-                        { name: 'Idade', value: `${rating || msgError}`, inline: true },
-                        { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
-                        { name: 'Gêneros', value: `${generos}`, inline: true },
+                        { name: '🆔 Status', value: `${status || msgError}`, inline: true },
+                        { name: '📺 Type', value: `${type || msgError}`, inline: true },
+                        { name: '💯 Nota', value: `${score || msgError}/10`, inline: true },
+                        { name: '⚠️ Idade', value: `${rating || msgError}`, inline: true },
+                        { name: '📅 Publicação', value: `${aired.string || msgError}`, inline: true },
+                        { name: '📑 Gêneros', value: `${generos}`, inline: true },
                     )
                     .setAuthor({ name: `| 🏆 Season Atual `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlTrailer)

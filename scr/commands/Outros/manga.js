@@ -39,12 +39,12 @@ module.exports = {
                 .setTitle(`${titles.en_jp || canonicalTitle || msgError}`)
                 .setDescription(`${synopsis || description || msgError}`)
                 .addFields(
-                    { name: 'Criado em', value: startDate || msgError, inline: true },
-                    { name: 'Capítulo Final', value: endDate || msgError, inline: true },
-                    { name: 'Total de Capítulos', value: `${chapterCount || msgError}`, inline: true },
-                    { name: 'Status', value: firstKeyUpper(status) || msgError, inline: true },
-                    { name: 'Popularidade', value: `${popularityRank || msgError}`, inline: true },
-                    { name: 'Nota', value: `${averageRating || msgError}/100`, inline: true },
+                    { name: '📅 Criado em', value: startDate || msgError, inline: true },
+                    { name: '📅 Capítulo Final', value: endDate || msgError, inline: true },
+                    { name: '🧾 Total de Capítulos', value: `${chapterCount || msgError}`, inline: true },
+                    { name: '🆔 Status', value: firstKeyUpper(status) || msgError, inline: true },
+                    { name: '⭐ Popularidade', value: `${popularityRank || msgError}`, inline: true },
+                    { name: '💯 Nota', value: `${averageRating || msgError}/100`, inline: true },
                 )
                 .setThumbnail(`${posterImage.small || posterImage.medium}`)
                 .setAuthor({ name: `| 🏆 Mangá `, iconURL: msg.author.displayAvatarURL() })

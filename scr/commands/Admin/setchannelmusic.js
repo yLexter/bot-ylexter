@@ -10,13 +10,13 @@ module.exports = {
     aliase: ["stmusic"],
     execute: async (client, msg, args, cor) => {
         try {
-            
+
             let channel = msg.mentions.channels.first()
 
             if (!channel || channel.type != 'GUILD_TEXT') {
                 const helpMsg = new MessageEmbed()
-                     .setColor(cor)
-                    .setAuthor({ name: `| ❌ Mencione um Canal de texto, use o #`, iconURL: msg.author.displayAvatarURL() })
+                    .setColor(cor)
+                    .setAuthor({ name: `| ❌ Mencione um Canal de Texto, use o #`, iconURL: msg.author.displayAvatarURL() })
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 

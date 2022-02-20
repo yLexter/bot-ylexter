@@ -16,9 +16,7 @@ module.exports = {
       if (!queue) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setTitle('**Erro:**')
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Não existe músicas sendo tocada.')
+          .setAuthor({ name: `| Não existe Músicas sendo Tocada. `, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 

@@ -7,7 +7,7 @@ module.exports = {
   type: 'music',
   aliase: [],
   execute: async (client, msg, args, cor) => {
- 
+
     const { secondsToText } = client.music
 
     try {
@@ -16,16 +16,15 @@ module.exports = {
       if (!queue || queue.songs.length == 0) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Não existe músicas sendo tocada.')
+          .setAuthor({ name: `| Não existe Músicas sendo Tocada. `, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      const { songs } = queue
       let quantidadePerPag = 10
-      var pags = total_pags()
-      let contador = 1
+      const pagsTotal = total_pags()
+      let paginaAtual = 1
       const finishCommmand = 300
+      let msg_principal = await msg.channel.send({ embeds: [msgEmbed(paginaAtual, pagsTotal)] })
 
       function queuePags(number) {
         const queue = client.queues.get(msg.guild.id);
@@ -41,8 +40,7 @@ module.exports = {
 
       function total_pags() {
         const queue = client.queues.get(msg.guild.id);
-        const { songs } = queue
-        const total = songs.length - 1
+        const total = queue.songs.length - 1
         return total < quantidadePerPag ? 1 : Math.ceil((total / quantidadePerPag))
       }
 
@@ -54,13 +52,21 @@ module.exports = {
         };
         return string / 1000
       }
-      
-      const helpMsg10 = new MessageEmbed()
-        .setColor(cor)
-        .setDescription(queuePags(1))
-        .setAuthor({ name: `| 📑 Queue`, iconURL: msg.author.displayAvatarURL() })
-        .addField("Info's", `\nTotal: ${songs.length - 1} | Pag's: ${contador}/${pags} | Tempo: ${secondsToText(somarDuration())}`)
-      let msg_principal = await msg.channel.send({ embeds: [helpMsg10] })
+
+      function msgEmbed(positon, pags) {
+        const queue = client.queues.get(msg.guild.id);
+        const quantidadeSongs = queue.songs.length - 1 == 0 ? 1 : queue.songs.length - 1
+        const helpMsg = new MessageEmbed()
+          .setColor(cor)
+          .setDescription(queuePags(positon))
+          .setAuthor({ name: `| 📑 Queue`, iconURL: msg.author.displayAvatarURL() })
+          .setFooter({ text: `Músicas: ${quantidadeSongs} | Pag's: ${paginaAtual}/${pags} | Tempo: ${secondsToText(somarDuration())}` })
+        return helpMsg
+      }
+
+      function mudarMsg(number, pagsTotal) {
+        return msg_principal.edit({ embeds: [msgEmbed(number, pagsTotal)] }).catch(() => { })
+      }
 
       await msg_principal.react('⏪');
       await msg_principal.react('🔁');
@@ -76,32 +82,19 @@ module.exports = {
         try {
           const queue = client.queues.get(msg.guild.id);
 
-          if (!queue || queue.songs.length == 0) {
-            return collector.stop()
-          }
+          if (!queue || queue.songs.length == 0) return collector.stop();
 
           const pagsTotal = total_pags()
+
+          function firstPag() {
+            paginaAtual = 1
+            return mudarMsg(paginaAtual, pagsTotal)
+          }
 
           await wait(0.8 * 1000)
           await reaction.users.remove(user.id)
 
-          function mudarMsg(number) {
-            const helpMsg = new MessageEmbed()
-              .setColor(cor)
-              .setDescription(queuePags(number))
-              .setAuthor({ name: `| 📑 Queue`, iconURL: msg.author.displayAvatarURL() })
-              .addField("Info's", `\nTotal: ${queue.songs.length - 1} | Pag's: ${contador}/${pagsTotal} | Tempo: ${secondsToText(somarDuration())}`)
-            return msg_principal.edit({ embeds: [helpMsg] }).catch(() => { })
-          }
-
-          function firstPag() {
-            contador = 1
-            return mudarMsg(1)
-          }
-
-          if (contador > pagsTotal) {
-            return firstPag()
-          }
+          if (paginaAtual > pagsTotal) return firstPag();
 
           const reactions = {
             '🔁': () => {
@@ -109,18 +102,18 @@ module.exports = {
             },
             '⏩': () => {
               if (pagsTotal == 1) return;
-              if (contador == pagsTotal) return firstPag();
-              contador++
-              return mudarMsg(contador)
+              if (paginaAtual == pagsTotal) return firstPag();
+              paginaAtual++
+              return mudarMsg(paginaAtual, pagsTotal)
             },
             '⏪': () => {
               if (pagsTotal == 1) return;
-              if (contador == 1) {
-                contador = pagsTotal
-                return mudarMsg(pagsTotal);
+              if (paginaAtual == 1) {
+                paginaAtual = pagsTotal
+                return mudarMsg(pagsTotal, pagsTotal);
               }
-              contador--
-              return mudarMsg(contador)
+              paginaAtual--
+              return mudarMsg(paginaAtual, pagsTotal)
             }
           }
           await reactions[reaction.emoji.name]()

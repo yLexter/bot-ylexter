@@ -25,7 +25,7 @@ module.exports = {
                 const {
                     title, episodes, status, duration,
                     synopsis, rating, images, genres, score,
-                    aired, type, url
+                    aired, type, url, favorites
                 } = data
                 const msgError = '???'
                 const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
@@ -38,14 +38,15 @@ module.exports = {
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: 'Status', value: `${status || msgError}`, inline: true },
-                        { name: 'Idade', value: `${rating || msgError}`, inline: true },
-                        { name: "Duração", value: `${duration || msgError}`, inline: true },
-                        { name: 'Episodios', value: `${episodes || msgError}`, inline: true },
-                        { name: 'Nota', value: `${score || msgError}/10`, inline: true },
-                        { name: 'Gêneros', value: `${generos}`, inline: true },
-                        { name: 'Publicação', value: `${aired.string || msgError}`, inline: true },
-                        { name: 'Type', value: `${type || msgError}`, inline: true },
+                        { name: '🆔 Status', value: `${status || msgError}`, inline: true },
+                        { name: '⚠️ Idade', value: `${rating || msgError}`, inline: true },
+                        { name: "🕒 Duração", value: `${duration || msgError}`, inline: true },
+                        { name: '🧾 Episodios', value: `${episodes || msgError}`, inline: true },
+                        { name: '💯 Nota', value: `${score || msgError}/10`, inline: true },
+                        { name: '📑 Gêneros', value: `${generos}`, inline: true },
+                        { name: '📅 Publicação', value: `${aired.string || msgError}`, inline: true },
+                        { name: '📺 Type', value: `${type || msgError}`, inline: true },
+                        { name: '⭐ Favoritos', value: `${favorites || msgError}`, inline: true },
                     )
                     .setAuthor({ name: `| 🏆 Recomendação do ${client.user.username} `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlMAL)

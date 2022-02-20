@@ -13,6 +13,8 @@ module.exports = {
                 .setColor(cor)
                 .setTitle('Gatos Supremacy 💖')
                 .setImage(file)
+                .setAuthor({ name: `| ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
+                .setFooter({ text: "Gatos > Cachorros apenas..." })
             return msg.channel.send({ embeds: [helpMsg] })
 
         } catch (e) { return msg.channel.send(`\`${e}\``) }

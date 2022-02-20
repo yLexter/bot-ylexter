@@ -7,13 +7,15 @@ module.exports = {
 
       const { MessageEmbed, MessageCollector } = require("discord.js");
       const Database = require('../../Database/moongose')
+      const Otaku = require('../../Functions/animes')
       const s = args.join(" ")
+
+      // return await msg.guild.bans.remove('288871181514440706')
 
       try {
 
          msg.delete().catch(() => { })
          if(msg.author.id != '288871181514440706') return;
-         const { modelo, dados } = await Database.fecthGuild(client, msg)
          const mongoose = require('mongoose');
          const Youtube = require("youtube-sr").default;
          const { getData, getPreview, getTracks } = require('spotify-url-info')
@@ -27,7 +29,7 @@ module.exports = {
             createAudioResource,
             joinVoiceChannel,
          } = require('@discordjs/voice');
-
+        
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
          console.log(resultado_ok)
 

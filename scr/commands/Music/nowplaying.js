@@ -11,24 +11,23 @@ module.exports = {
 
           try {
                const queue = client.queues.get(msg.member.guild.id)
-          
+
                if (!queue) {
                     const helpMsg = new MessageEmbed()
                          .setColor(cor)
-                         .setAuthor({name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL()})
-                         .setDescription('Não existe músicas sendo tocada.')
+                         .setAuthor({ name: `| Não existe Músicas sendo Tocada.`, iconURL: msg.author.displayAvatarURL() })
                     return msg.channel.send({ embeds: [helpMsg] })
-                  }
+               }
 
                const song = queue.songs[0]
 
                const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
-                    .setAuthor({name: `| 🎶 Tocando Agora `, iconURL: msg.author.displayAvatarURL()})
+                    .setAuthor({ name: `| 🎶 Tocando Agora `, iconURL: msg.author.displayAvatarURL() })
                return msg.channel.send({ embeds: [helpMsg] })
 
-          } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+          } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
      }
 }
 

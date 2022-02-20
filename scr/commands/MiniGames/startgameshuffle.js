@@ -3,7 +3,7 @@ const config = require("./palavras.json");
 const wait = require('util').promisify(setTimeout);
 
 module.exports = {
-  name: "creategameshuffle",
+  name: "gameshuffle",
   help: "Inicia o jogo do embaralhamento",
   type: "fun",
   aliase: ["gamesh"],
@@ -15,12 +15,12 @@ module.exports = {
       if (shuffle) {
         if (!args[0]) return;
         const { owner, status } = shuffle
-        const totalPalavras = config.palavras.length
+        const totalPalavras = config.palavras.length - 1
         const numberQuestions = Math.floor(Number(args[1]))
         const timeResposta = Math.floor(Number(args[1]))
         const gameConfig = args[0].toLowerCase()
         const errorMsg = () => {
-          return msg.reply({ content: 'Ocorreu um Erro ao Tentar Definir as configurações , tente novamente. Use: Command + Config + Parâmentro' })
+          return msg.reply({ content: 'Ocorreu um Erro ao Tentar Definir as configurações , Tente novamente. Use: Command + Config + Parâmentro' })
         }
 
         if (msg.author.id != owner || status) {
@@ -48,7 +48,7 @@ module.exports = {
           },
           {
             name: 'tempo',
-            help: `Utilize um número maior que 60 e menos que 600 para definir o tempo de respota , em (s)`,
+            help: `Utilize um número maior que 60 e menor que 600 para definir o tempo de respota , em (s)`,
             run: async () => {
               let shuffle = client.shuffles.get(msg.guild.id)
               if (!timeResposta || timeResposta < 60 || timeResposta > 600 || isNaN(timeResposta)) return errorMsg();
@@ -174,24 +174,24 @@ module.exports = {
       };
 
       function players_ordenados() {
-        let string = ''
         let shuffle = client.shuffles.get(msg.guild.id)
         let ordanar = shuffle.players.sort((x, y) => {
           return y.pontos - x.pontos
         })
         client.shuffles.set(msg.guild.id, shuffle)
-        shuffle.players.forEach((element, index) => {
+        const string = shuffle.players.map((element, index) => {
           let contador = index + 1
-          string += `${contador}. ${element.nome} - pts: ${element.pontos}\n`
-        });
+          return `**${contador}. ${element.nome}** - pts: ${element.pontos}`
+        }).join('\n');
+
         return string
       }
 
-      function endGame() {
+      function endGame(champion) {
         const string_2 = players_ordenados()
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setDescription(`Parabéns <@${champion.id}> Por Ter Vencido o Jogo Do Embaralhamento! \n\n **Placar**\n${string_2}`)
+          .setDescription(`**Parabéns <@${champion.id}> Por Ter Vencido o Jogo Do Embaralhamento!** \n\n **🔰 Placar Geral**\n${string_2}`)
           .setAuthor({ name: `| 🏆 Campeão`, iconURL: client.user.displayAvatarURL() })
         msg.channel.send({ embeds: [helpMsg] })
         return client.shuffles.delete(msg.guild.id)
@@ -199,7 +199,7 @@ module.exports = {
 
       function championGame() {
         const shuffle = client.shuffles.get(msg.guild.id)
-        const player = players.find(element => element.pontos == shuffle.questionsWin)
+        const player = shuffle.players.find(element => element.pontos == shuffle.questionsWin)
         return player ? player : null
       }
 
@@ -209,10 +209,9 @@ module.exports = {
         const palavra_embaralhada = embaralhar(palavra_aleatoria)
 
         const filter = m => {
-          return shuffle.players.find(element => element.id == m.author.id) &&
-            m.content.toLowerCase() == palavra_aleatoria.toLowerCase() &&
-            msg.channel.id === m.channel.id
+          return shuffle.players.find(element => element.id == m.author.id) && m.content.toLowerCase() == palavra_aleatoria.toLowerCase() && msg.channel.id === m.channel.id
         }
+        console.log(palavra_aleatoria)
         const collector = msg.channel.createMessageCollector({ filter, max: 1, time: shuffle.tempo * 1000 })
 
         await wait(1.5 * 1000)
@@ -255,9 +254,12 @@ module.exports = {
             client.shuffles.set(msg.guild.id, shuffle)
           }
 
-          if (shuffle.afk == afk) return msg.channel.send(`Nas ultimas ${afk} palavras ninguem acertou , o jogo será encerrado por **Inatividade**`);
-
-          champion ? endGame() : game()
+          if (shuffle.afk == afk) {
+            client.shuffles.delete(msg.guild.id)
+            return msg.channel.send(`Nas ultimas ${afk} palavras ninguem acertou , o jogo será encerrado por **Inatividade**`);
+          }
+          
+          champion ? endGame(champion) : game()
 
         })
 

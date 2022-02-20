@@ -7,7 +7,7 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic , playSong } = client.music
+    const { stopMusic, playSong } = client.music
 
     try {
 
@@ -16,8 +16,7 @@ module.exports = {
       if (!queue || !queue.back) {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Não existe músicas para voltar.')
+          .setAuthor({ name: `| ❌ Não Existe músicas para voltar.`, iconURL: msg.author.displayAvatarURL() })
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
@@ -38,7 +37,7 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
 
-    } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 }; // Execute end
 

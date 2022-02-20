@@ -4,7 +4,7 @@ module.exports = {
      name: "clear",
      help: "Limpa todas as musicas da queue",
      type: 'music',
-     aliase: ["c"],
+     aliase: ["cl"],
      execute: (client, msg, args, cor) => {
 
           const { stopMusic } = client.music
@@ -16,8 +16,7 @@ module.exports = {
                if (!queue) {
                     const helpMsg = new MessageEmbed()
                          .setColor(cor)
-                         .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-                         .setDescription('Não existe músicas sendo tocada.')
+                         .setAuthor({ name: `| Não existe Músicas sendo Tocada.`, iconURL: msg.author.displayAvatarURL() })
                     return msg.channel.send({ embeds: [helpMsg] })
                }
 

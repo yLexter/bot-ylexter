@@ -99,16 +99,16 @@ async function playSong(client, msg, song) {
 
 function stopMusic(client, msg, cor) {
   try {
-    let queue = client.queues.get(msg.guild.id)
+    const queue = client.queues.get(msg.guild.id)
     if (queue) {
       if (queue.connection) queue.connection.destroy();
       client.queues.delete(msg.guild.id)
       const helpMsg = new MessageEmbed()
         .setColor(cor)
         .setAuthor({ name: ' | ⏹️ Stopped Queue.', iconURL: client.user.displayAvatarURL() })
-      return msg.channel.send({ embeds: [helpMsg] })
+      return msg.channel.send({ embeds: [helpMsg] }).catch(() => { })
     }
-  } catch (e) { return }
+  } catch (e) { return client.queues.delete(msg.guild.id), console.log(e) }
 }
 
 async function tocarPlaylist(client, msg, item) {
@@ -168,14 +168,19 @@ function backMusic(client, msg) {
 
 async function textToSeconds(text) {
 
-  async function formatar(y) {
-    const ok = y.split(":").map(x => { return Number(x) })
-    for (let number of ok) {
+  async function formatar(numeros) {
+    const arrayNumeros = numeros.split(":").map(x => {
+      let number = Number(x)
       if (isNaN(number)) throw new Error('Use Horas:Minutos:Segundos.');
+      return Math.floor(Math.abs(number))
+    })
+
+    for (let x = 0; x < arrayNumeros.length;) {
+      if (arrayNumeros[x] === 0) {
+        arrayNumeros.shift()
+      } else { break }
     }
-    if (ok[0] == '00') ok.shift()
-    if (ok[0] == '00') ok.shift()
-    return ok
+    return arrayNumeros
   }
 
   const tempo = await formatar(text)
@@ -185,31 +190,28 @@ async function textToSeconds(text) {
     '0': () => {
       return 0
     },
-
     '1': () => {
-      const segundos = Math.abs(tempo[0])
+      const segundos = tempo[0]
       if (segundos > 59) throw new Error('Número Invalido')
       return segundos
     },
-
     '2': () => {
-      const minutos = Math.abs(tempo[0])
-      const segundos = Math.abs(tempo[1])
+      const minutos = tempo[0]
+      const segundos = tempo[1]
       if (segundos > 59 || minutos > 59) throw new Error('Número Invalido')
       return minutos * 60 + segundos
     },
-
     '3': () => {
-      const horas = Math.abs(tempo[0])
-      const minutos = Math.abs(tempo[1])
-      const segundos = Math.abs(tempo[2])
+      const horas = tempo[0]
+      const minutos = tempo[1]
+      const segundos = tempo[2]
       if (segundos > 59 || minutos > 59 || horas > 23) throw new Error('Número Invalido')
       return horas * 60 * 60 + minutos * 60 + segundos
     }
   }
 
   if (!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');
-  return await Math.floor(objects[quantidade]())
+  return await objects[quantidade]()
 
 }
 
@@ -286,7 +288,7 @@ async function spotifySearch(client, msg, list) {
         return search_yt(titulo)
       });
 
-      const artista = artists && artists.length > 0 ? artists.map((x,y,z) => {
+      const artista = artists && artists.length > 0 ? artists.map((x, y, z) => {
         return z.length - 1 == y ? `[${x.name}](${x.external_urls.spotify})` : `[${x.name}](${x.external_urls.spotify}), `
       }) : '??'
 
@@ -413,10 +415,11 @@ function PushAndPlaySong(client, msg, cor, song) {
   if (queue) {
     queue.songs.push(song);
     client.queues.set(msg.guild.id, queue);
+    const positionSong = queue.songs.length - 1
     const helpMsg = new MessageEmbed()
       .setColor(cor)
       .setTitle(`${song.title}`)
-      .setAuthor({ name: `| 🎶 Adicionado a Fila`, iconURL: msg.author.displayAvatarURL() })
+      .setAuthor({ name: `| 🎶 Adicionado na fila na posição ${positionSong}°.`, iconURL: msg.author.displayAvatarURL() })
       .setURL(song.url)
       .setDescription(`Duração: **${song.durationFormatted}**`)
     return msg.channel.send({ embeds: [helpMsg] })

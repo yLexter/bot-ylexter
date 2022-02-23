@@ -8,7 +8,6 @@ module.exports = {
     execute: async (client, msg, args, cor) => {
         try {
             const mention = msg.mentions.members.first() || msg.member
-            console.log(mention)
             const link = mention.displayAvatarURL({ size: 1024, dynamic: true })
             const helpMsg = new MessageEmbed()
                 .setColor(cor)

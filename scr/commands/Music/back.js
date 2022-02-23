@@ -21,7 +21,6 @@ module.exports = {
       }
 
       const song = queue.back
-      let url = song.url
       let x = queue.songs.shift()
       queue.songs.unshift(song)
 
@@ -32,7 +31,7 @@ module.exports = {
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
-        .setDescription(`[${song.title}](${url}) [${song.durationFormatted}]`)
+        .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
         .setAuthor({ name: '| ⏪ Retornada', iconURL: msg.author.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
 

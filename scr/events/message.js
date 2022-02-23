@@ -12,19 +12,18 @@ module.exports = {
 
     try {
 
-      if (msg.author.bot || msg.channel.type === 'dm') return;
+      if (msg.author.bot || msg.channel.type === 'dm' || !msg.guild.me.permissions.has('ADMINISTRATOR')) return;
 
       const { dados } = await Database.fecthGuild(client, msg)
-      const customPrefix = dados.prefix
-      const prefixBot = customPrefix || process.env.PREFIX
+      const prefixBot = dados.prefix || process.env.PREFIX
       const verify = msg.mentions.members.first()
 
-      if (verify && verify.user.id == client.user.id) {
+      if (verify && msg.content.startsWith('<') && msg.content.endsWith('>') && verify.user.id == client.user.id) {
         const canalMusic = dados.channelMusic ? `<#${dados.channelMusic}>` : '`Não Definido`'
         const msgHelp = new MessageEmbed()
           .setColor(cor)
-          .setTitle('Infos e Configurações do Server')
-          .setDescription(`Prefix atual: \`${prefixBot}\` \nMeu ID: \`${client.user.id}\`\nCanal de Música: ${canalMusic}\nLink de Convite: [Aqui](https://discord.com/oauth2/authorize?client_id=906324795786924082&scope=bot&permissions=8)`)
+          .setTitle("Info's e Configurações do Server")
+          .setDescription(`**Prefix atual \`${prefixBot}\` \nMeu ID \`${client.user.id}\`\nCanal de Música ${canalMusic}\nLink de Convite** [Aqui](https://discord.com/oauth2/authorize?client_id=906324795786924082&scope=bot&permissions=8)`)
           .setAuthor({ name: `| Olá ${msg.author.tag}.`, iconURL: msg.author.displayAvatarURL() })
           .setFooter({ text: '| Criador do Bot: yLexter#1687', iconURL: "https://cdn.discordapp.com/avatars/288871181514440706/217633420a296c18f5d5f3bbf2ca0544.webp" })
         return msg.reply({ embeds: [msgHelp] });

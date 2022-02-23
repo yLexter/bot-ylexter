@@ -13,56 +13,48 @@ class DatabaseClass {
 
     async fecthGuild(client, msg) {
 
-        try {
-            const guild = await modelGuild.findOne({ id: msg.guild.id })
+        const guild = await modelGuild.findOne({ id: msg.guild.id })
 
-            if (guild) {
-                return {
-                    "dados": guild,
-                    "modelo": modelGuild
-                }
-            } else {
-                const guild = await modelGuild.create({ id: msg.guild.id })
-                    .catch(e => { msg.channel.send('Ocorreu um Erro , tente novamente.') })
-                await guild.save().catch(err => console.log(err));
-                return {
-                    "dados": guild,
-                    "modelo": modelGuild
-                }
+        if (guild) {
+            return {
+                "dados": guild,
+                "modelo": modelGuild
             }
-
-        } catch (e) { return console.log(e) }
+        } else {
+            const guild = await modelGuild.create({ id: msg.guild.id })
+            await guild.save()
+            return {
+                "dados": guild,
+                "modelo": modelGuild
+            }
+        }
 
     }
 
     async fecthUser(client, msg) {
 
-        try {
-            const user = await modelUser.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
+        const user = await modelUser.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
 
-            if (user) {
-                return {
-                    "dados": user,
-                    "modelo": modelUser
-                }
-
-            } else {
-                const user = await modelUser.create({
-                    id: `${msg.guild.id}-${msg.author.id}`,
-                    username: msg.author.username,
-                    guildId: msg.guild.id
-                }).catch(e => { msg.channel.send('Ocorreu um Erro , tente novamente.') })
-                await user.save().catch(err => console.log(err))
-
-                return {
-                    "dados": user,
-                    "modelo": modelUser
-                }
+        if (user) {
+            return {
+                "dados": user,
+                "modelo": modelUser
             }
 
-        } catch (e) { return console.log(e) }
-    }
+        } else {
+            const user = await modelUser.create({
+                id: `${msg.guild.id}-${msg.author.id}`,
+                username: msg.author.username,
+                guildId: msg.guild.id
+            })
+            await user.save()
 
+            return {
+                "dados": user,
+                "modelo": modelUser
+            }
+        }
+    }
 }
 
 const Database = new DatabaseClass();

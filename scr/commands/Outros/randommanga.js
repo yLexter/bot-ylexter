@@ -40,10 +40,10 @@ module.exports = {
                     .addFields(
                         { name: '🆔 Status', value: `${status || msgError}`, inline: true },
                         { name: '💯 Nota', value: `${scored || msgError}/10`, inline: true },
-                        { name: "📅 Publicação", value: `${published.string || msgError}`, inline: true },
-                        { name: '📑 Gêneros', value: `${generos}`, inline: true },
-                        { name: '📺 Type', value: `${type || msgError}`, inline: true },
                         { name: '🧾 Capítulos', value: `${chapters || msgError}`, inline: true },
+                        { name: "📅 Publicação", value: `${published.string || msgError}`, inline: true },
+                        { name: '📺 Type', value: `${type || msgError}`, inline: true },
+                        { name: '📑 Gêneros', value: `${generos}`, inline: true },
                     )
                     .setAuthor({ name: `| 🏆 Recomendação do ${client.user.username}`, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlMAL)

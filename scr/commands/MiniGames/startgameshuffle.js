@@ -16,8 +16,7 @@ module.exports = {
         if (!args[0]) return;
         const { owner, status } = shuffle
         const totalPalavras = config.palavras.length - 1
-        const numberQuestions = Math.floor(Number(args[1]))
-        const timeResposta = Math.floor(Number(args[1]))
+        const numberQuestions = timeResposta = Math.floor(Number(args[1]))
         const gameConfig = args[0].toLowerCase()
         const errorMsg = () => {
           return msg.reply({ content: 'Ocorreu um Erro ao Tentar Definir as configurações , Tente novamente. Use: Command + Config + Parâmentro' })
@@ -77,7 +76,7 @@ module.exports = {
       }
 
       shuffle = {
-        players: [{ id: msg.author.id, nome: msg.author.tag, pontos: 0 }],
+        players: [newPlayer(msg.author.id, msg.author.tag)],
         rodada: 0,
         afk: 0,
         owner: msg.author.id,
@@ -86,6 +85,7 @@ module.exports = {
         tempo: 60
       }
 
+      console.log(shuffle)
       client.shuffles.set(msg.guild.id, shuffle)
 
       const helpMsg = new MessageEmbed()
@@ -131,7 +131,7 @@ module.exports = {
             if (verify) {
               m.reply({ content: '❌ | Você já está participando do jogo.' })
             } else {
-              shuffle.players.push({ id: m.author.id, nome: m.author.tag, pontos: 0 }),
+              shuffle.players.push(newPlayer(m.author.id, m.author.tag)),
                 client.shuffles.set(msg.guild.id, shuffle)
               m.reply({ content: '✔️ | Sucesso: Você está participando do jogo.' })
             }
@@ -164,6 +164,14 @@ module.exports = {
         return game()
 
       })
+
+      function newPlayer(id, nome) {
+        const player = new Object()
+        player.id = id
+        player.nome = nome
+        player.pontos = 0
+        return player
+      }
 
       function embaralhar(string) {
         return string
@@ -199,8 +207,7 @@ module.exports = {
 
       function championGame() {
         const shuffle = client.shuffles.get(msg.guild.id)
-        const player = shuffle.players.find(element => element.pontos == shuffle.questionsWin)
-        return player ? player : null
+        return shuffle.players.find(element => element.pontos == shuffle.questionsWin)
       }
 
       async function game() {
@@ -211,7 +218,7 @@ module.exports = {
         const filter = m => {
           return shuffle.players.find(element => element.id == m.author.id) && m.content.toLowerCase() == palavra_aleatoria.toLowerCase() && msg.channel.id === m.channel.id
         }
-        console.log(palavra_aleatoria)
+
         const collector = msg.channel.createMessageCollector({ filter, max: 1, time: shuffle.tempo * 1000 })
 
         await wait(1.5 * 1000)
@@ -258,7 +265,7 @@ module.exports = {
             client.shuffles.delete(msg.guild.id)
             return msg.channel.send(`Nas ultimas ${afk} palavras ninguem acertou , o jogo será encerrado por **Inatividade**`);
           }
-          
+
           champion ? endGame(champion) : game()
 
         })

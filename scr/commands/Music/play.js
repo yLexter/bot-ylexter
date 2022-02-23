@@ -24,22 +24,12 @@ module.exports = {
 
         // Spotify
         async function tocarSpotify(item) {
-
-            function msgError() {
-                const helpMsg20 = new MessageEmbed()
-                    .setColor(cor)
-                    .setDescription('Ocorreu um erro ao buscar sua Playlist/Música , Por Favor Tente Novamente.')
-                    .addFields({ name: 'Suporte', value: 'Apenas Playlists , Tracks e Álbuns são Suportados.' })
-                    .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-                return msg.channel.send({ embeds: [helpMsg20] })
-            }
-
             try {
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`⏯️ Carregando Song(s)`)
                     .setAuthor({ name: '| Spotify Playlist/Track/Álbum', iconURL: msg.author.displayAvatarURL() })
-                const msg_embed = await msg.channel.send({ embeds: [helpMsg20] })
+                var msg_embed = await msg.channel.send({ embeds: [helpMsg20] })
 
                 const spotify = await spotifySearch(client, msg, item)
 
@@ -61,7 +51,7 @@ module.exports = {
                         return msg_embed.delete().catch(() => { })
                     },
                     'album': async () => {
-                        const { name, total, url, images, songs, duration , artista} = spotify
+                        const { name, total, url, images, songs, duration, artista } = spotify
                         const helpMsg100 = new MessageEmbed()
                             .setColor(cor)
                             .setDescription(`🅰️ **Album: [${name}](${url})**\n📑 **Total: ${total}**\n🧑 **Artista(s): ${artista}**\n🕑 **Duração: ${duration}**`)
@@ -75,7 +65,12 @@ module.exports = {
                 await spotifyObejcts[spotify.type]()
 
             } catch (e) {
-                return msgError()
+                const helpMsg20 = new MessageEmbed()
+                    .setColor(cor)
+                    .setDescription('Ocorreu um erro ao buscar sua Playlist/Música , Por Favor Tente Novamente.')
+                    .addFields({ name: 'Suporte', value: 'Apenas Playlists , Tracks e Álbuns são Suportados.' })
+                    .setAuthor({ name: `| ❌ Erro `, iconURL: msg.author.displayAvatarURL() })
+                return msg_embed.edit({ embeds: [helpMsg20] }).catch(e => { })
             }
         }
 
@@ -117,7 +112,6 @@ module.exports = {
                 PushAndPlaySong(client, msg, cor, song)
 
             } catch (e) {
-                console.log(e)
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription('Não achei oque você procura')

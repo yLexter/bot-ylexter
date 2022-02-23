@@ -16,9 +16,9 @@ module.exports = {
       msg.delete().catch(() => { })
       const s = args.join(" ");
       if (!s) return;
+      
       const queueSyt = SearchYT.get(msg.guild.id)
-      const listResult = await YouTube.search(s, { limit: 11 });
-      const listaFiltrado = listResult.filter(m => { return m.duration > 0 })
+      const listaFiltrado = (await YouTube.search(s, { limit: 11 })).filter(m => { return m.duration > 0 })
       const maxTempo = 30
       const totalResult = listaFiltrado.length - 1
 

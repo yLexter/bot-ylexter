@@ -14,6 +14,7 @@ module.exports = {
     name: "seek",
     help: "Avança ou retrocede para minutagem desejada , use Horas:Minutos:Segundos",
     type: "music",
+    cooldown: 4,
     aliase: [],
     execute: async (client, msg, args, cor) => {
 

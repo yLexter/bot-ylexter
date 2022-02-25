@@ -16,7 +16,7 @@ module.exports = {
       msg.delete().catch(() => { })
       const s = args.join(" ");
       if (!s) return;
-      
+
       const queueSyt = SearchYT.get(msg.guild.id)
       const listaFiltrado = (await YouTube.search(s, { limit: 11 })).filter(m => { return m.duration > 0 })
       const maxTempo = 30
@@ -58,6 +58,7 @@ module.exports = {
 
       collector.on('collect', async m => {
         const song = listaFiltrado[m]
+        if (!song) return collector.stop();
         await wait(0.5 * 1000)
         m.delete().catch(() => { })
         if (m.content.toLowerCase() == "!cancel") return collector.stop();

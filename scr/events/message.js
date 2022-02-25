@@ -38,7 +38,7 @@ module.exports = {
       if (!command) return;
 
       const idChannel = dados.channelMusic || null
-      const defaultTimeCD = command.cooldown || 2
+      const defaultTimeCD = command.cooldown || Number(process.env.cdCmd)
       const commandCooldown = `${msg.guild.id}-${command.name}`
 
       const typesCommands = {

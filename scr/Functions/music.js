@@ -13,7 +13,7 @@ const {
 async function playSong(client, msg, song) {
 
   const { stopMusic, tocarPlaylist, backMusic } = client.music
-  const cor = '#4B0082'
+  const cor = process.env.COR
   let icone
 
   try {
@@ -419,7 +419,7 @@ function PushAndPlaySong(client, msg, cor, song) {
     const helpMsg = new MessageEmbed()
       .setColor(cor)
       .setTitle(`${song.title}`)
-      .setAuthor({ name: `| 🎶 Adicionado na fila na posição ${positionSong}°.`, iconURL: msg.author.displayAvatarURL() })
+      .setAuthor({ name: `| 🎶 Adicionado na fila na ${positionSong} posição°.`, iconURL: msg.author.displayAvatarURL() })
       .setURL(song.url)
       .setDescription(`Duração: **${song.durationFormatted}**`)
     return msg.channel.send({ embeds: [helpMsg] })

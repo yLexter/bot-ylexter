@@ -41,7 +41,7 @@ module.exports = {
               let shuffle = client.shuffles.get(msg.guild.id)
               if (!numberQuestions || numberQuestions < 3 || numberQuestions > totalPalavras || isNaN(numberQuestions)) return errorMsg();
               shuffle.questionsWin = numberQuestions
-              msg.reply({ content: `A quantidade de questões para vencer o jogo foi definido para ` + `\`${numberQuestions}\`` })
+              msg.reply({ content: `A quantidade de questões para vencer o jogo foi definido para ` + `\`${numberQuestions}\`.` })
               return client.shuffles.set(msg.guild.id, shuffle)
             }
           },
@@ -52,7 +52,7 @@ module.exports = {
               let shuffle = client.shuffles.get(msg.guild.id)
               if (!timeResposta || timeResposta < 60 || timeResposta > 600 || isNaN(timeResposta)) return errorMsg();
               shuffle.tempo = timeResposta
-              msg.reply({ content: `O tempo para responder jogo as perguntas foi definido para ` + `\`${timeResposta}\`` })
+              msg.reply({ content: `O tempo para responder jogo as perguntas foi definido para ` + `\`${timeResposta}\`s.` })
               return client.shuffles.set(msg.guild.id, shuffle)
             }
           },
@@ -85,7 +85,6 @@ module.exports = {
         tempo: 60
       }
 
-      console.log(shuffle)
       client.shuffles.set(msg.guild.id, shuffle)
 
       const helpMsg = new MessageEmbed()

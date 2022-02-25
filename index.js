@@ -1,5 +1,5 @@
 const { Client, Intents, Message, User, MessageEmbed, Collection, Collector, } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES , Intents.FLAGS.GUILD_VOICE_STATES , Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS] });
 
 const fs = require('fs')
 const path = require('path')
@@ -44,6 +44,10 @@ for (let eventFile of eventsFiles) {
     client.on(evento.name, (...args) => evento.execute(client, ...args));
   }
 }
+
+process.on('unhandledRejection', err => {
+  console.log(err);
+});
 
 /* for (let file of slashsFiles) {
   const command = require(`./scr/Slashs/${file}`);

@@ -15,39 +15,32 @@ module.exports = {
             const tempoGame = 300
             const ladoQuadrado = 300
             const larguraBarra = 10
-            const tamanhoElement = 80
-            const timeCollector = 60
-            const adversario = msg.mentions.members.first()
+            const sizeX = 80
+            const sizeO = 55
+            const timeUserAccept = 60
+            const emojiReact = '✅'
+            const adversario = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
             const { xImagem, oImagem } = await getXAndO()
+            const buscarPlayer = idPlayer => { return [...games?.values()].find(x => x.players.find(y => y == idPlayer)) }
 
-            if (!adversario || msg.author.id == adversario.user.id || adversario.user.bot) {
-                const helpMsg = new MessageEmbed()
-                    .setColor(cor)
-                    .setAuthor({ name: '❌ Mencione alguem para jogar contra', iconURL: msg.author.displayAvatarURL() })
-                return msg.channel.send({ embeds: [helpMsg] })
-            }
-
-            const buscarPlayer = idPlayer => { return [...games.values()].find(x => x.players.find(y => y == idPlayer)) }
-            const verificaoPlayer = buscarPlayer(msg.author.id) || buscarPlayer(adversario.user.id)
-
-            if (verificaoPlayer) {
-                const helpMsg = new MessageEmbed()
-                    .setColor(cor)
-                    .setAuthor({ name: '| Você ou seu Adversário já estão em Partida', iconURL: msg.author.displayAvatarURL() })
-                return msg.channel.send({ embeds: [helpMsg] })
-            }
+            if (!adversario) return msg.reply('❌| Ops! , Você precisa mencionar algúem para jogar.');
+            if (msg.author.id == adversario.user.id) return msg.reply('🚫| Você não pode jogar contra si mesmo, é muito fácil.')
+            if (adversario.user.id == client.user.id) return msg.reply('❌| Nem tenta , eu ganho fácil.')
+            if (adversario.user.bot) return msg.reply('❌| Você não pode jogar contra bots , eles só são inteligente no xadrez.');
+            if (buscarPlayer(msg.author.id) || buscarPlayer(adversario.user.id)) return msg.reply('❌| Ops! Você ou seu adversário já estão em uma partida.')
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| ${msg.author.username} vs ${adversario.user.username} `, iconURL: msg.author.displayAvatarURL() })
                 .setImage('https://i.imgur.com/JIAbZhp.png')
+                .setDescription('Para jogar, digite a coordenada que queira, por exemplo **2a**.')
                 .setFooter({ text: 'Caso o Adversário não reaga , a partida será cancelada!' })
             const msgPrincipal = await msg.channel.send({ content: `<@${adversario.user.id}>`, embeds: [helpMsg] })
 
-            await msgPrincipal.react('✔️')
+            await msgPrincipal.react(emojiReact)
 
-            const filter = (reaction, user) => { return reaction.emoji.name == '✔️' && user.id == adversario.user.id }
-            const collector = msgPrincipal.createReactionCollector({ filter, time: timeCollector * 1000, max: 1 })
+            const filter = (reaction, user) => { return reaction.emoji.name == emojiReact && user.id == adversario.user.id }
+            const collector = msgPrincipal.createReactionCollector({ filter, time: timeUserAccept * 1000, max: 1 })
 
             collector.on('collect', (reaction, user) => { collector.stop() });
 
@@ -58,26 +51,16 @@ module.exports = {
                     let game = games.get(msg.author.id)
 
                     if (!game) {
-                        msg.channel.send({ content: 'O Jogo vai começar.' })
-                        velha = {
-                            players: [msg.author.id, adversario.user.id],
-                            vez: null,
-                            jogadasFeitas: [],
-                            jogadorX: null,
-                            jogadorY: null,
-                        }
-                        velha.vez = velha.players[Math.floor(Math.random() * velha.players.length)]
-                        velha.jogadorX = velha.players[0]
-                        velha.jogadorY = velha.players[1]
-                        games.set(msg.author.id, velha)
+                        msg.channel.send({ content: `${emojiReact} O Jogo vai começar.` })
+                        newGame(msg.author.id, adversario.user.id)
                     }
 
                     game = games.get(msg.author.id)
 
                     const { canvas } = gerarLayout()
                     const imagem = new MessageAttachment(canvas.toBuffer(), 'firstImagem.png')
-                    const msgSecundaria = await msg.channel.send({ content: `🔰 Jogador X: <@${game.jogadorX}> | Jogador O: <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>`, files: [imagem] })
 
+                    const msgSecundaria = await msg.channel.send({ content: `🔰 Jogador X: <@${game.jogadorX}> | Jogador O: <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>`, files: [imagem] })
                     const filter = m => { return buscarPlayer(m.author.id) && jogadasPossiveis.find(x => { return x == m.content.toLowerCase() }) }
 
                     const collector = msg.channel.createMessageCollector({ filter, time: tempoGame * 1000 });
@@ -90,8 +73,8 @@ module.exports = {
                             const verifyJogada = jogadasFeitas.find(x => { return x.jogadaFeita == jogadaPlayer })
                             const player = game.vez
 
-                            if (m.author.id != game.vez) return m.reply({ content: '⚠️ Não é sua vez de jogar!' })
-                            if (verifyJogada) return m.reply({ content: '❌ Essa Jogada já foi feita , Escolha outra.' })
+                            if (m.author.id != game.vez) return m.reply({ content: '⚠️ | Não é sua vez de jogar!' })
+                            if (verifyJogada) return m.reply({ content: '❌| Essa Jogada já foi feita , escolha outra.' })
 
                             const jogadaFeita = jogadasPossiveis.find(x => { return x == jogadaPlayer })
                             jogadasFeitas.push({ jogador: game.vez, jogadaFeita })
@@ -99,41 +82,25 @@ module.exports = {
                             player == jogadorX ? game.vez = jogadorY : game.vez = jogadorX
                             games.set(msg.author.id, game)
 
-                            await wait(1 * 1000)
-                            const { canvas, ctx } = gerarLayout()
-
-                            for (let jogada of game.jogadasFeitas) {
-                                let element = jogada.jogador == game.jogadorX ? xImagem : oImagem
-                                const { xPosition, yPosition } = insertElement(jogada.jogadaFeita)
-                                ctx.drawImage(element, xPosition, yPosition, tamanhoElement, tamanhoElement)
-                            }
+                            await wait(0.5 * 1000)
 
                             const winner = verifyWinner(player)
+                            const imageUpdated = getImageUpdated()
+                            const file = new MessageAttachment(imageUpdated.toBuffer(), 'imagemAtt.png')
 
                             if (winner) {
                                 collector.stop()
-                                const file = new MessageAttachment(canvas.toBuffer(), 'imagemAtt.png')
-                                const helpMsg = new MessageEmbed()
-                                    .setColor(cor)
-                                    .setAuthor({ name: '| 🏆 Campeão', iconURL: msg.author.displayAvatarURL() })
-                                    .setDescription(`O <@${player}> Venceu o jogo da velha!`)
-                                return msg.channel.send({ embeds: [helpMsg], files: [file] })
+                                return msgSecundaria.edit({ content: `🏆 Vencedor\nO <@${player}> Venceu o jogo da velha!`, files: [file] })
                             }
 
                             if (jogadasFeitas.length == jogadasPossiveis.length) {
                                 collector.stop()
-                                const file = new MessageAttachment(canvas.toBuffer(), 'imagemAtt.png')
-                                const helpMsg = new MessageEmbed()
-                                    .setColor(cor)
-                                    .setAuthor({ name: '| 🏆 Empate', iconURL: msg.author.displayAvatarURL() })
-                                    .setDescription(`Veeeelha! Nínguem ganhou a partida`)
-                                return msg.channel.send({ embeds: [helpMsg], files: [file] })
+                                return msgSecundaria.edit({ content: '🏆 Velhaa!\nNinguém ganhou o jogo.', files: [file] })
                             }
 
-                            const file = new MessageAttachment(canvas.toBuffer(), 'imagemAtt.png')
-                            msgSecundaria.edit({ content: `🔰 Jogador X: <@${game.jogadorX}> | Jogador O: <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>`, files: [file] }).catch(e => console.log(e))
+                            return msgSecundaria.edit({ content: `🔰 Jogador X: <@${game.jogadorX}> | Jogador O: <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>`, files: [file] })
 
-                        } catch (e) { console.log(e), collector.stop(), msg.channel.send({ content: 'Ops ocorreu um Erro Inesperado , o Jogo foi Cancelado , Caso pesista avise ao dono do Bot.' }) }
+                        } catch (e) { console.log(e), collector.stop(), msg.channel.send({ content: '| ❌ Ops ocorreu um Erro Inesperado , o Jogo foi Cancelado , Caso pesista avise ao dono do Bot.' }) }
                     });
 
                     collector.on('end', collected => { games.delete(msg.author.id) });
@@ -141,6 +108,32 @@ module.exports = {
                 } catch (e) { games.delete(msg.author.id) }
 
             });
+
+            function getImageUpdated() {
+                let game = games.get(msg.author.id)
+                const { canvas, ctx } = gerarLayout()
+                for (let jogada of game.jogadasFeitas) {
+                    let element = jogada.jogador == game.jogadorX ? xImagem : oImagem
+                    const { xPosition, yPosition } = insertElement(jogada.jogadaFeita)
+                    const elementSize = element == xImagem ? sizeX : sizeO
+                    ctx.drawImage(element, xPosition, yPosition, elementSize, elementSize)
+                }
+                return canvas
+            }
+
+            function newGame(challenger, challenged) {
+                velha = {
+                    players: [challenger, challenged],
+                    vez: null,
+                    jogadasFeitas: [],
+                    jogadorX: null,
+                    jogadorY: null,
+                }
+                velha.vez = velha.players[Math.floor(Math.random() * velha.players.length)]
+                velha.jogadorX = velha.players[0]
+                velha.jogadorY = velha.players[1]
+                games.set(challenger, velha)
+            }
 
             function verifyWinner(player) {
                 let game = games.get(msg.author.id)
@@ -189,7 +182,7 @@ module.exports = {
 
             function insertElement(position) {
                 // c Significa Coluna
-                const element1c = ladoQuadrado / 3 - 85
+                const element1c = ladoQuadrado / 3 - 75
                 const element2c = ladoQuadrado / 2 - 30
                 const element3c = ladoQuadrado - 80
                 const allPositions = {
@@ -206,7 +199,7 @@ module.exports = {
                 return allPositions[position]
             }
 
-        } catch (e) { console.log(e), msg.channel.send(`Ops, Ocorreu um Erro ,Tente novamente.`) }
+        } catch (e) { console.log(e), msg.channel.send(`❌| Ops, Ocorreu um Erro ,Tente novamente.`) }
     }
 }
 

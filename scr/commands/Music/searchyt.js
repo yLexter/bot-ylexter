@@ -26,7 +26,7 @@ module.exports = {
         const helpMsg = new MessageEmbed()
           .setColor(cor)
           .setAuthor({ name: `| ❌ Erro`, iconURL: msg.author.displayAvatarURL() })
-          .setDescription('Pesquisa invalida ou Busca em andamento')
+          .setDescription('Pesquisa invalida ou Busca em andamento.')
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
@@ -40,7 +40,7 @@ module.exports = {
         .setColor(cor)
         .setDescription(string)
         .setAuthor({ name: `|🔎 Pesquisa do Youtube`, iconURL: msg.author.displayAvatarURL() })
-        .setFooter({ text: `Digite um número de 0 a ${totalResult} dentre ${maxTempo}s para por a Música , Caso contrário a Busca será Cancelada | Use !cancel para Cancelar.` })
+        .setFooter({ text: `Digite um número de 0 a ${totalResult} dentre ${maxTempo}s para por a música , caso contrário a Busca será cancelada | Use !cancel para Cancelar.` })
       var msg_pesquisa = await msg.channel.send({ embeds: [helpMsg] })
 
       const filter = m => {

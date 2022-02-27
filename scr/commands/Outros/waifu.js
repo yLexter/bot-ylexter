@@ -16,7 +16,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setImage(url)
                 .setColor(cor)
-                .setTitle(`Você tem ${randomNumero}% de Chance de Ficar com essa Waifu.`)
+                .setTitle(`Você tem ${randomNumero}% de chance de ficar com essa waifu.`)
                 .setAuthor({ name: `| ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
                 .setFooter({ text: `${footer}` })
             return msg.channel.send({ embeds: [embed] })

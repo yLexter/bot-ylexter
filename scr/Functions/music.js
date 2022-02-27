@@ -419,7 +419,7 @@ function PushAndPlaySong(client, msg, cor, song) {
     const helpMsg = new MessageEmbed()
       .setColor(cor)
       .setTitle(`${song.title}`)
-      .setAuthor({ name: `| 🎶 Adicionado na fila na ${positionSong} posição°.`, iconURL: msg.author.displayAvatarURL() })
+      .setAuthor({ name: `| 🎶 Adicionado a queue na ${positionSong}° posição.`, iconURL: msg.author.displayAvatarURL() })
       .setURL(song.url)
       .setDescription(`Duração: **${song.durationFormatted}**`)
     return msg.channel.send({ embeds: [helpMsg] })

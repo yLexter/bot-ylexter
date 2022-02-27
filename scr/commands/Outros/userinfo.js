@@ -10,7 +10,7 @@ module.exports = {
   execute: async (client, msg, args, cor) => {
 
     try {
-      const userInfos = msg.mentions.members.first() || msg.guild.members.cache.get(msg.author.id)
+      const userInfos = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.member
       const { user, guild, roles } = userInfos
       const stringRoles = ([...roles.cache.values()]).map((x, y, z) => { return z.length - 1 == y ? `${x.name}.` : `${x.name}, ` }).join('\n')
       const urlAvatar = userInfos.displayAvatarURL()
@@ -20,8 +20,8 @@ module.exports = {
         .setThumbnail(urlAvatar)
         .setFields(
           { name: '#️⃣ Tag', value: `${user.tag}` },
-          { name: '📅 Criação da Conta', value: String(moment(user.createdAt).format('LLLL')) },
-          { name: '📅 Entrou no Servidor', value: String(moment(guild.joinedAt).format('LLLL')) },
+          { name: '📅 Criação da Conta', value: String(moment(user.createdAt).format('LLLL')), inline: true },
+          { name: '📅 Entrou no Servidor', value: String(moment(guild.joinedAt).format('LLLL')), inline: true },
           { name: '🛑 Roles', value: stringRoles }
         ).setAuthor({ name: `| Info's de ${user.username}`, iconURL: urlAvatar })
         .setFooter({ text: `| 🆔 ${user.id}`, iconURL: urlAvatar })

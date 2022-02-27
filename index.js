@@ -49,6 +49,7 @@ process.on('unhandledRejection', err => {
   console.log(err);
 });
 
+
 /* for (let file of slashsFiles) {
   const command = require(`./scr/Slashs/${file}`);
   client.slashs.set(command.name, command)

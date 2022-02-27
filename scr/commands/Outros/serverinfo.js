@@ -18,10 +18,12 @@ module.exports = {
                 .setThumbnail(iconGuild)
                 .setFields(
                     { name: '🔰 Dono do Servidor', value: `<@${ownerId}>` },
-                    { name: '🔱 Membros no Servidor', value: `${memberCount}` },
+                    { name: '📅 Entrei em', value: String(moment(msg.guild.me.joinedAt).format('LLLL')), inline: true },
+                    { name: '📅 Servidor criado em', value: String(moment(createdAt).format('LLLL')), inline: true },
+                    { name: '🔱 Total de Membros', value: `${memberCount}` },
                     { name: '🛑 Roles', value: stringRoles }
                 ).setAuthor({ name: `| ${name} `, iconURL: iconGuild })
-                .setFooter({ text: `📅 Servidor criado em ${moment(createdAt).format('LLLL')} | 🆔 ${id}`, iconURL: iconGuild })
+                .setFooter({ text: ` | 🆔 ${id}`, iconURL: iconGuild })
             return msg.channel.send({ embeds: [helpMsg] })
         } catch (e) { return msg.channel.send(`\`${e}\``) }
     }

@@ -7,7 +7,7 @@ module.exports = {
     aliase: [],
     execute: async (client, msg, args, cor) => {
         try {
-            const mention = msg.mentions.members.first() || msg.member
+            const mention = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.member
             const link = mention.displayAvatarURL({ size: 1024, dynamic: true })
             const helpMsg = new MessageEmbed()
                 .setColor(cor)

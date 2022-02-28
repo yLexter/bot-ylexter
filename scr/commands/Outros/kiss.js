@@ -13,7 +13,7 @@ module.exports = {
             const { url } = await fetch(`https://api.waifu.pics/sfw/kiss`).then(response => response.json())
             const porcetagem = Math.floor(Math.random() * 101)
             const allUsers = msg.guild.members.cache.map(x => { return x.user.id })
-            const randomUser = (msg.mentions.members.first()).user.id || allUsers[Math.floor(Math.random() * allUsers.length)]
+            const randomUser = msg.mentions.members.first()?.user.id || allUsers[Math.floor(Math.random() * allUsers.length)]
             const footer = porcetagem < 30 ? 'Eita... não combinam nem um pouco.' : porcetagem > 30 && porcetagem < 60 ? 'Quase, só falta um empurrãozinho.' : 'Temos um novo casal na área.'
 
             if (msg.author.id == randomUser) {

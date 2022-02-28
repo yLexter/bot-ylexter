@@ -66,7 +66,7 @@ module.exports = {
 
         if (command.onlyOwner) {
           let dono = msg.guild.ownerID == msg.author.id
-          return dono ? executeCmd() : msg.delete().catch(() => { });
+          if (dono) return executeCmd();
         }
 
         return executeCmd()
@@ -87,7 +87,7 @@ module.exports = {
 
       function Administrador() {
         let permission = msg.member.permissions.has('ADMINISTRATOR')
-        return permission ? executeCommand() : msg.delete().catch(() => { })
+        if (permission) return executeCommand();
       }
 
     } catch (e) { return console.log(e) }

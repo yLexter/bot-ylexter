@@ -48,7 +48,8 @@ async function playSong(client, msg, song) {
         songs: [song],
         loop: null,
         back: null,
-        loopQueue: null
+        loopQueue: null,
+        songPlay: null
       }
 
       client.queues.set(msg.guild.id, queue);
@@ -66,6 +67,7 @@ async function playSong(client, msg, song) {
     player.play(resource);
     queue.connection.subscribe(player)
     queue.dispatcher = player
+    queue.songPlay = Date.now()
 
     player.on(AudioPlayerStatus.Idle, () => {
       let queue = client.queues.get(msg.guild.id);

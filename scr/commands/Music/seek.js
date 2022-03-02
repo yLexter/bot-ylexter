@@ -40,11 +40,14 @@ module.exports = {
             const song = queue.songs[0]
 
             if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
-           
+
             const stream = await play.stream(song.id, { seek: secondsFinal, quality: 3 })
             const resource = await createAudioResource(stream.stream, { inputType: StreamType.Opus });
             queue.dispatcher.play(resource);
             queue.connection.subscribe(queue.dispatcher)
+            queue.songPlay = Date.now() - secondsFinal * 1000
+            client.queues.set(msg.guild.id, queue);
+
 
         } catch (e) {
             const helpMsg = new MessageEmbed()

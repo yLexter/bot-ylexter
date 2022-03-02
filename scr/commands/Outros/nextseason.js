@@ -1,12 +1,12 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
-const Otaku = require('./../../Functions/animes')
+const Otaku = require('../../Functions/animes')
 
 module.exports = {
-    name: "topanimes",
-    help: "Mostra a lista dos Top Animes do MyAnimeList.",
+    name: "nextseason",
+    help: "Mostra a lista dos animes da próxima temporada.",
     type: "anime",
-    aliase: ["tanimes"],
     cooldown: 20,
+    aliase: ["snext"],
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()
@@ -15,17 +15,16 @@ module.exports = {
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
         try {
-            const topAnimes = await Otaku.getTopAnimes()
+            const seasonNextAnimes = await Otaku.getNextSeason()
             const msgError = '???'
             const finishCommmand = 120
             const maxTitleLength = 85
-            const menuAnimes = topAnimes.map((element, indice) => {
-                const contador = indice + 1
+            const menuAnimes = seasonNextAnimes.map((element, indice) => {
                 const generos = element.genres && element.genres.length > 0 ? element.genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("") : msgError
-                const title = element.title && element.title.length > maxTitleLength ? `${element.tile.substring(0, maxTitleLength)}...` : element.title || msgError
-
+                const title = element.title && element.title.length > maxTitleLength ? `${element.title.substring(0, maxTitleLength)}...` : element.title || msgError
+                const contador = indice + 1
                 return {
                     label: `🌟 ${contador}. ${title}`,
                     description: generos,
@@ -42,45 +41,47 @@ module.exports = {
                         .addOptions(menuAnimes),
                 );
 
-            const listaDeAnimes = topAnimes.map((x, y) => {
+            const listaDeAnimes = seasonNextAnimes.map((x, y) => {
                 let contador = y + 1
-                return `**${contador}° [${x.title || msgError}](${x.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'}) [🌟 ${x.score || msgError}/10]**`
+                return `**${contador}° [${x.title || msgError}](${x.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'})**`
             }).join('\n')
 
             const embedInicial = new MessageEmbed()
                 .setColor(cor)
-                .setAuthor({ name: `| 🏆 Top animes em ordem.`, iconURL: msg.author.displayAvatarURL() })
+                .setAuthor({ name: `| 🏆 Animes proxíma temporada.`, iconURL: msg.author.displayAvatarURL() })
                 .setDescription(listaDeAnimes)
 
             await msg_embed.edit({ embeds: [embedInicial], components: [row] })
 
+
             function getAnimeByPosition(number) {
-                return topAnimes[number]
+                return seasonNextAnimes[number]
             }
 
             function msgEmbedAnime(info) {
                 const {
-                    title, episodes, status, score, duration,
-                    synopsis, year, images, genres, trailer
+                    title, status, type,
+                    synopsis, images, genres, trailer, rating,
+                    score, aired , favorites
                 } = info
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
                 }).join("\n") : msgError
-                const imagem = images.jpg.image_url ? images.jpg.image_url : images.jpg.large_image_url
+                const imagem = images.jpg.image_url ? images.jpg.image_url : images.webp.large_image_url
                 const urlTrailer = trailer.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(`${title || msgError}`)
                     .setDescription(`${synopsis || msgError}`)
                     .addFields(
-                        { name: '📅 Ano', value: `${year || msgError}`, inline: true },
                         { name: '🆔 Status', value: `${status || msgError}`, inline: true },
-                        { name: "🕒 Duração", value: `${duration || msgError}`, inline: true },
+                        { name: '📺 Type', value: `${type || msgError}`, inline: true },
+                        { name: '🌟 Favoritos', value: `${favorites || msgError}`, inline: true },
+                        { name: '⚠️ Idade', value: `${rating || msgError}`, inline: true },
+                        { name: '📅 Publicação', value: `${aired.string || msgError}`, inline: true },
                         { name: '📑 Gêneros', value: `${generos}`, inline: true },
-                        { name: '💯 Nota', value: `${score || msgError}/10`, inline: true },
-                        { name: '🧾 Episodios', value: `${episodes || msgError}`, inline: true },
                     )
-                    .setAuthor({ name: `| 🏆 TopAnimes`, iconURL: msg.author.displayAvatarURL() })
+                    .setAuthor({ name: `| 🏆 Next season `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlTrailer)
                 if (imagem) helpMsg.setThumbnail(imagem);
                 return helpMsg

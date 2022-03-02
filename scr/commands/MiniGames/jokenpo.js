@@ -62,23 +62,26 @@ module.exports = {
 
                     if (collected.size == 0 || !game) {
                         games.delete(msg.author.id)
-                        return msgChallenger.edit({ content: `**❌| O adversário <@${adversario.user.id}> não aceitou o desafio.**`, embeds: [], components: [] }).catch(() => {games.delete(msg.author.id)})
+                        return msgChallenger.edit({ content: `**❌| O adversário <@${adversario.user.id}> não aceitou o desafio.**`, embeds: [], components: [] }).catch(() => { games.delete(msg.author.id) })
                     }
 
                     const buttons = new MessageActionRow()
                         .addComponents(
                             new MessageButton()
                                 .setCustomId('pedra')
+                                .setLabel('Pedra')
                                 .setStyle('PRIMARY')
                                 .setEmoji(emojiPedra),
                             new MessageButton()
+                                .setCustomId('papel')
+                                .setLabel('Papel')
+                                .setStyle('PRIMARY')
+                                .setEmoji(emojiPapel),
+                            new MessageButton()
                                 .setCustomId('tesoura')
                                 .setStyle('PRIMARY')
+                                .setLabel('Tesoura')
                                 .setEmoji(emojiTesoura),
-                            new MessageButton()
-                                .setCustomId('papel')
-                                .setStyle('PRIMARY')
-                                .setEmoji(emojiPapel)
                         );
 
                     const embed = new MessageEmbed()
@@ -87,7 +90,7 @@ module.exports = {
                         .setImage('https://publicdomainvectors.org/photos/rock-paper-scissors.png')
                         .setFooter({ text: 'Caso um dos jogadores não escolham , o jogo será cancelado' })
 
-                    msgChallenger.edit({ content: `<@${adversario.user.id}>, O <@${msg.author.id}> lhe chamou para um jokenpo.`, embeds: [embed], components: [buttons] }).catch(() => {games.delete(msg.author.id)})
+                    msgChallenger.edit({ content: `<@${adversario.user.id}>, O <@${msg.author.id}> lhe chamou para um jokenpo.`, embeds: [embed], components: [buttons] }).catch(() => { games.delete(msg.author.id) })
                 } catch (e) { games.delete(msg.author.id) }
 
                 const filter = i => { return msg.author.id == i.user.id || adversario.user.id == i.user.id }
@@ -121,7 +124,7 @@ module.exports = {
                             return collector.stop();
                         }
 
-                        msgChallenger.edit({ content: `<@${i.user.id}> escolheu sua jogada!` }).catch(() => {games.delete(msg.author.id)})
+                        msgChallenger.edit({ content: `<@${i.user.id}> escolheu sua jogada!` }).catch(() => { games.delete(msg.author.id) })
                         i.deferUpdate();
 
                     } catch (e) { games.delete(msg.author.id), collector.stop() }
@@ -131,7 +134,7 @@ module.exports = {
                     try {
                         if (collected.size == 0) {
                             games.delete(msg.author.id)
-                            return msgChallenger.edit({ content: 'Nenhum dos players escolheram uma jogada!', components: [], embeds: [] }).catch(() => {games.delete(msg.author.id)})
+                            return msgChallenger.edit({ content: 'Nenhum dos players escolheram uma jogada!', components: [], embeds: [] }).catch(() => { games.delete(msg.author.id) })
                         }
 
                         game()
@@ -148,7 +151,7 @@ module.exports = {
 
                     if (notPlayed) {
                         games.delete(msg.author.id)
-                        return msgChallenger.edit({ content: `O Player <@${notPlayed.id}> não escolheu nenhuma jogada, o jogo foi cancelado.`, components: [], embeds: [] }).catch(() => {games.delete(msg.author.id)})
+                        return msgChallenger.edit({ content: `O Player <@${notPlayed.id}> não escolheu nenhuma jogada, o jogo foi cancelado.`, components: [], embeds: [] }).catch(() => { games.delete(msg.author.id) })
                     }
 
                     const { player1, player2 } = game
@@ -163,11 +166,11 @@ module.exports = {
 
                     if (!winner) {
                         games.delete(msg.author.id)
-                        return msgChallenger.edit({ content: `**🏆| Empaate!\nNinguém venceu! Ambos escolheram ${emojisRespectMove[player1.jogada]} ${player1.jogada}.**`, components: [], embeds: [] }).catch(() => {games.delete(msg.author.id)})
+                        return msgChallenger.edit({ content: `**🏆| Empaate!\nNinguém venceu! Ambos escolheram ${emojisRespectMove[player1.jogada]} ${player1.jogada}.**`, components: [], embeds: [] }).catch(() => { games.delete(msg.author.id) })
                     }
 
                     games.delete(msg.author.id)
-                    return msgChallenger.edit({ content: `**🏆| O <@${winner.id}> venceu!!\nAs jogadas foram ${playerAndEmoji(player1)} e ${playerAndEmoji(player2)}.**`, components: [], embeds: [] }).catch(() => {games.delete(msg.author.id)})
+                    return msgChallenger.edit({ content: `**🏆| O <@${winner.id}> venceu!!\nAs jogadas foram ${playerAndEmoji(player1)} e ${playerAndEmoji(player2)}.**`, components: [], embeds: [] }).catch(() => { games.delete(msg.author.id) })
 
                 } catch (e) {
                     games.delete(msg.author.id)

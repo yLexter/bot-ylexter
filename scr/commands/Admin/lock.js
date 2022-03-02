@@ -8,7 +8,7 @@ module.exports = {
         try {
 
             await msg.channel.permissionOverwrites.edit(msg.guild.id, { SEND_MESSAGES: false })
-            msg.channel.send(`🔓| Este canal foi bloqueado por **${msg.author.tag}.**`)
+            msg.channel.send(`🔒| Este canal foi bloqueado por **${msg.author.tag}.**`)
 
 
         } catch (e) { msg.channel.send(`\`${e}\``) }

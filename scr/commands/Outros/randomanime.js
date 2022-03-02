@@ -63,7 +63,7 @@ module.exports = {
             await mudarMsgEmbed()
             await msg_embed.react('🔁')
 
-            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 });
+            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 , max: 8});
 
             collector.on('collect', async (reaction, user) => {
                 const reactions = {

@@ -15,7 +15,7 @@ module.exports = {
       const stringRoles = ([...roles.cache.values()]).map((x, y, z) => { return z.length - 1 == y ? `${x.name}. ` : `${x.name}, ` }).join('\n')
       const urlAvatar = userInfos.displayAvatarURL()
       const admin = userInfos.permissions.has('ADMINISTRATOR') ? 'Sim' : 'Não'
-      const ownerGuild = user.id == msg.guild.ownerID ? 'Sim' : 'Não'
+      const ownerGuild = user.id == msg.guild.ownerId ? 'Sim' : 'Não'
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)

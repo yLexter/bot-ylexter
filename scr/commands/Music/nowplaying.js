@@ -7,10 +7,17 @@ module.exports = {
      aliase: ['nwp'],
      execute: (client, msg, args, cor) => {
 
-          const { stopMusic } = client.music
+          const { stopMusic , secondsToText } = client.music
 
           try {
                const queue = client.queues.get(msg.member.guild.id)
+               const barraMusic = []
+               const emoji = '🔵'
+               const maxBarrinha = 10
+
+               for (let x = 0; x < maxBarrinha; x++) {
+                    barraMusic.push("-")
+               }
 
                if (!queue) {
                     const helpMsg = new MessageEmbed()
@@ -20,10 +27,17 @@ module.exports = {
                }
 
                const song = queue.songs[0]
+               const time = Math.floor((Date.now() - queue.songPlay) / 1000) > song.duration / 1000 ? song.duration / 1000 : Math.floor((Date.now() - queue.songPlay) / 1000)
+               const timeFormatado = secondsToText(time)
+               const positionBola = Math.floor(time / (song.duration / (1000 * barraMusic.length)))
+
+               barraMusic.splice(positionBola, 0, emoji)
+
+               const stringBarra = barraMusic.join("")
 
                const helpMsg = new MessageEmbed()
                     .setColor(cor)
-                    .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
+                    .setDescription(`[${song.title}](${song.url}) \n\n**⏯️ [${timeFormatado}] ${stringBarra} [${song.durationFormatted}]**`)
                     .setAuthor({ name: `| 🎶 Tocando Agora `, iconURL: msg.author.displayAvatarURL() })
                return msg.channel.send({ embeds: [helpMsg] })
 

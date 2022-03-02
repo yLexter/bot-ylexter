@@ -1,12 +1,11 @@
-const { MessageEmbed } = require("discord.js");
-const wait = require('util').promisify(setTimeout);
+const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
 const Otaku = require('../../Functions/animes')
 
 module.exports = {
     name: "seasonnow",
     help: "Mostra a lista dos animes da temporada atual.",
     type: "anime",
-    cooldown: 10,
+    cooldown: 20,
     aliase: ["snow"],
     execute: async (client, msg, args, cor) => {
 
@@ -16,20 +15,51 @@ module.exports = {
         let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
         try {
-            let contador = 0
-            const topAnimes = await Otaku.getSeasonNow()
+            const seasonNowAnimes = await Otaku.getSeasonNow()
             const msgError = '???'
-            const finishCommmand = 300
-            const pagsTotal = topAnimes.length - 1
-            const firstPosition = 0
+            const finishCommmand = 120
+            const maxTitleLength = 85
+            const menuAnimes = seasonNowAnimes.map((element, indice) => {
+                const generos = element.genres && element.genres.length > 0 ? element.genres.map((x, y, z) => {
+                    return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
+                }).join("") : msgError
+                const title = element.title && element.title.length > maxTitleLength ? `${element.tile.substring(0, maxTitleLength)}...` : element.title || msgError
+                const contador = indice + 1
+                
+                return {
+                    label: `🌟 ${contador}. ${title}`,
+                    description: generos,
+                    value: String(indice)
+                }
+            })
+            const row = new MessageActionRow()
+                .addComponents(
+                    new MessageSelectMenu()
+                        .setCustomId('select')
+                        .setPlaceholder('Selecione um anime.')
+                        .setMinValues(1)
+                        .setMaxValues(1)
+                        .addOptions(menuAnimes),
+                );
+
+            const listaDeAnimes = seasonNowAnimes.map((x, y) => {
+                let contador = y + 1
+                return `**${contador}° [${x.title || msgError}](${x.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'})**`
+            }).join('\n')
+
+            const embedInicial = new MessageEmbed()
+                .setColor(cor)
+                .setAuthor({ name: `| 🏆 Animes da temporada atual.`, iconURL: msg.author.displayAvatarURL() })
+                .setDescription(listaDeAnimes)
+
+            await msg_embed.edit({ embeds: [embedInicial], components: [row] })
+
 
             function getAnimeByPosition(number) {
-                return topAnimes[number]
+                return seasonNowAnimes[number]
             }
 
             function msgEmbedAnime(info) {
-                const contadorEmbed = contador + 1
-                const pagstotalEmbed = pagsTotal + 1
                 const {
                     title, status, type,
                     synopsis, images, genres, trailer, rating,
@@ -54,7 +84,6 @@ module.exports = {
                     )
                     .setAuthor({ name: `| 🏆 Season Atual `, iconURL: msg.author.displayAvatarURL() })
                     .setURL(urlTrailer)
-                    .setFooter({ text: ` Pag's ${contadorEmbed}/${pagstotalEmbed}` })
                 if (imagem) helpMsg.setThumbnail(imagem);
                 return helpMsg
             }
@@ -62,53 +91,26 @@ module.exports = {
             function mudarMsg(number) {
                 const atualAnime = getAnimeByPosition(number)
                 const pagAtual = msgEmbedAnime(atualAnime)
-                return msg_embed.edit({ embeds: [pagAtual] }).catch(() => { })
+                return msg_embed.edit({ embeds: [pagAtual], components: [row] }).catch(() => { })
             }
 
-            function firstPag() {
-                contador = firstPosition
-                return mudarMsg(firstPosition)
-            }
-
-            const filter = (reaction, user) => {
-                return (reaction.emoji.name == '⏪' || reaction.emoji.name == '🔁' || reaction.emoji.name == '⏩') && user.id == msg.author.id
+            const filter = i => {
+                return i.user.id === msg.author.id;
             };
 
-            await firstPag();
-            await msg_embed.react('⏪');
-            await msg_embed.react('⏩');
+            const collector = msg_embed.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', time: finishCommmand * 1000, max: 28 });
 
-            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000 });
-
-            collector.on('collect', async (reaction, user) => {
+            collector.on('collect', async i => {
                 try {
-                    await wait(0.5 * 1000)
-                    const reactions = {
-                        '⏩': () => {
-                            if (pagsTotal == firstPosition) return;
-                            if (contador == pagsTotal) return firstPag();
-                            contador++
-                            return mudarMsg(contador)
-                        },
-                        '⏪': () => {
-                            if (pagsTotal == firstPosition) return;
-                            if (contador == firstPosition) {
-                                contador = pagsTotal
-                                return mudarMsg(pagsTotal);
-                            }
-                            contador--
-                            return mudarMsg(contador)
-                        }
-                    }
-                    await reactions[reaction.emoji.name]()
-                    await reaction.users.remove(user.id)
+                    mudarMsg(i.values[0])
+                    i.deferUpdate();
                 } catch (e) {
                     return console.log(e)
                 }
             });
 
             collector.on('end', collected => {
-                msg_embed.delete().catch(() => { })
+                msg_embed.edit({ components: [] }).catch(() => { })
             })
 
         } catch (e) {

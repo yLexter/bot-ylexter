@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const translate = require('@iamtraction/google-translate');
 
 class ClassOtaku {
     constructor() {
@@ -40,17 +41,26 @@ class ClassOtaku {
         return data.data
     }
 
-    async searchAnime(search){
-      let data = await this.fetchUrl(this.baseUrlKitsu + '/anime?filter[text]=' + search)
-      if(!data.data[0]) throw new Error('Not Found')
-      return data.data[0]
+    async searchAnime(search) {
+        let data = await this.fetchUrl(this.baseUrlKitsu + '/anime?filter[text]=' + search)
+        if (!data.data[0]) throw new Error('Not Found')
+        return data.data[0]
     }
 
-    async searchManga(search){
+    async searchManga(search) {
         let data = await this.fetchUrl(this.baseUrlKitsu + '/manga?filter[text]=' + search)
-        if(!data.data[0]) throw new Error('Not Found')
+        if (!data.data[0]) throw new Error('Not Found')
         return data.data[0]
-      }
+    }
+
+    async translateSynopses(texto) {
+        try {
+            return (await translate(texto, { from: 'en', to: 'pt' })).text
+        } catch (e) {
+            return texto
+        }
+
+    }
 }
 
 const Otaku = new ClassOtaku()

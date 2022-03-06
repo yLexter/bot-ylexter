@@ -23,6 +23,8 @@ module.exports = {
       if (queue.dispatcher._state.status == 'playing') return msg.delete().catch(() => { });
 
       queue.dispatcher.unpause();
+      queue.songPlay = Date.now() - queue.songPlay
+      client.queues.set(msg.guild.id, queue);
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)

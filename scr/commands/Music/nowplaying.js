@@ -26,8 +26,9 @@ module.exports = {
                     return msg.channel.send({ embeds: [helpMsg] })
                }
 
+               const songPaused = queue.dispatcher._state.status == 'paused'
                const song = queue.songs[0]
-               const time = Math.floor((Date.now() - queue.songPlay) / 1000) > song.duration / 1000 ? song.duration / 1000 : Math.floor((Date.now() - queue.songPlay) / 1000)
+               const time = songPaused ? Math.floor(queue.songPlay / 1000) : Math.floor((Date.now() - queue.songPlay) / 1000)
                const timeFormatado = secondsToText(time)
                const positionBola = Math.floor(time / (song.duration / (1000 * barraMusic.length)))
 

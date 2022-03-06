@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const wait = require('util').promisify(setTimeout);
 
 module.exports = {
@@ -23,8 +23,32 @@ module.exports = {
       let quantidadePerPag = 10
       const pagsTotal = total_pags()
       let paginaAtual = 1
-      const finishCommmand = 300
-      let msg_principal = await msg.channel.send({ embeds: [msgEmbed(paginaAtual, pagsTotal)] })
+      const finishCommmand = 120
+      const row = new MessageActionRow()
+        .addComponents(
+          new MessageButton()
+            .setCustomId('ttretroceder')
+            .setEmoji('⏮️')
+            .setStyle('PRIMARY'),
+          new MessageButton()
+            .setCustomId('retroceder')
+            .setEmoji('⏪')
+            .setStyle('PRIMARY'),
+          new MessageButton()
+            .setCustomId('reload')
+            .setEmoji('🔁')
+            .setStyle('PRIMARY'),
+          new MessageButton()
+            .setCustomId('avançar')
+            .setEmoji('⏩')
+            .setStyle('PRIMARY'),
+          new MessageButton()
+            .setCustomId('ttavançar')
+            .setEmoji('⏭️')
+            .setStyle('PRIMARY'),
+        );
+
+      let msg_principal = await msg.channel.send({ embeds: [msgEmbed(paginaAtual, pagsTotal)], components: [row] })
 
       function queuePags(number) {
         const queue = client.queues.get(msg.guild.id);
@@ -68,18 +92,16 @@ module.exports = {
         return msg_principal.edit({ embeds: [msgEmbed(number, pagsTotal)] }).catch(() => { })
       }
 
-      await msg_principal.react('⏪');
-      await msg_principal.react('🔁');
-      await msg_principal.react('⏩');
+      const filter = (i) => {
+        i.deferUpdate()
+        return i.user.id == msg.author.id
+      }
 
-      const filter = (reaction, user) => {
-        return (reaction.emoji.name == '⏪' || reaction.emoji.name == '🔁' || reaction.emoji.name == '⏩') && user.id == msg.author.id
-      };
+      const collector = await msg_principal.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: finishCommmand * 1000, max: 15 });
 
-      const collector = await msg_principal.createReactionCollector({ filter, time: finishCommmand * 1000 });
-
-      collector.on('collect', async (reaction, user) => {
+      collector.on('collect', async i => {
         try {
+
           const queue = client.queues.get(msg.guild.id);
 
           if (!queue || queue.songs.length == 0) return collector.stop();
@@ -91,39 +113,44 @@ module.exports = {
             return mudarMsg(paginaAtual, pagsTotal)
           }
 
-          await wait(0.8 * 1000)
-          await reaction.users.remove(user.id)
+          if (paginaAtual > pagsTotal) {
+            return firstPag();
+          }
 
-          if (paginaAtual > pagsTotal) return firstPag();
-
-          const reactions = {
-            '🔁': () => {
-              return firstPag()
-            },
-            '⏩': () => {
-              if (pagsTotal == 1) return;
-              if (paginaAtual == pagsTotal) return firstPag();
+          const buttons = {
+            'avançar': () => {
+              if (pagsTotal == 1 || paginaAtual == pagsTotal) return;
               paginaAtual++
               return mudarMsg(paginaAtual, pagsTotal)
             },
-            '⏪': () => {
-              if (pagsTotal == 1) return;
-              if (paginaAtual == 1) {
-                paginaAtual = pagsTotal
-                return mudarMsg(pagsTotal, pagsTotal);
-              }
+            'retroceder': () => {
+              if (pagsTotal == 1 || paginaAtual == 1) return;
               paginaAtual--
               return mudarMsg(paginaAtual, pagsTotal)
+            },
+            'ttavançar': () => {
+              if (paginaAtual == pagsTotal) return;
+              paginaAtual = pagsTotal
+              return mudarMsg(paginaAtual, pagsTotal)
+            },
+            'ttretroceder': () => {
+              if (paginaAtual == 1) return
+              return firstPag()
+            },
+            'reload': () => {
+              mudarMsg(paginaAtual, pagsTotal)
             }
           }
-          await reactions[reaction.emoji.name]()
+
+          await buttons[i.customId]()
+
         } catch (e) {
           return console.log(e)
         }
       });
 
       collector.on('end', collected => {
-        msg_principal.delete().catch(() => { })
+        msg_principal.edit({ components: [] }).catch(() => { })
       })
     } catch (e) { console.log(e) }
   }

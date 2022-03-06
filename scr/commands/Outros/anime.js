@@ -32,6 +32,8 @@ module.exports = {
         popularityRank, titles,
         synopsis, startDate, endDate,
         posterImage, status, description, canonicalTitle } = data.attributes
+    
+      const synopsisTraduzida = await Otaku.translateSynopses(synopsis)
 
       function firstKeyUpper(string) {
         return string[0].toUpperCase() + string.slice(1, string.length)
@@ -40,7 +42,7 @@ module.exports = {
       const helpMsg = new MessageEmbed()
         .setColor(cor)
         .setTitle(`${canonicalTitle || titles.en_jp || msgError}`)
-        .setDescription(`${synopsis || description || msgError}`)
+        .setDescription(`${synopsisTraduzida || description || msgError}`)
         .addFields(
           { name: '📅 Estreia', value: startDate || msgError, inline: true },
           { name: '📅 Encerramento', value: endDate || msgError, inline: true },

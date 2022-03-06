@@ -112,7 +112,6 @@ module.exports = {
             })
 
         } catch (e) {
-            console.log(e)
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })

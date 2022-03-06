@@ -12,11 +12,11 @@ module.exports = {
         const helpMsg1 = new MessageEmbed()
             .setAuthor({ name: `| Procurando...`, iconURL: msg.author.displayAvatarURL() })
             .setColor(cor)
-        let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => {})
+        let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
         try {
             const s = args.join(" ")
-            
+
             if (!s) {
                 const helpMsg = new MessageEmbed()
                     .setAuthor({ name: `| Informe um Mangá.`, iconURL: msg.author.displayAvatarURL() })
@@ -30,6 +30,8 @@ module.exports = {
                 synopsis, titles, startDate
                 , averageRating, chapterCount, popularityRank, canonicalTitle } = data.attributes
 
+            const synopsisTraduzida = await Otaku.translateSynopses(synopsis)
+
             function firstKeyUpper(string) {
                 return string[0].toUpperCase() + string.slice(1, string.length)
             }
@@ -37,7 +39,7 @@ module.exports = {
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setTitle(`${titles.en_jp || canonicalTitle || msgError}`)
-                .setDescription(`${synopsis || description || msgError}`)
+                .setDescription(`${synopsisTraduzida || description || msgError}`)
                 .addFields(
                     { name: '📅 Criado em', value: startDate || msgError, inline: true },
                     { name: '📅 Capítulo Final', value: endDate || msgError, inline: true },

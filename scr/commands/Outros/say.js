@@ -8,9 +8,10 @@ module.exports = {
       var msg_user = args.join(" ")
       var corMsg = args[0].toLowerCase()
       var Msg_args = args.slice(1).join(' ')
+      const limit = 100
       msg.delete().catch(() => { })
 
-      if (msg_user.length > 100 || !msg_user) return msg.reply('Você não digitou **nada** ou o **limite** de caracteres foi excedido!');
+      if (msg_user.length > limit || !msg_user) return msg.reply(`Você não digitou **nada** ou o **limite [${limit}]** de caracteres foi excedido!`);
 
       function msgColorido(corMessage, message = null) {
         const selectCor = {

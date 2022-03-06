@@ -35,7 +35,6 @@ module.exports = {
                barraMusic.splice(positionBola, 0, emoji)
 
                const stringBarra = barraMusic.join("")
-
                const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`[${song.title}](${song.url}) \n\n**⏯️ [${timeFormatado}] ${stringBarra} [${song.durationFormatted}]**`)

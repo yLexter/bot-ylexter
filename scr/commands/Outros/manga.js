@@ -22,7 +22,6 @@ module.exports = {
                     .setAuthor({ name: `| Informe um Mangá.`, iconURL: msg.author.displayAvatarURL() })
                 return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
             }
-
             const data = await Otaku.searchManga(s)
             const msgError = '???'
             const { posterImage, status,

@@ -31,7 +31,6 @@ module.exports = {
         .setAuthor({ name: '| ⏹️ Pausada.', iconURL: msg.author.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
 
-
     } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 }; // Execute end

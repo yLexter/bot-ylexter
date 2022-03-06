@@ -74,8 +74,6 @@ module.exports = {
             msg_embed.delete().catch(() => { })
         }
 
-
-
     }
 
 

@@ -149,6 +149,7 @@ module.exports = {
         }
       });
 
+      
       collector.on('end', collected => {
         msg_principal.edit({ components: [] }).catch(() => { })
       })

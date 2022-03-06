@@ -15,7 +15,6 @@ module.exports = {
     let msg_embed = await msg.channel.send({ embeds: [helpMsg1] }).catch(() => { })
 
     try {
-
       const s = args.join(" ")
 
       if (!s) {

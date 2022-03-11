@@ -1,5 +1,4 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const wait = require('util').promisify(setTimeout);
 
 module.exports = {
   name: "queue",
@@ -8,7 +7,7 @@ module.exports = {
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
-    const { secondsToText } = client.music
+    const { secondsToText , musicVetor } = client.music
 
     try {
       const queue = client.queues.get(msg.member.guild.id);
@@ -53,7 +52,7 @@ module.exports = {
       function queuePags(number) {
         const queue = client.queues.get(msg.guild.id);
         const { songs } = queue
-        let string = `🔊 **Tocando agora**\n[${songs[0].title}](${songs[0].url}) [${songs[0].durationFormatted}]\n\n`
+        let string = `🔊 **Tocando agora**\n[${songs[0].title}](${songs[0].url})\n${musicVetor(client, msg)}\n\n`
         let pagAtual = number == 1 ? 1 : number * quantidadePerPag - quantidadePerPag + 1
         for (i = pagAtual; i < pagAtual + quantidadePerPag; i++) {
           if (!songs[i]) break;
@@ -77,12 +76,12 @@ module.exports = {
         return string / 1000
       }
 
-      function msgEmbed(positon, pags) {
+      function msgEmbed(position, pags) {
         const queue = client.queues.get(msg.guild.id);
         const quantidadeSongs = queue.songs.length - 1 == 0 ? 1 : queue.songs.length - 1
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setDescription(queuePags(positon))
+          .setDescription(queuePags(position))
           .setAuthor({ name: `| 📑 Queue`, iconURL: msg.author.displayAvatarURL() })
           .setFooter({ text: `Músicas: ${quantidadeSongs} | Pag's: ${paginaAtual}/${pags} | Tempo: ${secondsToText(somarDuration())}` })
         return helpMsg
@@ -149,7 +148,6 @@ module.exports = {
         }
       });
 
-      
       collector.on('end', collected => {
         msg_principal.edit({ components: [] }).catch(() => { })
       })

@@ -428,6 +428,37 @@ function PushAndPlaySong(client, msg, cor, song) {
   } else return playSong(client, msg, song);
 }
 
+function musicVetor(client, msg) {
+  const barraMusic = []
+  const emoji = '🔵'
+  const maxBarrinha = 15
+  const queue = client.queues.get(msg.guild.id)
+
+  for (let x = 0; x < maxBarrinha; x++) {
+    barraMusic.push("-")
+  }
+
+  const songPaused = queue.dispatcher._state.status == 'paused'
+  const song = queue.songs[0]
+  const time = songPaused ? Math.floor(queue.songPlay / 1000) : Math.floor((Date.now() - queue.songPlay) / 1000)
+  const timeFormatado = secondsToText(time)
+  const positionBola = Math.floor(time / (song.duration / (1000 * maxBarrinha)))
+  const emojiPlay = songPaused ? '▶️' : '⏸'
+
+  barraMusic.splice(positionBola, 0, emoji)
+
+  if (positionBola > 1) {
+    barraMusic.unshift("**")
+    barraMusic.splice(positionBola + 1, 0, "**")
+  }
+
+  let musicBar = barraMusic.join("")
+
+  return `${musicBar}\n${emojiPlay}  ${timeFormatado}/${song.durationFormatted}`
+
+
+}
+
 module.exports = {
   vdSearch,
   ytPlaylist,
@@ -439,5 +470,6 @@ module.exports = {
   spotifySearch,
   playSong,
   titulo_formatado,
-  PushAndPlaySong
+  PushAndPlaySong,
+  musicVetor
 }

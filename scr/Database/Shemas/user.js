@@ -13,7 +13,7 @@ const schemaUser = new mongoose.Schema({
     },
 
     username: String,
-    
+
     warns: {
         type: Array,
         default: []
@@ -25,8 +25,8 @@ const schemaUser = new mongoose.Schema({
     },
 
     minigames: {
-        type: Array,
-        default: []
+        type: Object,
+        default: {}
     },
 
     outros: {

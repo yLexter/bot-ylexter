@@ -1,7 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const Youtube = require("youtube-sr").default;
 const lyricsFinder = require('lyrics-finder');
-const translate = require('@iamtraction/google-translate');
 
 module.exports = {
     name: "lyrics",
@@ -45,8 +44,7 @@ module.exports = {
                     return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
                 }
 
-                const lyricsWithLimit = lyricsFormated(buscarLyrics)
-                const lyrics = (await translate(lyricsWithLimit, { to: 'pt' })).text
+                const lyrics = lyricsFormated(buscarLyrics)
                 const titulo = await tituloOfMusic(musica)
 
                 const helpMsg = new MessageEmbed()

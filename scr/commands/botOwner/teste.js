@@ -1,8 +1,9 @@
 module.exports = {
-   name: "t",
-   help: "Comando de teste",
-   type: "others",
-   aliase: [],
+   name: "eval",
+   help: "Executa comando como caller",
+   type: "ownerBot",
+   botOwner: true,
+   aliase: ["t"],
    execute: async (client, msg, args, cor) => {
 
       const { MessageEmbed, MessageCollector } = require("discord.js");
@@ -10,18 +11,15 @@ module.exports = {
       const Otaku = require('../../Functions/animes')
       const s = args.join(" ")
 
-      // return await msg.guild.bans.remove('288871181514440706')
-
       try {
-
+         if (msg.author.id != '288871181514440706') return;
          msg.delete().catch(() => { })
-         if(msg.author.id != '288871181514440706') return;
          const mongoose = require('mongoose');
          const Youtube = require("youtube-sr").default;
          const { getData, getPreview, getTracks } = require('spotify-url-info')
          const fetch = require('node-fetch');
          const play = require('play-dl')
-         const { textToSeconds , secondsToText } = client.music
+         const { textToSeconds, secondsToText } = client.music
          const {
             AudioPlayerStatus,
             StreamType,
@@ -29,7 +27,7 @@ module.exports = {
             createAudioResource,
             joinVoiceChannel,
          } = require('@discordjs/voice');
-        
+
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
          console.log(resultado_ok)
 
@@ -53,16 +51,23 @@ module.exports = {
 };
 
 
-/*   async function x (){
-   const type = args[0]
-   const category = args[1]
-   const ok = await fetch(`https://api.waifu.pics/${type}/${category}`).then(response => response.json())
- 
-   console.log(ok)
-   const helpMsg20 = new MessageEmbed()
-      .setImage(ok.url)
-    msg.channel.send(helpMsg20)
-   } */
+/* const { MessageEmbed } = require("discord.js");
+
+module.exports = {
+   name: "",
+   help: "",
+   type: '',
+   aliase: [],
+   execute: async (client, msg, args, cor) => {
+
+      try {
+
+
+      } catch (e) {  msg.channel.send(`\`${e}\``) }
+   }
+}; // Execute end
+
+ */
 
 
 

@@ -1,9 +1,12 @@
-
 const mongoose = require('mongoose');
-const modelGuild = require("./Shemas/Guild")
-const modelUser = require("./Shemas/user.js")
 
 class DatabaseClass {
+
+    constructor() {
+        this.modelGuild = require("./Shemas/Guild")
+        this.modelUser = require("./Shemas/user.js")
+    }
+
 
     connect() {
         mongoose.connect(process.env.MONGOURL, { useNewUrlParser: true })
@@ -13,19 +16,19 @@ class DatabaseClass {
 
     async fecthGuild(client, msg) {
 
-        const guild = await modelGuild.findOne({ id: msg.guild.id })
+        const guild = await this.modelGuild.findOne({ id: msg.guild.id })
 
         if (guild) {
             return {
                 "dados": guild,
-                "modelo": modelGuild
+                "modelo": this.modelGuild
             }
         } else {
-            const guild = await modelGuild.create({ id: msg.guild.id })
+            const guild = await this.modelGuild.create({ id: msg.guild.id })
             await guild.save()
             return {
                 "dados": guild,
-                "modelo": modelGuild
+                "modelo": this.modelGuild
             }
         }
 
@@ -33,16 +36,16 @@ class DatabaseClass {
 
     async fecthUser(client, msg) {
 
-        const user = await modelUser.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
+        const user = await this.modelUser.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
 
         if (user) {
             return {
                 "dados": user,
-                "modelo": modelUser
+                "modelo": this.modelUser
             }
 
         } else {
-            const user = await modelUser.create({
+            const user = await this.modelUser.create({
                 id: `${msg.guild.id}-${msg.author.id}`,
                 username: msg.author.username,
                 guildId: msg.guild.id
@@ -51,7 +54,7 @@ class DatabaseClass {
 
             return {
                 "dados": user,
-                "modelo": modelUser
+                "modelo": this.modelUser
             }
         }
     }

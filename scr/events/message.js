@@ -42,9 +42,9 @@ module.exports = {
       const commandCooldown = `${msg.guild.id}-${command.name}`
 
       const typesCommands = {
-        music: musica,
-        others: executeCommand,
-        admin: Administrador
+        music,
+        admin,
+        ownerBot
       }
 
       typesCommands[command.type] ? typesCommands[command.type]() : executeCommand()
@@ -61,7 +61,7 @@ module.exports = {
         const cdCommand = cooldown.get(commandCooldown)
         if (cdCommand) {
           const time = defaultTimeCD - Math.floor(Date.now() / 1000 - cdCommand) || '??'
-          return msg.reply({ content: `⏰ **Este comando está em Cooldown , Aguarde ${time}s.**` }).catch(() => { })
+          return msg.reply({ content: `⏰| **Este comando está em Cooldown , Aguarde ${time}s.**` }).catch(() => { })
         }
 
         if (command.onlyOwner) {
@@ -72,20 +72,25 @@ module.exports = {
         return executeCmd()
       }
 
-      async function musica() {
+      function ownerBot() {
+        let dono = msg.author.id == process.env.ownerBotId
+        if (dono) return executeCommand();
+      }
+
+      async function music() {
         if (!idChannel || idChannel == msg.channel.id) {
           let queue = client.queues.get(msg.member.guild.id);
           if (queue) {
             if (queue.dispatcher._state.status == 'idle') return;
-            return queue.connection.joinConfig.channelId == msg.member.voice.channel.id ? executeCommand() : msg.delete().catch(() => { })
+            return queue.connection.joinConfig.channelId == msg.member.voice.channel.id ? executeCommand() : null
           }
           return executeCommand()
         } else {
-          msg.reply({ content: `🚫 **Esse comando só é Permitido no canal <#${idChannel}>**` }).catch(() => { })
+          msg.reply({ content: `🚫| **Esse comando só é Permitido no canal <#${idChannel}>**` }).catch(() => { })
         }
       }
 
-      function Administrador() {
+      function admin() {
         let permission = msg.member.permissions.has('ADMINISTRATOR')
         if (permission) return executeCommand();
       }

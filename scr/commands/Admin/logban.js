@@ -10,8 +10,6 @@ module.exports = {
 
     try {
 
-       return msg.reply('Em manuteção')  
-
       const userId = args[0]
       const {dados , modelo } = await Database.fecthGuild(client , msg)
       const user = dados.logs.find(x => { return `${msg.guild.id}-${userId}`})

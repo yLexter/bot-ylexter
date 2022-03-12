@@ -4,9 +4,9 @@ class DatabaseClass {
 
     constructor() {
         this.modelGuild = require("./Shemas/Guild")
-        this.modelUser = require("./Shemas/user.js")
+        this.modelUser = require("./Shemas/user")
+        this.client = require('./Shemas/client')
     }
-
 
     connect() {
         mongoose.connect(process.env.MONGOURL, { useNewUrlParser: true })
@@ -57,6 +57,13 @@ class DatabaseClass {
                 "modelo": this.modelUser
             }
         }
+    }
+
+    async createClient(client) {
+        const clientModel = await this.client.create({
+            id: `${client.user.id}`,
+        })
+        await clientModel.save()
     }
 }
 

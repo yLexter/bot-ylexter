@@ -431,11 +431,11 @@ function PushAndPlaySong(client, msg, cor, song) {
 function musicVetor(client, msg) {
   const barraMusic = []
   const emoji = '🔵'
-  const maxBarrinha = 15
+  const maxBarrinha = 10
   const queue = client.queues.get(msg.guild.id)
 
   for (let x = 0; x < maxBarrinha; x++) {
-    barraMusic.push("-")
+    barraMusic.push("▬")
   }
 
   const songPaused = queue.dispatcher._state.status == 'paused'
@@ -446,11 +446,6 @@ function musicVetor(client, msg) {
   const emojiPlay = songPaused ? '▶️' : '⏸'
 
   barraMusic.splice(positionBola, 0, emoji)
-
-  if (positionBola > 1) {
-    barraMusic.unshift("**")
-    barraMusic.splice(positionBola + 1, 0, "**")
-  }
 
   let musicBar = barraMusic.join("")
 

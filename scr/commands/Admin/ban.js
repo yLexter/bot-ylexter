@@ -13,7 +13,7 @@ module.exports = {
     try {
       const local = moment.locale('pt-br');
       const memberM = msg.mentions.members.first()
-      const reason = args.slice(1).join(' ') ? args.slice(1).join(' ') : 'Não Informada.'
+      const reason = args.slice(1).join(' ') || 'Não Informada.'
       const data = moment().format("LLLL")
       const { modelo, dados } = await Database.fecthGuild(client, msg)
 
@@ -34,7 +34,7 @@ module.exports = {
         logid: "ban",
         idGuild: `${msg.guild.id}-${memberM.user.id}`,
         autor: msg.author.tag,
-        nome: `${memberM.user.username}#${memberM.user.discriminator}`,
+        nome: `${memberM.user.tag}`,
         id: memberM.user.id,
         motivo: reason,
         data: data

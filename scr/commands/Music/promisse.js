@@ -2,15 +2,15 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "promisse",
-    help: "Coloca uma música em 1° da Queue , A música pode ser do Spotify/Youtube e da Propía Queue Usando a Posição da Música na Queue.",
+    help: "Coloca uma música em 1° lugar da Queue.",
     type: 'music',
+    usage: '<Comando> + <Pesquisa ou Posição da Queue> || Ex: <promisse 10> ou <promisse industry baby>',
     aliase: ["prs", "pms"],
     execute: async (client, msg, args, cor) => {
 
         const { vdSearch, spotifySearch } = client.music
 
         try {
-
             let queue = client.queues.get(msg.guild.id);
             const s = args.join(" ")
             const incluso = (x) => { return s.toLowerCase().includes(x) }

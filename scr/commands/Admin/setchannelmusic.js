@@ -1,11 +1,11 @@
 const { MessageEmbed } = require("discord.js");
-const mongoose = require('mongoose');
 const Database = require('../../Database/moongose')
 
 module.exports = {
     name: "setchannelmusic",
-    help: "Seta um canal para ser o canal de música , use <command> + menção de um canal usando #",
+    help: "Seta um canal para ser o canal de música, todos os comando de música só poderão ser usado no canal de música.",
     type: "admin",
+    usage: '<Comando> + <Menção ao Canal> || Para mencionar o canal digite # e selecione o canal.',
     cooldown: 20,
     aliase: ["stmusic"],
     execute: async (client, msg, args, cor) => {
@@ -20,9 +20,7 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            const { modelo } = await Database.fecthGuild(client, msg)
-
-            await modelo.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: channel.id })
+            await Database.guild.findOneAndUpdate({ id: msg.guild.id }, { channelMusic: channel.id })
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)

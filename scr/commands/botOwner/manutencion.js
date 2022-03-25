@@ -3,7 +3,7 @@ const Database = require('./../../Database/moongose')
 const moment = require('moment')
 
 module.exports = {
-    name: "manutecao",
+    name: "maintenance",
     help: "Adiciona um comando a manuteção.",
     type: 'ownerBot',
     cooldown: 5,
@@ -27,7 +27,7 @@ module.exports = {
                 return msg.reply(`Comando Inválido!\nTodos os Comandos: \`${commands.join(", ")}\``)
             }
 
-            if (command == 'manutecao') return msg.reply('Tu tem demência é?????')
+            if (command == 'maintenance') return msg.reply('Tu tem demência é?????')
 
             if (["add", "adicionar"].includes(method)) return await addCommand()
             if (["delete", "del", "remover"].includes(method)) return await delCommand()
@@ -57,7 +57,7 @@ module.exports = {
                     { id: client.user.id },
                     { $pull: { commandsMan: { name: command } } }
                 )
-                return msg.reply(`Suceso!\no Comando \`${command}\` foi removido da lista de manuteção!`)
+                return msg.reply(`Suceso!\nO comando \`${command}\` foi removido da lista de manuteção!`)
             }
 
             async function deleteCommands() {

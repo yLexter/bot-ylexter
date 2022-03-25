@@ -8,18 +8,20 @@ module.exports = {
   execute: async (client, msg, args, cor) => {
 
     try {
-      var string = ``
+      let string = ``
       const s = args.join(" ")
-      const info = client.commands.find(y => y.name == s.toLowerCase()) || client.commands.find(x => x.aliase.find(y => y.toLowerCase() == s.toLowerCase()))
+      const allCommands = client.commands.filter(x => { return x.type != 'ownerBot' })
+      const info = allCommands.find(y => y.name == s.toLowerCase()) || allCommands.find(x => x.aliase.find(y => y.toLowerCase() == s.toLowerCase()))
+      const ordenados = agruparPor(allCommands, 'type')
+
       if (info) {
         const cdCommand = info.cooldown || process.env.cdCmd
-        const stringAliase = info.aliase.length > 0 ? info.aliase.map((element, index, array) => {
-          return index == array.length - 1 ? `${element}.` : `${element}, `
-        }).join("") : 'Não Definido'
+        const stringAliase = info.aliase.length > 0 ? info.aliase.join(", ") : 'Não Definido'
+        const usage = info.usage || `<Comando>`
         const helpMsg = new MessageEmbed()
           .setColor(cor)
-          .setAuthor({ name: ' | 🛠️ Commands: ', iconURL: msg.author.displayAvatarURL() })
-          .setDescription(`**Comando:**  \`${info.name}\` \n**Descrição:** \`${info.help}\`\n**Aliase's:**  \`${stringAliase}\`\n**Cooldown:** \`${cdCommand}\``)
+          .setAuthor({ name: ' | 🛠️ Informação do Comando', iconURL: msg.author.displayAvatarURL() })
+          .setDescription(`**Comando **\`${info.name}\`\n**Descrição ** \`${info.help}\`\n **Usage ** \`${usage}\`\n  **Aliase's **  \`${stringAliase}\`\n**Cooldown ** \`${cdCommand}\``)
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
@@ -33,8 +35,6 @@ module.exports = {
           return acc;
         }, {});
       }
-
-      let ordenados = agruparPor(client.commands, 'type')
 
       for (x in ordenados) {
         let key = ordenados[x]
@@ -58,7 +58,7 @@ module.exports = {
         .setColor(cor)
         .setAuthor({ name: ' | 🛠️ Commands', iconURL: msg.author.displayAvatarURL() })
         .setDescription(string)
-        .setFooter({ text: 'Detalhes do comando , Use help + <comando>.' })
+        .setFooter({ text: 'Detalhes do comando, use help + <comando>.' })
       return msg.channel.send({ embeds: [helpMsg] })
 
     } catch (e) { msg.channel.send(`\`${e}\``) }

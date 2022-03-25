@@ -4,6 +4,7 @@ module.exports = {
   name: "queue",
   help: "Mostra as músicas da fila",
   type: 'music',
+  cooldown: 20,
   aliase: [],
   execute: async (client, msg, args, cor) => {
 

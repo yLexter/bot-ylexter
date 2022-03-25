@@ -1,5 +1,5 @@
 let { MessageEmbed, MessageCollector } = require("discord.js");
-const config = require("./palavras.json");
+const config = require("../../Jsons/palavras.json");
 const wait = require('util').promisify(setTimeout);
 
 module.exports = {
@@ -95,7 +95,7 @@ module.exports = {
           { name: '**Como entrar no jogo**', value: 'Digite: !join' },
           { name: '**Vencedor**', value: 'Padrão - 3pts' },
           { name: '**Quantidade Minima de jogadores**', value: '2' },
-          { name: '**Início**', value: 'O Dono do game tem 5min para startar ou o jogo será cancelado.' },
+          { name: '**Início**', value: 'O Dono do game tem 5min para startar ou o jogo será cancelado. || Use !start para começar.' },
           { name: 'Dono', value: `O dono do jogo é o <@${shuffle.owner}> , Portanto só ele que poderá startar o game e todas as configurações é ele que define.` },
           { name: "Configs", value: 'Ao dono do game , utilize: `Comando + configs` para ver as configs disponiveis ' }
         )

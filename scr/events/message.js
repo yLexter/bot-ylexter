@@ -38,8 +38,8 @@ module.exports = {
       const idChannel = dados.channelMusic || null
       const defaultTimeCD = command.cooldown || Number(process.env.cdCmd)
       const commandCooldown = `${msg.guild.id}-${command.name}`
+      const cdCommand = cooldown.get(commandCooldown)
       const data = await Database.client.findOne({ id: client.user.id })
-
       const typesCommands = {
         music,
         admin,
@@ -57,27 +57,23 @@ module.exports = {
       }
 
       function executeCommand() {
-        const cdCommand = cooldown.get(commandCooldown)
         const commandMan = data?.commandsMan?.find(x => { return x.name == command.name })
-
         if (data?.blacklist?.Users.some(x => x.id == msg.author.id)) return;
         if (data?.blacklist?.Guilds.some(x => x.id == msg.guild.id)) return msg.guild.leave();
 
         if (cdCommand) {
           const time = defaultTimeCD - Math.floor(Date.now() / 1000 - cdCommand) || '??'
-          return msg.reply({ content: `⏰| **Este comando está em Cooldown , Aguarde \`${time}s.\`**` }).catch(() => { })
+          return msg.reply({ content: `⏰| **Este comando está em cooldown, aguarde \`${time}s.\`**` }).catch(() => { })
         }
 
         if (commandMan) {
           return msg.reply(`**⚠️| Este comando está em manutenção , desculpe.\nMotivo \`${commandMan.reason}\`** `)
         }
-
         if (command.onlyOwner) {
           let dono = msg.guild.ownerID == msg.author.id
           if (!dono) return;
           return executeCmd();
         }
-
         return executeCmd()
       }
 
@@ -90,7 +86,7 @@ module.exports = {
           let queue = client.queues.get(msg.member.guild.id);
           if (queue) {
             if (queue.dispatcher._state.status == 'idle') return;
-            return queue.connection.joinConfig.channelId == msg.member.voice.channel.id ? executeCommand() : null
+            return queue?.connection?.joinConfig.channelId == msg.member?.voice?.channel?.id ? executeCommand() : null
           }
           return executeCommand()
         } else {

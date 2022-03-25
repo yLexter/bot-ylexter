@@ -5,7 +5,7 @@ module.exports = {
     name: "nextseason",
     help: "Mostra a lista dos animes da próxima temporada.",
     type: "anime",
-    cooldown: 20,
+    cooldown: 40,
     aliase: ["snext"],
     execute: async (client, msg, args, cor) => {
 

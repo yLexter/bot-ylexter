@@ -6,6 +6,7 @@ module.exports = {
     name: "jogodavelha",
     help: "Jogo da Velha Tradicional.",
     aliase: ['velha'],
+    usage: '<Comando> + <Menção ao user ou ID>',
     type: "fun",
     execute: async (client, msg, args, cor) => {
 

@@ -5,6 +5,7 @@ module.exports = {
   name: "remove",
   help: "Remove uma música desejada da queue",
   type: 'music',
+  usage: '<Comando> + <Posição da música> || Ex: remove 10, remove a 10° música.',
   aliase: [],
   execute: async (client, msg, args, cor) => {
 

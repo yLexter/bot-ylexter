@@ -2,6 +2,7 @@ module.exports = {
   name: "say",
   help: "Cores: [ red , yellow ,  green , blue , orange , black , darkblue ] |  Use: say + cor + mensagem , para digitar colorido.",
   type: "fun",
+  usage: '<Comando> + <Texto para o bot  falar>',
   aliase: [],
   execute: (client, msg, args, cor) => {
     try {

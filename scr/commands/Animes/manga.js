@@ -5,6 +5,7 @@ module.exports = {
     name: "manga",
     help: "Faz uma busca por um mangá",
     type: "anime",
+    usage: '<Comando> + <Nome do mangá>',
     cooldown: 10,
     aliase: [],
     execute: async (client, msg, args, cor) => {

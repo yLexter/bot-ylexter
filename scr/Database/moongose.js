@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 class DatabaseClass {
 
     constructor() {
-        this.modelGuild = require("./Shemas/Guild")
-        this.modelUser = require("./Shemas/user")
+        this.guild = require("./Shemas/Guild")
+        this.user = require("./Shemas/user")
         this.client = require('./Shemas/client')
     }
 
@@ -16,19 +16,19 @@ class DatabaseClass {
 
     async fecthGuild(client, msg) {
 
-        const guild = await this.modelGuild.findOne({ id: msg.guild.id })
+        const guild = await this.guild.findOne({ id: msg.guild.id })
 
         if (guild) {
             return {
                 "dados": guild,
-                "modelo": this.modelGuild
+                "modelo": this.guild
             }
         } else {
-            const guild = await this.modelGuild.create({ id: msg.guild.id })
+            const guild = await this.guild.create({ id: msg.guild.id })
             await guild.save()
             return {
                 "dados": guild,
-                "modelo": this.modelGuild
+                "modelo": this.guild
             }
         }
 
@@ -36,16 +36,16 @@ class DatabaseClass {
 
     async fecthUser(client, msg) {
 
-        const user = await this.modelUser.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
+        const user = await this.user.findOne({ id: `${msg.guild.id}-${msg.author.id}` })
 
         if (user) {
             return {
                 "dados": user,
-                "modelo": this.modelUser
+                "modelo": this.user
             }
 
         } else {
-            const user = await this.modelUser.create({
+            const user = await this.user.create({
                 id: `${msg.guild.id}-${msg.author.id}`,
                 username: msg.author.username,
                 guildId: msg.guild.id
@@ -54,7 +54,7 @@ class DatabaseClass {
 
             return {
                 "dados": user,
-                "modelo": this.modelUser
+                "modelo": this.user
             }
         }
     }

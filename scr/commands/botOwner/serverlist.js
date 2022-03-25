@@ -42,11 +42,11 @@ module.exports = {
 
             function embedServer(data) {
                 const { name, id, ownerId, memberCount, joinedAt, icon, createdAt } = data
-                const iconGuild = icon ? icon : 'https://spng.pngfind.com/pngs/s/154-1548198_discord-gg-cute-discord-hd-png-download.png'
+                const iconGuild = icon || 'https://spng.pngfind.com/pngs/s/154-1548198_discord-gg-cute-discord-hd-png-download.png'
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setTitle(name)
-                    .setURL(icon)
+                    .setURL(iconGuild)
                     .setThumbnail(iconGuild)
                     .setFields(
                         { name: '🆔 ID do Servidor', value: String(id) },
@@ -55,7 +55,7 @@ module.exports = {
                         { name: '📅 Servidor criado em', value: String(moment(createdAt).format('LLLL')), inline: true },
                         { name: '🔱 Total de Membros', value: `${memberCount}` },
                     ).setAuthor({ name: `| Lista de Servidores. `, iconURL: iconGuild })
-                    .setFooter({ text: ` | Pag: ${contador}/${serverAmount}`, iconURL: iconGuild })
+                    .setFooter({ text: ` | Pag: ${contador + 1}/${serverAmount + 1}`, iconURL: iconGuild })
                 return helpMsg
             }
 
@@ -68,11 +68,11 @@ module.exports = {
                 return msgPrincipal.edit({ embeds: [embedServer(servidor)], components: [row] }).catch(() => { })
             }
 
-            const filter = i => {
-                i.deferUpdate()
-                return msg.author.id == i.user.id
-            }
-            const collector = msgPrincipal.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: finishCommand * 1000 });
+            const collector = msgPrincipal.createMessageComponentCollector({
+                filter: i => { return msg.author.id == i.user.id },
+                componentType: 'BUTTON',
+                time: finishCommand * 1000
+            });
 
             collector.on('collect', i => {
 
@@ -90,6 +90,7 @@ module.exports = {
                 }
 
                 try {
+                    i.deferUpdate()
                     buttons[i.customId]()
                 } catch (e) {
                     console.log(e)

@@ -4,6 +4,7 @@ module.exports = {
     name: "avatar",
     help: "Exibe o seu avatar.",
     type: "others",
+    usage: '<Comando> + <Menção ao User ou ID> || *Para ver o seu, use apenas <Comando>.',
     aliase: [],
     execute: async (client, msg, args, cor) => {
         try {

@@ -5,6 +5,7 @@ module.exports = {
     name: "waifu",
     help: "Mostra uma waifu aleatória",
     type: 'fun',
+    cooldown: 8,
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
@@ -16,7 +17,7 @@ module.exports = {
             const embed = new MessageEmbed()
                 .setImage(url)
                 .setColor(cor)
-                .setTitle(`Você tem ${randomNumero}% de chance de ficar com essa waifu.`)
+                .setDescription(`Você tem ${randomNumero}% de chance de ficar com essa waifu.`)
                 .setAuthor({ name: `| ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
                 .setFooter({ text: `${footer}` })
             return msg.channel.send({ embeds: [embed] })

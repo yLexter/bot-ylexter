@@ -39,7 +39,7 @@ module.exports = {
                 const userBlacklist = data.blacklist.Users.find(x => x.id == userOrServer)
 
                 if (userOrServer.length != 18) return msg.reply('ID inválido , os ID Tem 18 caracteres!')
-                if (client.guilds.cache.get(userOrServer)) return msg.reply('Isto é um ID de um serviidor!')
+                if (client.guilds.cache.get(userOrServer)) return msg.reply('Isto é um ID de um servidor!')
 
                 if (methodsAdd.includes(method)) {
                     if (userBlacklist) return msg.reply('O user já estar na blacklist!');

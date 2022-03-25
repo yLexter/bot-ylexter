@@ -1,11 +1,12 @@
 const translate = require("@iamtraction/google-translate");
 const { MessageEmbed } = require("discord.js");
-const { languages } = require('./../Outros/config_others.json')
+const { languages } = require('../../Jsons/laguages.json')
 
 module.exports = {
     name: "tradutor",
-    help: "Traduz um texto para linguagem que desejar. Exemplo: <comando> pt welcome , traduz welcome pro português.",
+    help: "Traduz um texto para linguagem que desejar.",
     type: "others",
+    usage: '<Comando> + <Linguagem> + <Texto> || Ex: Tradutor pt welcome',
     cooldown: 10,
     aliase: ["tr"],
     execute: async (client, msg, args, cor) => {

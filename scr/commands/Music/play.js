@@ -4,6 +4,7 @@ module.exports = {
     name: "play",
     help: "Reproduz a música desejada no canal atual do usuário",
     type: 'music',
+    usage: '<Comando> + <Pesquisa>',
     aliase: ["p"],
     execute: (client, msg, args, cor) => {
 

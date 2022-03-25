@@ -5,7 +5,7 @@ module.exports = {
     name: "randomanime",
     help: "O Darius irá recomendar um anime para você.",
     type: "anime",
-    cooldown: 10,
+    cooldown: 30,
     aliase: ["ranime"],
     execute: async (client, msg, args, cor) => {
 

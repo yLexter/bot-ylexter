@@ -5,6 +5,7 @@ module.exports = {
     name: "jokenpo",
     help: "Jogo tradicional de pedra, papel e tesoura.",
     type: "fun",
+    usage: '<Comando> + <Menção ao user ou ID>',
     aliase: ["jkp"],
     execute: async (client, msg, args, cor) => {
         try {

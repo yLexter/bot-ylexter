@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Database = require('./../Database/moongose')
-// De Darius | ${prefix}Help
+
 module.exports = {
     name: 'ready',
     once: true,

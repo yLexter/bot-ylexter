@@ -6,7 +6,7 @@ module.exports = {
     help: "Mostra a lista dos Top Animes do MyAnimeList.",
     type: "anime",
     aliase: ["tanimes"],
-    cooldown: 20,
+    cooldown: 30,
     execute: async (client, msg, args, cor) => {
 
         const helpMsg1 = new MessageEmbed()

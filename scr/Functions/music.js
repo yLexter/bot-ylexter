@@ -26,21 +26,25 @@ async function playSong(client, msg, song) {
       icone = msg.author.displayAvatarURL()
     }
 
+    const embedNowPlay = (songNow) => {
+      return new MessageEmbed()
+        .setColor(cor)
+        .setDescription(`[${songNow.title}](${songNow.url}) [${songNow.durationFormatted}]`)
+        .setAuthor({ name: `| 🎶 Tocando Agora`, iconURL: icone })
+    }
+
     if (!song) return stopMusic(client, msg, cor);
 
-    const url = song.url
     const player = createAudioPlayer();
     const stream = await play.stream(song.id)
     const resource = createAudioResource(stream.stream, { inputType: StreamType.Opus });
 
     if (!queue) {
-
       var conn = await joinVoiceChannel({
         channelId: msg.member.voice.channel.id,
         guildId: msg.guild.id,
         adapterCreator: msg.guild.voiceAdapterCreator
       });
-
       queue = {
         volume: 0.2,
         connection: conn,
@@ -51,15 +55,8 @@ async function playSong(client, msg, song) {
         loopQueue: null,
         songPlay: null
       }
-
       client.queues.set(msg.guild.id, queue);
-      const helpMsg = new MessageEmbed()
-        .setColor(cor)
-        .setDescription(`Duração: **${song.durationFormatted}**`)
-        .setTitle(song.title)
-        .setURL(url)
-        .setAuthor({ name: `| 🎶 Tocando Agora`, iconURL: icone })
-      msg.channel.send({ embeds: [helpMsg] })
+      msg.channel.send({ embeds: [embedNowPlay(song)] })
     };
 
     if (queue.loopQueue && queue.songs.length == 1) tocarPlaylist(client, msg, queue.loopQueue);
@@ -73,15 +70,10 @@ async function playSong(client, msg, song) {
       let queue = client.queues.get(msg.guild.id);
       if (!queue.loop) backMusic(client, msg)
 
-      playSong(client, msg, queue.songs[0])
+      const nextSong = queue?.songs[0]
+      playSong(client, msg, nextSong)
       if (queue.songs.length > 0) {
-        let url = queue.songs[0].url
-        const helpMsg = new MessageEmbed()
-          .setColor(cor)
-          .setTitle(`${queue.songs[0].title}`)
-          .setURL(url)
-          .setAuthor({ name: `| 🎶 Tocando Agora`, iconURL: icone })
-        msg.channel.send({ embeds: [helpMsg] })
+        msg.channel.send({ embeds: [embedNowPlay(nextSong)] })
       }
     });
 
@@ -168,7 +160,7 @@ function backMusic(client, msg) {
   } catch (e) { return }
 }
 
-async function textToSeconds(text) {
+async function textToSeconds(minute) {
 
   async function formatar(numeros) {
     const arrayNumeros = numeros.split(":").map(x => {
@@ -185,7 +177,7 @@ async function textToSeconds(text) {
     return arrayNumeros
   }
 
-  const tempo = await formatar(text)
+  const tempo = await formatar(minute)
   const quantidade = tempo.length
 
   const objects = {
@@ -402,7 +394,7 @@ function titulo_formatado(string) {
     "Official", "Video", "Soundtrack",
     "Vídeo", "Clipe", "Lyric", "Lyrics", "VIDEO"
     , "VÍDEO", 'MUSIC', 'OFFICIAL', 'OFICIAL', "Audio", "AUDIO", "Áudio"
-    , "4K", "4k", "CLIPE", "Clipe", "dvd", "clipe"
+    , "4K", "4k", "CLIPE", "Clipe", "dvd", "clipe", "DVD", "Dvd"
   ]
 
   for (x of remover) {
@@ -417,13 +409,10 @@ function PushAndPlaySong(client, msg, cor, song) {
   if (queue) {
     queue.songs.push(song);
     client.queues.set(msg.guild.id, queue);
-    const positionSong = queue.songs.length - 1
     const helpMsg = new MessageEmbed()
       .setColor(cor)
-      .setTitle(`${song.title}`)
-      .setAuthor({ name: `| 🎶 Adicionado a queue na ${positionSong}° posição.`, iconURL: msg.author.displayAvatarURL() })
-      .setURL(song.url)
-      .setDescription(`Duração: **${song.durationFormatted}**`)
+      .setAuthor({ name: `| 🎶 Adicionado a ${queue.songs.length - 1}° posição da queue.`, iconURL: msg.author.displayAvatarURL() })
+      .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
     return msg.channel.send({ embeds: [helpMsg] })
   } else return playSong(client, msg, song);
 }
@@ -447,10 +436,7 @@ function musicVetor(client, msg) {
 
   barraMusic.splice(positionBola, 0, emoji)
 
-  let musicBar = barraMusic.join("")
-
-  return `${musicBar}\n${emojiPlay}  ${timeFormatado}/${song.durationFormatted}`
-
+  return `${barraMusic.join("")}\n${emojiPlay}  ${timeFormatado}/${song.durationFormatted}`
 
 }
 

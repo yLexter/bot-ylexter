@@ -5,6 +5,7 @@ module.exports = {
     help: "Procura uma música da queue",
     type: 'music',
     aliase: ["sch"],
+    usage: '<Comando> + <Pesquisa>',
     execute: async (client, msg, args, cor) => {
 
         const { stopMusic } = client.music

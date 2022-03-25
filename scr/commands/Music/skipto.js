@@ -4,6 +4,7 @@ module.exports = {
   name: "skipto",
   help: "	Pula para uma determinada música na fila de músicas",
   type: 'music',
+  usage: '<Comando> + <Posição da música> || Ex: skipto 10 , Skipa para 10° música.',
   aliase: ['skt'],
   execute: (client, msg, args, cor) => {
 

@@ -12,9 +12,10 @@ const play = require('play-dl')
 
 module.exports = {
     name: "seek",
-    help: "Avança ou retrocede para minutagem desejada , use Horas:Minutos:Segundos",
+    help: "Avança ou retrocede para minutagem desejada.",
     type: "music",
-    cooldown: 4,
+    cooldown: 5,
+    usage: '<Comando> + <Minutagem> || Ex: seek 1:00',
     aliase: [],
     execute: async (client, msg, args, cor) => {
 

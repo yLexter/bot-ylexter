@@ -1,21 +1,19 @@
 const { MessageEmbed } = require("discord.js");
-const mongoose = require('mongoose');
 const moment = require('moment');
 const Database = require('../../Database/moongose')
+moment.locale('pt-br');
 
 module.exports = {
   name: "kick",
-  help: "Kicka um usuário do servidor , use: @user + Reason",
+  help: "Kicka um usuário do servidor.",
   aliase: ['kck'],
+  usage: '<Comando> + <Menção ao user ou ID> + <Motivo: Opcional>',
   type: "admin",
   execute: async (client, msg, args, cor) => {
-   
+
     try {
-      const local = moment.locale('pt-br');
-      const memberM = msg.mentions.members.first()
+      const memberM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
       const reason = args.slice(1).join(' ');
-      const data = moment().format("LLLL")
-      const { modelo, dados } = await Database.fecthGuild(client, msg)
 
       if (!memberM || !reason) {
         const helpMsg = new MessageEmbed()
@@ -28,24 +26,23 @@ module.exports = {
       try {
         await memberM.kick(reason)
       } catch (e) {
-        return msg.reply({ content: 'Não consigo Kickar este user.'})
+        return msg.reply({ content: 'Não consigo Kickar este user.\nTalvez ele tenha mais permissão que eu.' })
       }
 
       let objectBan = {
         logid: "kick",
-        idGuild: `${msg.guild.id}-${memberM.user.id}`,
         autor: msg.author.tag,
-        nome: `${memberM.user.username}#${memberM.user.discriminator}`,
+        nome: `${memberM.user.tag}`,
         id: memberM.user.id,
         motivo: reason,
-        data: data
+        data: moment(Date.now()).format("LLLL")
       }
 
-      await modelo.findOneAndUpdate({ id: msg.guild.id }, { $push: { logs: objectBan } })
+      await Database.guild.findOneAndUpdate({ id: msg.guild.id }, { $push: { logs: objectBan } })
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
-        .setDescription(`O user **${memberM.user.username}#${memberM.user.discriminator}** foi banido com sucesso.`)
+        .setDescription(`O membro \`${memberM.user.tag}\` foi kickado com sucesso.`)
         .setAuthor({ name: `| ✔️ | Sucesso `, iconURL: msg.author.displayAvatarURL() })
       return msg.channel.send({ embeds: [helpMsg] })
     } catch (e) { msg.channel.send(`\`${e}\``) }

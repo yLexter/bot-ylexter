@@ -2,8 +2,9 @@ const { MessageEmbed } = require("discord.js");
 
 module.exports = {
     name: "move",
-    help: "Move uma música para determinada posição da fila , Use 2 número , o que quer mover e a nova posição.",
+    help: "Move uma música para determinada posição da fila.",
     type: 'music',
+    usage: '<Comando> + <Posição da Música que deseja mover> + <Nova Posiçãp> || Ex: move 10 5, muda a 10° música para 5° posição.',
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
@@ -11,8 +12,8 @@ module.exports = {
 
         try {
             const queue = client.queues.get(msg.guild.id);
-            const posicaoSong = Math.floor(Number(args[0]))
-            const newPosicaoSong = Math.floor(Number(args[1]))
+            const posicaoSong = Math.abs(Math.floor(Number(args[0])))
+            const newPosicaoSong = Math.abs(Math.floor(Number(args[1])))
 
             if (!queue || posicaoSong == 0 || isNaN(posicaoSong) || isNaN(newPosicaoSong) || !queue.songs[posicaoSong] || newPosicaoSong <= 0) {
                 const helpMsg = new MessageEmbed()

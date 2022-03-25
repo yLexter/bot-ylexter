@@ -4,7 +4,7 @@ module.exports = {
     name: "calculadora",
     help: "Calculadora tradicional.",
     type: "others",
-    cooldown: 50,
+    cooldown: 60,
     aliase: ["calc"],
     execute: async (client, msg, args, cor) => {
         try {
@@ -53,6 +53,7 @@ module.exports = {
             let values = ['0']
             const finishCommmand = 120
             const operations = ['*', '/', '+', '-']
+            const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
             const msgPrincipal = await msg.channel.send({ embeds: [embed('0')], components: generateComponents() })
             const editMsg = (valor) => {
                 return msgPrincipal.edit({ embeds: [embed(valor)], components: generateComponents() })
@@ -83,7 +84,9 @@ module.exports = {
                         return editMsgAndPushValue(inputUser)
                     }
 
-                    if (values.length == 1 && values[0] == '0') values.pop();
+                    if (values.length == 1 && values[0] == '0' && checkInput(numbers)) {
+                        values.pop();
+                    }
 
                     let buttons = {
                         '.': () => {

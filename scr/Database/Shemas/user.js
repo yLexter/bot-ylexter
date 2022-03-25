@@ -1,37 +1,20 @@
 const mongoose = require('mongoose');
 
 const schemaUser = new mongoose.Schema({
-
-    id: {
-        type: String,
-        required: true
-    },
-
-    guildId: {
-        type: String,
-        required: true
-    },
-
+    id: { type: String, required: true },
+    guildId: { type: String, required: true },
     username: String,
-
     warns: {
-        type: Array,
-        default: []
+        type: Array, default: []
     },
-
     xp: {
-        type: Number,
-        default: 1000
+        type: Number, default: 1000
     },
-
     minigames: {
-        type: Object,
-        default: {}
+        type: Object, default: {}
     },
-
     outros: {
-        type: Array
-        , default: []
+        type: Array, default: []
     }
 })
 

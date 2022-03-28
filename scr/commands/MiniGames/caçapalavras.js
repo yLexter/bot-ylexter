@@ -78,15 +78,17 @@ module.exports = {
                 const alfabeto = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase()
                 const idHorizontal = 'horizontal'
                 const idVertical = 'vertical'
-                const maxCaractere = 25
+                const maxCaractere = 23
                 const structure = getStructure()
                 const structureFillX = getStructure('x')
                 const sizeColumn = Object.keys(structure).length
-                const randomNumber1 = getRandomInt(0, allPalavras.length - 15)
+                const randomNumber1 = getRandomInt(0, allPalavras.length - 20)
                 const palavras = allPalavras
                     .map(x => { return x.toUpperCase() })
-                    .slice(randomNumber1, randomNumber1 + getRandomInt(10, 15))
+                    .slice(randomNumber1, randomNumber1 + getRandomInt(10, 20))
                 const positionWords = []
+
+                console.log(palavras)
 
 
                 function getRandomCaractere() {
@@ -122,8 +124,6 @@ module.exports = {
                         "20": [],
                         "21": [],
                         "22": [],
-                        "23": [],
-                        "24": [],
                     }
                     for (indice in colunas) {
                         let colunaAtual = colunas[indice]
@@ -131,7 +131,7 @@ module.exports = {
                             let fill = element || getRandomCaractere()
                             colunaAtual.push(fill)
                             if (x == maxCaractere - 1) {
-                                colunaAtual.push('\n')
+                                colunaAtual.push('    \n')
                             }
                         }
                     }
@@ -258,7 +258,7 @@ module.exports = {
                             const equivalentColumn = positionWords
                                 .filter(x => { return x.type == idVertical && x.firstPosition == position })
 
-                            if (column - word.length < 0 || position + word.length > sizeColumn) return true
+                            if (column - word.length < 0 || column + word.length > sizeColumn || position > maxCaractere) return true
 
                             for (element of equivalentColumn) {
                                 for (x = column; x <= column + word.length; x++) {

@@ -1,11 +1,9 @@
 const { logs } = require("../Jsons/config.json")
 const { MessageEmbed } = require("discord.js");
 const moment = require('moment')
-const mongoose = require('mongoose');
-const Database = require('./../Database/moongose')
 
 module.exports = {
-    name: 'guildDelete',
+    name: 'guildCreate',
     once: false,
     execute: async (client, guild) => {
 
@@ -24,13 +22,11 @@ module.exports = {
                     { name: '📅 Servidor criado em', value: String(moment(createdAt).format('LLLL')), inline: true },
                     { name: '🔱 Total de Membros', value: `${memberCount}` },
                 ).setAuthor({ name: `| ${name}`, iconURL: iconGuild })
-                .setFooter({ text: 'Type: GuildRemove', iconURL: iconGuild })
+                .setFooter({ text: 'Type: GuildAdd', iconURL: iconGuild })
             return helpMsg
         }
 
         client.channels.cache.get(logs.guilds).send({ embeds: [embedServer(guild)] })
-
-        await Database.guild.findOneAndDelete({ id: guild.id })
 
     }
 }

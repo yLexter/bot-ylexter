@@ -67,7 +67,8 @@ module.exports = {
                 const guildBlacklist = data.blacklist.Guilds.find(x => x.id == userOrServer)
 
                 if (userOrServer.length != 18) return msg.reply('ID inválido , os ID Tem 18 caracteres!')
-
+                if (client.users.cache.get(userOrServer)) return msg.reply('Isto é um ID de um user!')
+                
                 if (methodsAdd.includes(method)) {
                     if (guildBlacklist) return msg.reply('a Guild já estar na blacklist!')
                     await Database.client.findOneAndUpdate(
@@ -75,9 +76,7 @@ module.exports = {
                         { $push: { 'blacklist.Guilds': logBlacklist('Guild') } }
                     )
                     return msg.reply(`A guild foi adicionado na blacklist com sucesso!`)
-
                 }
-
                 if (methodsDelet.includes(method)) {
                     if (!guildBlacklist) return msg.reply('a Guild não estar na blacklist!')
                     await Database.client.findOneAndUpdate(

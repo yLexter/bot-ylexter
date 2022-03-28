@@ -9,6 +9,7 @@ module.exports = {
 
         try {
             await msg.channel.permissionOverwrites.edit(msg.guild.id, { SEND_MESSAGES: true })
+            msg.delete().catch(() => {})
             const embed = new MessageEmbed()
                 .setColor(cor)
                 .setDescription(`>>> 🔓| Este canal foi desbloqueado por **${msg.author.tag}.**`)

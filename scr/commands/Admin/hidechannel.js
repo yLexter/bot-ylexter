@@ -11,6 +11,7 @@ module.exports = {
         try {
             const reason = args.join(' ') || 'Não Informado.'
             await msg.channel.permissionOverwrites.edit(msg.guild.id, { VIEW_CHANNEL: false })
+            msg.delete().catch(() => {})
             const embed = new MessageEmbed()
                 .setColor(cor)
                 .setDescription(`>>> 🔒| Este canal foi bloqueado de ser visto por **${msg.author.tag}.**\nMotivo \`${reason}\``)

@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { cdCmd } = require("../../Jsons/config.json")
 
 module.exports = {
   name: "help",
@@ -15,7 +16,7 @@ module.exports = {
       const ordenados = agruparPor(allCommands, 'type')
 
       if (info) {
-        const cdCommand = info.cooldown || process.env.cdCmd
+        const cdCommand = info.cooldown || cdCmd
         const stringAliase = info.aliase.length > 0 ? info.aliase.join(", ") : 'Não Definido'
         const usage = info.usage || `<Comando>`
         const helpMsg = new MessageEmbed()

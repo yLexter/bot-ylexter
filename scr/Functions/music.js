@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { getData, getTracks } = require('spotify-url-info');
 const YouTube = require("youtube-sr").default;
+const Utils = require("./Utils")
 const play = require('play-dl')
 const {
   AudioPlayerStatus,
@@ -9,6 +10,53 @@ const {
   createAudioResource,
   joinVoiceChannel,
 } = require('@discordjs/voice');
+
+async function soundCloudSearch(client, msg, item) {
+  const data = await play.soundcloud(item)
+  const { type, name, url, durationInMs, durationInSec, user, tracksCount } = data
+  const typesData = {
+    'track': () => {
+      return {
+        id: url,
+        title: name,
+        url: item,
+        type,
+        duration: durationInMs,
+        durationFormatted: Utils.secondsToText(durationInSec)
+      }
+    },
+    'playlist': async () => {
+      const tracks = await data.all_tracks()
+      console.log(tracks)
+
+      const songs = tracks.map(song => {
+        const { id, name, durationInMs } = song
+        return {
+          id: `https://api.soundcloud.com/tracks/${id}`,
+          title: name || '??',
+          url: item,
+          duration: durationInMs || 0,
+          durationFormatted: durationInMs ? Utils.secondsToText(durationInMs / 1000) : '00:00'
+        }
+      })
+      return {
+        type,
+        owner: {
+          name: user.name,
+          url: user.url
+        },
+        playlist: {
+          name,
+          url: item,
+        },
+        songs,
+        total: tracksCount,
+        totalDuration: Utils.secondsToText(durationInSec)
+      }
+    }
+  }
+  return typesData[type]()
+}
 
 async function playSong(client, msg, song) {
 
@@ -37,7 +85,7 @@ async function playSong(client, msg, song) {
 
     const player = createAudioPlayer();
     const stream = await play.stream(song.id)
-    const resource = createAudioResource(stream.stream, { inputType: StreamType.Opus });
+    const resource = createAudioResource(stream.stream, { inputType: stream.type });
 
     if (!queue) {
       var conn = await joinVoiceChannel({
@@ -53,10 +101,11 @@ async function playSong(client, msg, song) {
         loop: null,
         back: null,
         loopQueue: null,
-        songPlay: null
+        songPlay: null,
+        message: null
       }
+      queue.message = await msg.channel.send({ embeds: [embedNowPlay(song)] })
       client.queues.set(msg.guild.id, queue);
-      msg.channel.send({ embeds: [embedNowPlay(song)] })
     };
 
     if (queue.loopQueue && queue.songs.length == 1) tocarPlaylist(client, msg, queue.loopQueue);
@@ -66,14 +115,17 @@ async function playSong(client, msg, song) {
     queue.dispatcher = player
     queue.songPlay = Date.now()
 
-    player.on(AudioPlayerStatus.Idle, () => {
+    player.on(AudioPlayerStatus.Idle, async () => {
       let queue = client.queues.get(msg.guild.id);
       if (!queue.loop) backMusic(client, msg)
 
       const nextSong = queue?.songs[0]
+      queue.message.delete().catch(() => { })
+
       playSong(client, msg, nextSong)
       if (queue.songs.length > 0) {
-        msg.channel.send({ embeds: [embedNowPlay(nextSong)] })
+        queue.message = await msg.channel.send({ embeds: [embedNowPlay(nextSong)] })
+        client.queues.set(msg.guild.id, queue);
       }
     });
 
@@ -130,24 +182,6 @@ async function tocarPlaylist(client, msg, item) {
   } catch (e) { return }
 }
 
-function secondsToText(segundos) {
-  dia = Math.floor(segundos / 86400)
-  restoDia = Math.floor(segundos % 86400)
-  horas = Math.floor(restoDia / 3600)
-  restoHoras = Math.floor(restoDia % 3600)
-  minutos = Math.floor(restoHoras / 60)
-  seconds = restoHoras % 60
-  capsula = [dia, horas, minutos, seconds]
-
-  let capsula2 = capsula.map(item => {
-    return item < 10 ? item = `0${item}` : item
-  })
-
-  if (capsula2[0] == '00') capsula2.shift();
-  if (capsula2[0] == '00') capsula2.shift();
-  return capsula2.join(':')
-}
-
 function backMusic(client, msg) {
   try {
     let queue = client.queues.get(msg.member.guild.id)
@@ -158,55 +192,6 @@ function backMusic(client, msg) {
       return saved
     }
   } catch (e) { return }
-}
-
-async function textToSeconds(minute) {
-
-  async function formatar(numeros) {
-    const arrayNumeros = numeros.split(":").map(x => {
-      let number = Number(x)
-      if (isNaN(number)) throw new Error('Use Horas:Minutos:Segundos.');
-      return Math.floor(Math.abs(number))
-    })
-
-    for (let x = 0; x < arrayNumeros.length;) {
-      if (arrayNumeros[x] === 0) {
-        arrayNumeros.shift()
-      } else { break }
-    }
-    return arrayNumeros
-  }
-
-  const tempo = await formatar(minute)
-  const quantidade = tempo.length
-
-  const objects = {
-    '0': () => {
-      return 0
-    },
-    '1': () => {
-      const segundos = tempo[0]
-      if (segundos > 59) throw new Error('Número Invalido')
-      return segundos
-    },
-    '2': () => {
-      const minutos = tempo[0]
-      const segundos = tempo[1]
-      if (segundos > 59 || minutos > 59) throw new Error('Número Invalido')
-      return minutos * 60 + segundos
-    },
-    '3': () => {
-      const horas = tempo[0]
-      const minutos = tempo[1]
-      const segundos = tempo[2]
-      if (segundos > 59 || minutos > 59 || horas > 23) throw new Error('Número Invalido')
-      return horas * 60 * 60 + minutos * 60 + segundos
-    }
-  }
-
-  if (!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');
-  return await objects[quantidade]()
-
 }
 
 async function spotifySearch(client, msg, list) {
@@ -229,7 +214,7 @@ async function spotifySearch(client, msg, list) {
         title: name,
         type: 'track',
         url: external_urls.spotify,
-        durationFormatted: secondsToText(duration_ms / 1000),
+        durationFormatted: Utils.secondsToText(duration_ms / 1000),
         id: msc.id,
         duration: duration_ms
       }
@@ -250,7 +235,7 @@ async function spotifySearch(client, msg, list) {
         return {
           title: name,
           url: external_urls.spotify,
-          durationFormatted: secondsToText(duration_ms / 1000),
+          durationFormatted: Utils.secondsToText(duration_ms / 1000),
           duration: duration_ms,
           id: result_final[y].id
         }
@@ -269,7 +254,7 @@ async function spotifySearch(client, msg, list) {
         type: type,
         likes: followers.total,
         total: tracks.total,
-        duration: secondsToText(durationTotal / 1000),
+        duration: Utils.secondsToText(durationTotal / 1000),
         images: images
       }
     },
@@ -295,7 +280,7 @@ async function spotifySearch(client, msg, list) {
         return {
           title: name,
           url: external_urls.spotify,
-          durationFormatted: secondsToText(duration_ms / 1000),
+          durationFormatted: Utils.secondsToText(duration_ms / 1000),
           duration: duration_ms,
           id: resultSongsYt[y].id
         }
@@ -309,7 +294,7 @@ async function spotifySearch(client, msg, list) {
         url: external_urls.spotify,
         images,
         songs,
-        duration: secondsToText(durationTotal / 1000),
+        duration: Utils.secondsToText(durationTotal / 1000),
       }
     }
   }
@@ -430,7 +415,7 @@ function musicVetor(client, msg) {
   const songPaused = queue.dispatcher._state.status == 'paused'
   const song = queue.songs[0]
   const time = songPaused ? Math.floor(queue.songPlay / 1000) : Math.floor((Date.now() - queue.songPlay) / 1000)
-  const timeFormatado = secondsToText(time)
+  const timeFormatado = Utils.secondsToText(time)
   const positionBola = Math.floor(time / (song.duration / (1000 * maxBarrinha)))
   const emojiPlay = songPaused ? '▶️' : '⏸'
 
@@ -445,12 +430,11 @@ module.exports = {
   ytPlaylist,
   stopMusic,
   tocarPlaylist,
-  secondsToText,
   backMusic,
-  textToSeconds,
   spotifySearch,
   playSong,
   titulo_formatado,
   PushAndPlaySong,
-  musicVetor
+  musicVetor,
+  soundCloudSearch
 }

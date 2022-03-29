@@ -1,4 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { secondsToText } = require("../../Functions/Utils")
 
 module.exports = {
   name: "queue",
@@ -8,7 +9,7 @@ module.exports = {
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
-    const { secondsToText , musicVetor } = client.music
+    const { musicVetor } = client.music
 
     try {
       const queue = client.queues.get(msg.member.guild.id);

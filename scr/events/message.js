@@ -2,6 +2,7 @@ const { MessageEmbed, Permissions } = require("discord.js");
 const Database = require("../Database/moongose")
 const cooldown = new Map();
 const cor = process.env.COR
+const config = require("./../Jsons/config.json")
 
 module.exports = {
   name: 'messageCreate',
@@ -31,12 +32,12 @@ module.exports = {
 
       const args = msg.content.slice(prefixBot.length).split(" ")
       const commandName = args.shift().toLowerCase()
-      const command = client.commands.get(commandName) ? client.commands.get(commandName) : client.commands.find(x => x.aliase.find(y => y == commandName))
+      const command = client.commands.get(commandName) || client.commands.find(x => x.aliase.find(y => y == commandName))
 
       if (!command) return;
 
       const idChannel = dados.channelMusic || null
-      const defaultTimeCD = command.cooldown || Number(process.env.cdCmd)
+      const defaultTimeCD = command.cooldown || Number(config.cdCmd)
       const commandCooldown = `${msg.guild.id}-${command.name}`
       const cdCommand = cooldown.get(commandCooldown)
       const data = await Database.client.findOne({ id: client.user.id })
@@ -78,7 +79,7 @@ module.exports = {
       }
 
       function ownerBot() {
-        if (msg.author.id == process.env.ownerBotId) return executeCommand();
+        if (msg.author.id == config.ownerBotId) return executeCommand();
       }
 
       async function music() {

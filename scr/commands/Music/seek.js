@@ -7,6 +7,7 @@ const {
     joinVoiceChannel,
 } = require('@discordjs/voice');
 
+const Utils = require("../../Functions/Utils")
 const Youtube = require("youtube-sr").default;
 const play = require('play-dl')
 
@@ -18,8 +19,6 @@ module.exports = {
     usage: '<Comando> + <Minutagem> || Ex: seek 1:00',
     aliase: [],
     execute: async (client, msg, args, cor) => {
-
-        const { textToSeconds } = client.music
 
         try {
             const queue = client.queues.get(msg.guild.id);
@@ -37,13 +36,13 @@ module.exports = {
                 .setAuthor({ name: `| Seeking... `, iconURL: msg.author.displayAvatarURL() })
             var msgPrincipal = await msg.channel.send({ embeds: [helpMsg] })
 
-            const secondsFinal = await textToSeconds(args[0])
+            const secondsFinal = await Utils.textToSeconds(args[0])
             const song = queue.songs[0]
 
             if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
 
-            const stream = await play.stream(song.id, { seek: secondsFinal, quality: 3 })
-            const resource = await createAudioResource(stream.stream, { inputType: StreamType.Opus });
+            const stream = await play.stream(song.id, { seek: secondsFinal })
+            const resource = createAudioResource(stream.stream, { inputType: stream.type });
             queue.dispatcher.play(resource);
             queue.connection.subscribe(queue.dispatcher)
             queue.songPlay = Date.now() - secondsFinal * 1000

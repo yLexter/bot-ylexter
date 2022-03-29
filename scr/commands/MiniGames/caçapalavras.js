@@ -2,6 +2,7 @@ const { MessageEmbed } = require("discord.js");
 const games = new Map();
 const wait = require('util').promisify(setTimeout);
 const allPalavras = require("../../Jsons/caçapalavras.json").palavras
+const { secondsToText } = require("../../Functions/Utils")
 
 module.exports = {
     name: "caçapalavras",
@@ -12,7 +13,6 @@ module.exports = {
     execute: async (client, msg, args, cor) => {
         try {
 
-            const { secondsToText } = client.music
             const game = games.get(msg.author.id)
             const invativity = 2
             const timeToStart = 10
@@ -87,9 +87,6 @@ module.exports = {
                     .map(x => { return x.toUpperCase() })
                     .slice(randomNumber1, randomNumber1 + getRandomInt(10, 20))
                 const positionWords = []
-
-                console.log(palavras)
-
 
                 function getRandomCaractere() {
                     return alfabeto[Math.floor(Math.random() * alfabeto.length)]

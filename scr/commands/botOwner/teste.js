@@ -15,7 +15,6 @@ module.exports = {
       const { getData, getPreview, getTracks } = require('spotify-url-info')
       const fetch = require('node-fetch');
       const play = require('play-dl')
-      const { textToSeconds, secondsToText } = client.music
       const {
          AudioPlayerStatus,
          StreamType,
@@ -28,7 +27,7 @@ module.exports = {
          msg.delete().catch(() => { })
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
          console.log(resultado_ok)
-         const resultado = JSON.stringify(resultado_ok, null, '\t')
+         const resultado = JSON.stringify(resultado_ok, null, '\t').substring(0 , 3000)
 
          const helpMsg = new MessageEmbed()
             .setColor(cor)

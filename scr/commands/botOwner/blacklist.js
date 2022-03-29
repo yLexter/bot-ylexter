@@ -1,6 +1,7 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const Database = require('./../../Database/moongose')
 const moment = require('moment')
+const { ownerBotId } = require("./../../Jsons/config.json")
 
 module.exports = {
     name: "blacklist",
@@ -29,7 +30,7 @@ module.exports = {
 
             if (!method) return msg.reply('Informe um método\nMétodos: Add Ou Delete')
             if (!userOrServer) return msg.reply('Você precisa informar o ID do server ou do User!')
-            if (userOrServer == process.env.ownerBotId) return msg.reply('Tu tem demência seu fdp?')
+            if (userOrServer == ownerBotId) return msg.reply('Tu tem demência seu fdp?')
 
             if (['user', 'membro'].includes(type)) return await blacklistUser()
             if (['guild', 'servidor', 'server'].includes(type)) return await backlistGuild()
@@ -68,7 +69,7 @@ module.exports = {
 
                 if (userOrServer.length != 18) return msg.reply('ID inválido , os ID Tem 18 caracteres!')
                 if (client.users.cache.get(userOrServer)) return msg.reply('Isto é um ID de um user!')
-                
+
                 if (methodsAdd.includes(method)) {
                     if (guildBlacklist) return msg.reply('a Guild já estar na blacklist!')
                     await Database.client.findOneAndUpdate(

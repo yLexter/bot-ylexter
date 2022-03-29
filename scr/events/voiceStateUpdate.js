@@ -7,7 +7,7 @@ module.exports = {
 
         const guild = newState.guild
         const channelBot = guild.me.voice.channel
-        const timeToBack = 10
+        const timeToBack = 60
 
         if (!channelBot) return;
         if (oldState.id == client.user.id && oldState.channelId != newState.channelId) return verifyBotAlone();

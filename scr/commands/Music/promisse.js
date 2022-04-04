@@ -8,27 +8,34 @@ module.exports = {
     aliase: ["prs", "pms"],
     execute: async (client, msg, args, cor) => {
 
-        const { vdSearch, spotifySearch } = client.music
+        const { songSearch } = client.music
 
         try {
-            let queue = client.queues.get(msg.guild.id);
-            const s = args.join(" ")
             const incluso = (x) => { return s.toLowerCase().includes(x) }
-            const spt = incluso("spotify.com/track")
-            const ytb = isNaN(s) && queue.songs.length > 1
+            const queue = client.queues.get(msg.guild.id);
+            const s = args.join(" ")
+            const searchPromisse = isNaN(s)
 
-            if (!queue || incluso("list") && incluso('.com')) {
+            if (!queue || incluso("list") && incluso('.com') || queue.songs.length <= 1) {
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .addFields(
+                        { name: 'Songs', value: 'O Promisse só funciona com mais de 1 música na queue.' },
                         { name: 'Sem músicas:', value: '**Não** existe musicas sendo tocada.' },
                         { name: 'Músicas:', value: 'Quantidade de músicas **insuficiente** para usar o promisse | menor 3.' },
                         { name: "Playlists:", value: "O promissse não aceita playlists de **Spotify** e **Youtube**." })
-                    .setAuthor({ name: `| ❌ Prováveis Erros: `, iconURL: msg.author.displayAvatarURL()})
+                    .setAuthor({ name: `| ❌ Prováveis Erros: `, iconURL: msg.author.displayAvatarURL() })
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            spt ? await searchSP(s) : ytb ? await pesq_yt(s) : await queue_msc(s)
+            searchPromisse ? await promisseSearch(s) : await queuePromisse(s)
+
+            async function promisseSearch(search) {
+                const song = await songSearch(client, msg, search)
+                if (song.type !== 'track') return msg.reply({ content: '❌| O promisse aceita apenas tracks.' })
+                await firstMusic(song)
+                return embed(song)
+            }
 
             async function firstMusic(x) {
                 let queue = client.queues.get(msg.guild.id);
@@ -39,39 +46,22 @@ module.exports = {
                 return client.queues.set(msg.member.guild.id, queue);
             }
 
-            async function pesq_yt(x) {
-                const track = await vdSearch(client, msg, x)
-                embed(track)
-                return firstMusic(track)
-            }
+            async function queuePromisse(number) {
+                let limite = queue?.songs.length - 1
+                let music = queue?.songs[number]
 
-            async function searchSP(x) {
-                const track = await spotifySearch(client, msg, x)
-                embed(track)
-                return firstMusic(track)
-            }
-
-            async function queue_msc(x) {
-                let queue = client.queues.get(msg.guild.id);
-                let limite = queue.songs.length - 1
-                let music = queue.songs[Number(x)]
-
-                if (!music || x <= 1 || queue.songs.length <= 1) {
+                if (!music || number <= 1) {
                     const helpMsg = new MessageEmbed()
                         .setColor(cor)
-                        .addFields(
-                            { name: "Músicas insuficiente ou número", value: '`Número de músicas insuficentes | Menor que 1`' },
-                            { name: 'Numero invalido', value: '`Parâmetro não é um numero inteiro maior que 1`' })
+                        .addFields({ name: 'Numero invalido', value: '`Parâmetro não é um numero inteiro maior que 1`' })
                         .setAuthor({ name: `| Possiveis Erros: `, iconURL: msg.author.displayAvatarURL() })
-                    if (x > limite) helpMsg.addFields({ name: "Número Incorreto", value: ` Você só pode colocar números > **1** e =< **${limite}**.` });
+                    if (number > limite) helpMsg.addFields({ name: "Número Incorreto", value: ` Você só pode colocar números maiores que **1** e menores ou igual a **${limite}**.` });
                     return msg.channel.send({ embeds: [helpMsg] })
-                } else {
-                    embed(queue.songs[x])
-                    await firstMusic(queue.songs[x])
-                    const numero = Number(x) + 1
-                    queue.songs.splice(numero, 1)
-                    return client.queues.set(msg.guild.id, queue)
                 }
+                await firstMusic(music)
+                queue.songs.splice(number + 1, 1)
+                client.queues.set(msg.guild.id, queue)
+                return embed(music)
             }
 
             function embed(song) {
@@ -83,7 +73,7 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-        } catch (e) { return msg.reply({content: '`❌ Ocorreu um erro ao usar o promisse , tente novamente.`'}) };
+        } catch (e) { return msg.reply({ content: '`❌ Ocorreu um erro ao usar o promisse , tente novamente.`' }) };
 
     } // execute end
 }

@@ -12,7 +12,7 @@ module.exports = {
 
         try {
             const jogadasPossiveis = ['1a', '2a', '3a', '1b', '2b', '3b', '1c', '2c', '3c']
-            const timeResponse = 20
+            const timeResponse = 30
             const ladoQuadrado = 300
             const larguraBarra = 10
             const sizeX = 80
@@ -48,9 +48,11 @@ module.exports = {
                 .setFooter({ text: `Tempo parar jogar ${timeResponse}s ou será considerado W.O!` })
             const msgPrincipal = await msg.channel.send({ content: `<@${adversario.user.id}>`, embeds: [helpMsg], components: [row] })
 
-            const filter = i => { return i.user.id == adversario.user.id }
-
-            const collector = msg.channel.createMessageComponentCollector({ filter, time: timeUserAccept * 1000, max: 1 })
+            const collector = msg.channel.createMessageComponentCollector({
+                filter: i => { return i.user.id == adversario.user.id },
+                time: timeUserAccept * 1000,
+                max: 1
+            })
 
             collector.on('collect', async i => {
                 try {
@@ -70,13 +72,11 @@ module.exports = {
             });
 
             collector.on('end', async collected => {
-                if (collected.size == 0) return msgPrincipal.edit({ content: '❌| O Adversário demorou demais parar aceitar o Desafio.', embeds: [], components: [] }).catch(() => { })
+                if (collected.size == 0) return msgPrincipal.edit({ content: `❌| O ${adversario.author} demorou demais parar aceitar o Desafio.`, embeds: [], components: [] }).catch(() => { })
             });
 
-
             async function startGame() {
-                let game = games.get(msg.author.id)
-                if (!game) newGame(msg.author.id, adversario.user.id);
+                newGame(msg.author.id, adversario.user.id);
                 startRodada()
             }
 
@@ -88,31 +88,45 @@ module.exports = {
                     const imagem = new MessageAttachment(canvas.toBuffer(), 'firstImagem.png')
                     var msgSecundaria = await msgPrincipal.edit({ content: `⭕ <@${game.jogadorX}> || ❌ <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>`, files: [imagem], components: [], embeds: [] }).catch(() => { games.delete(msg.author.id) })
 
-                    rodada()
-
-                } catch (e) { games.delete(msg.author.id) }
-
-                function rodada() {
-                    const filter = m => { return buscarPlayer(m.author.id) && jogadasPossiveis.find(x => { return x == m.content.toLowerCase() }) }
-                    const collector = msg.channel.createMessageCollector({ filter, time: timeResponse * 1000 });
+                    const collector = msg.channel.createMessageCollector({
+                        filter: m => { return game.players.includes(m.author.id) && jogadasPossiveis.some(x => { return x == m.content.toLowerCase() }) },
+                        time: 60 * 1000,
+                        idle: timeResponse * 1000
+                    });
 
                     collector.on('collect', async m => {
                         try {
                             let game = games.get(msg.author.id)
                             let { jogadorX, jogadorY, jogadasFeitas } = game
                             const jogadaPlayer = m.content.toLowerCase()
-                            const verifyJogada = jogadasFeitas.find(x => { return x.jogadaFeita == jogadaPlayer })
+                            const jogadaFeita = jogadasPossiveis.find(x => { return x == jogadaPlayer })
 
                             if (m.author.id != game.vez) return m.reply({ content: '⚠️ | Não é sua vez de jogar!' })
-                            if (verifyJogada) return m.reply({ content: '❌| Essa Jogada já foi feita , escolha outra.' })
+                            if (jogadasFeitas.some(x => { return x.jogadaFeita == jogadaPlayer })) return m.reply({ content: '❌| Essa Jogada já foi feita , escolha outra.' })
 
-                            const jogadaFeita = jogadasPossiveis.find(x => { return x == jogadaPlayer })
                             jogadasFeitas.push({ jogador: game.vez, jogadaFeita })
-
                             game.vez == jogadorX ? game.vez = jogadorY : game.vez = jogadorX
-                            games.set(msg.author.id, game)
 
-                            collector.stop()
+                            const oponente = game.vez == game.jogadorX ? game.jogadorY : game.jogadorX
+                            const winner = verifyWinner(oponente)
+                            const imageUpdated = getImageUpdated()
+                            const file = new MessageAttachment(imageUpdated.toBuffer(), 'imagemAtt.png')
+
+                            if (winner) {
+                                games.delete(msg.author.id)
+                                collector.stop()
+                                return msgSecundaria.edit({ content: `🏆 Vencedor\nO <@${oponente}> venceu o jogo da velha!`, files: [file] }).catch(() => { games.delete(msg.author.id) })
+                            }
+
+                            if (game.jogadasFeitas.length == jogadasPossiveis.length) {
+                                games.delete(msg.author.id)
+                                collector.stop()
+                                return msgSecundaria.edit({ content: '**🏆 Velhaa!\nNinguém ganhou o jogo.**', files: [file] }).catch(() => { games.delete(msg.author.id) })
+                            }
+
+                            msgSecundaria.edit({ content: `**⭕ <@${game.jogadorX}> ❌ <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>**`, files: [file] }).catch(() => { games.delete(msg.author.id) })
+                            games.set(msg.author.id, game)
+                            collector.resetTimer()
 
                         } catch (e) { console.log(e), games.delete(msg.author.id), msg.channel.send({ content: '| ❌ Ops ocorreu um Erro Inesperado , o Jogo foi Cancelado , Caso pesista avise ao dono do Bot.' }) }
                     });
@@ -120,37 +134,16 @@ module.exports = {
                     collector.on('end', collected => {
                         try {
                             const game = games.get(msg.author.id)
+                            const oponente = game?.vez == game?.jogadorX ? game?.jogadorY : game?.jogadorX
                             if (!game) return;
-
-                            const oponente = game.vez == game.jogadorX ? game.jogadorY : game.jogadorX
-
-                            if (collected.size == 0) {
-                                games.delete(msg.author.id)
-                                return msgSecundaria.edit({ content: `❌ O jogador <@${game.vez}> demorou muito para responder.\n🏆 Vitória de <@${oponente}>.` }).catch(() => { games.delete(msg.author.id) })
-                            }
-
-                            const winner = verifyWinner(oponente)
-                            const imageUpdated = getImageUpdated()
-                            const file = new MessageAttachment(imageUpdated.toBuffer(), 'imagemAtt.png')
-
-                            if (winner) {
-                                games.delete(msg.author.id)
-                                return msgSecundaria.edit({ content: `🏆 Vencedor\nO <@${oponente}> venceu o jogo da velha!`, files: [file] }).catch(() => { games.delete(msg.author.id) })
-                            }
-
-                            if (game.jogadasFeitas.length == jogadasPossiveis.length) {
-                                games.delete(msg.author.id)
-                                return msgSecundaria.edit({ content: '🏆 Velhaa!\nNinguém ganhou o jogo.', files: [file] }).catch(() => { games.delete(msg.author.id) })
-                            }
-
-                            msgSecundaria.edit({ content: `**⭕ <@${game.jogadorX}> || ❌ <@${game.jogadorY}> \n🔰 A vez de Jogar é de <@${game.vez}>**`, files: [file] }).catch(() => { games.delete(msg.author.id) })
-
-                            return rodada()
-
+                            games.delete(msg.author.id)
+                            return msgSecundaria.edit({ content: `❌ O jogador <@${game.vez}> demorou muito para responder.\n🏆 Vitória de <@${oponente}>.` }).catch(() => { games.delete(msg.author.id) })
                         } catch (e) { games.delete(msg.author.id) }
                     });
 
-                }
+                } catch (e) { games.delete(msg.author.id) }
+
+
 
             }
 
@@ -168,6 +161,7 @@ module.exports = {
 
             function newGame(challenger, challenged) {
                 velha = {
+                    owner: challenger,
                     players: [challenger, challenged],
                     vez: null,
                     jogadasFeitas: [],

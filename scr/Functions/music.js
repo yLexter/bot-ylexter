@@ -11,51 +11,239 @@ const {
   joinVoiceChannel,
 } = require('@discordjs/voice');
 
-async function soundCloudSearch(client, msg, item) {
-  const data = await play.soundcloud(item)
-  const { type, name, url, durationInMs, durationInSec, user, tracksCount } = data
-  const typesData = {
-    'track': () => {
-      return {
-        id: url,
-        title: name,
-        url: item,
-        type,
-        duration: durationInMs,
-        durationFormatted: Utils.secondsToText(durationInSec)
-      }
-    },
-    'playlist': async () => {
-      const tracks = await data.all_tracks()
-      console.log(tracks)
 
-      const songs = tracks.map(song => {
-        const { id, name, durationInMs } = song
+async function songSearch(client, msg, songName) {
+
+  const incluso = item => { return songName.toLowerCase().includes(item) }
+  const spTify = incluso('spotify.com')
+  const sdCloud = incluso('soundcloud.')
+  const ytPlaylist = incluso('list=')
+
+  return spTify ? await spotifySearch() : sdCloud ? await soundCloudSearch() : ytPlaylist ? await ytPlaylistSearch() : await ytVideoSearch()
+
+  async function soundCloudSearch() {
+    const data = await play.soundcloud(songName)
+    const { type, name, url, durationInMs, durationInSec, user, tracksCount } = data
+    const typesData = {
+      'track': () => {
         return {
-          id: `https://api.soundcloud.com/tracks/${id}`,
-          title: name || '??',
-          url: item,
-          duration: durationInMs || 0,
-          durationFormatted: durationInMs ? Utils.secondsToText(durationInMs / 1000) : '00:00'
+          id: url,
+          title: name,
+          url: songName,
+          type,
+          duration: durationInMs,
+          durationFormatted: Utils.secondsToText(durationInSec)
         }
-      })
-      return {
-        type,
-        owner: {
-          name: user.name,
-          url: user.url
-        },
-        playlist: {
-          name,
-          url: item,
-        },
-        songs,
-        total: tracksCount,
-        totalDuration: Utils.secondsToText(durationInSec)
+      },
+      'playlist': async () => {
+        const songs = (await data.all_tracks()).map(song => {
+          const { id, name, durationInMs } = song
+          return {
+            id: `https://api.soundcloud.com/tracks/${id}`,
+            title: name || '??',
+            url: songName,
+            duration: durationInMs || 0,
+            durationFormatted: durationInMs ? Utils.secondsToText(durationInMs / 1000) : '00:00'
+          }
+        })
+        return {
+          type,
+          owner: {
+            name: user.name,
+            url: user.url
+          },
+          playlist: {
+            name,
+            url: songName,
+          },
+          songs,
+          total: tracksCount,
+          totalDuration: Utils.secondsToText(durationInSec)
+        }
       }
     }
+    return typesData[type]()
   }
-  return typesData[type]()
+
+  async function ytVideoSearch() {
+
+    if (songName.includes('youtube.com/watch?')) {
+      var song = await YouTube.getVideo(songName)
+    } else {
+      const busca = await YouTube.search(songName, { limit: 3 })
+      if (busca && !busca.length) throw new Error('Música não encontrada');
+      var song = busca[0]
+    }
+
+    const { id, url, duration, durationFormatted, title } = song
+
+    return {
+      type: 'track',
+      id: id,
+      title: title,
+      url: url,
+      duration: duration,
+      durationFormatted: durationFormatted,
+    }
+
+  }
+
+  async function ytPlaylistSearch() {
+
+    const formatar = songName.split("list=")
+    let idPlaylist = formatar[1]
+    let stringIndex = '&index'
+
+    if (idPlaylist.includes(stringIndex)) {
+      let formatar2 = idPlaylist.split(stringIndex)
+      idPlaylist = formatar2[0]
+    }
+
+    songName = `https://www.youtube.com/playlist?list=${idPlaylist}`
+
+    const lista1 = await YouTube.getPlaylist(songName)
+    const lista2 = await lista1.fetch()
+
+    const songs = lista2.videos.map(x => {
+      const { id, url, duration, durationFormatted, title } = x
+      return {
+        id: id,
+        title: title,
+        url: url,
+        duration: duration,
+        durationFormatted: durationFormatted,
+      }
+    })
+
+    const { title, videoCount, views, channel, url } = lista2
+
+    let string = 0
+    for (drt of songs) {
+      string += drt.duration
+    }
+
+    return {
+      type: 'playlist',
+      title: title,
+      videoCount: videoCount,
+      views: views,
+      channel: channel,
+      url: url,
+      songs: songs,
+      total: string
+    }
+
+  }
+
+  async function spotifySearch() {
+
+    async function search_yt(msc) {
+      const result = await YouTube.search(msc, { limit: 3 })
+      return result[0] ? result[0] : null
+    };
+
+    const spotify = await getTracks(songName)
+    const infoSpotify = await getData(songName)
+
+    const spotifyTypes = {
+      'track': async () => {
+        let titulo = `${spotify[0].name} - ${spotify[0].artists[0].name}`
+        let msc = await search_yt(titulo)
+        if (!msc) throw new Error('Música não Encontrada.');
+        const { name, external_urls, duration_ms } = spotify[0]
+        return {
+          title: name,
+          type: 'track',
+          url: external_urls.spotify,
+          durationFormatted: Utils.secondsToText(duration_ms / 1000),
+          id: msc.id,
+          duration: duration_ms
+        }
+      },
+      'playlist': async () => {
+        const { owner, external_urls, followers, tracks, images, name, type } = infoSpotify
+        const resultado = spotify.map(x => {
+          let titulo = `${x.name} - ${x.artists[0].name}`
+          return search_yt(titulo)
+        });
+
+        let result_final = await Promise.all(resultado)
+        let durationTotal = 0
+
+        const songs = spotify.map((x, y) => {
+          const { name, external_urls, duration_ms } = spotify[y]
+          durationTotal += duration_ms
+          return {
+            title: name,
+            url: external_urls.spotify,
+            durationFormatted: Utils.secondsToText(duration_ms / 1000),
+            duration: duration_ms,
+            id: result_final[y].id
+          }
+        })
+
+        return {
+          playlist: {
+            name: name,
+            url: external_urls.spotify
+          },
+          owner: {
+            name: owner.display_name,
+            url: external_urls.spotify
+          },
+          songs: songs,
+          type: type,
+          likes: followers.total,
+          total: tracks.total,
+          duration: Utils.secondsToText(durationTotal / 1000),
+          images: images
+        }
+      },
+      'album': async () => {
+
+        const { name, external_urls, images, total_tracks, artists } = infoSpotify
+
+        const resultado = spotify.map(x => {
+          let titulo = `${x.name} - ${x.artists[0].name ? x.artists[0].name : ""}`
+          return search_yt(titulo)
+        });
+
+        const artista = artists && artists.length > 0 ? artists.map(x => {
+          return `[${x.name}](${x.external_urls.spotify})`
+        }).join(", ") : '??'
+
+        let resultSongsYt = await Promise.all(resultado)
+        let durationTotal = 0
+
+        const songs = spotify.map((x, y) => {
+          const { name, external_urls, duration_ms } = spotify[y]
+          durationTotal += duration_ms
+          return {
+            title: name,
+            url: external_urls.spotify,
+            durationFormatted: Utils.secondsToText(duration_ms / 1000),
+            duration: duration_ms,
+            id: resultSongsYt[y].id
+          }
+        })
+
+        return {
+          artista,
+          name,
+          type: 'playlist',
+          total: total_tracks,
+          url: external_urls.spotify,
+          images,
+          songs,
+          duration: Utils.secondsToText(durationTotal / 1000),
+        }
+      }
+    }
+
+    return spotifyTypes[infoSpotify.type]()
+
+  }
+
 }
 
 async function playSong(client, msg, song) {
@@ -158,28 +346,22 @@ function stopMusic(client, msg, cor) {
 }
 
 async function tocarPlaylist(client, msg, item) {
-  try {
-    function videosInject(x) {
-      const queue = client.queues.get(msg.guild.id);
-      x.forEach((elemento, indice) => {
-        queue.songs.push(elemento)
-      })
-      client.queues.set(msg.guild.id, queue)
-    }
 
-    const queue = client.queues.get(msg.guild.id);
-    const song = item[0]
+  let queue = client.queues.get(msg.guild.id);
 
-    if (queue) {
-      videosInject(item)
-    } else {
-      await playSong(client, msg, song)
-      videosInject(item)
-      const queue = client.queues.get(msg.guild.id);
-      queue.songs.shift()
-      client.queues.set(msg.guild.id, queue)
-    }
-  } catch (e) { return }
+  function videosInject(playlist) {
+    playlist.forEach(song => { queue.songs.push(song) })
+    client.queues.set(msg.guild.id, queue)
+  }
+
+  if (queue) return videosInject(item);
+
+  await playSong(client, msg, item[0])
+  queue = client.queues.get(msg.guild.id)
+  videosInject(item)
+  queue.songs.shift()
+  client.queues.set(msg.guild.id, queue)
+
 }
 
 function backMusic(client, msg) {
@@ -192,185 +374,6 @@ function backMusic(client, msg) {
       return saved
     }
   } catch (e) { return }
-}
-
-async function spotifySearch(client, msg, list) {
-
-  async function search_yt(msc) {
-    const result = await YouTube.search(msc, { limit: 3 })
-    return result[0] ? result[0] : null
-  };
-
-  const spotify = await getTracks(list)
-  const infoSpotify = await getData(list)
-
-  const spotifyTypes = {
-    'track': async () => {
-      let titulo = `${spotify[0].name} - ${spotify[0].artists[0].name}`
-      let msc = await search_yt(titulo)
-      if (!msc) throw new Error('Música não Encontrada.');
-      const { name, external_urls, duration_ms } = spotify[0]
-      return {
-        title: name,
-        type: 'track',
-        url: external_urls.spotify,
-        durationFormatted: Utils.secondsToText(duration_ms / 1000),
-        id: msc.id,
-        duration: duration_ms
-      }
-    },
-    'playlist': async () => {
-      const { owner, external_urls, followers, tracks, images, name, type } = infoSpotify
-      const resultado = spotify.map(x => {
-        let titulo = `${x.name} - ${x.artists[0].name}`
-        return search_yt(titulo)
-      });
-
-      let result_final = await Promise.all(resultado)
-      let durationTotal = 0
-
-      const songs = spotify.map((x, y) => {
-        const { name, external_urls, duration_ms } = spotify[y]
-        durationTotal += duration_ms
-        return {
-          title: name,
-          url: external_urls.spotify,
-          durationFormatted: Utils.secondsToText(duration_ms / 1000),
-          duration: duration_ms,
-          id: result_final[y].id
-        }
-      })
-
-      return {
-        playlist: {
-          name: name,
-          url: external_urls.spotify
-        },
-        owner: {
-          name: owner.display_name,
-          url: external_urls.spotify
-        },
-        songs: songs,
-        type: type,
-        likes: followers.total,
-        total: tracks.total,
-        duration: Utils.secondsToText(durationTotal / 1000),
-        images: images
-      }
-    },
-    'album': async () => {
-
-      const { name, external_urls, images, type, total_tracks, artists } = infoSpotify
-
-      const resultado = spotify.map(x => {
-        let titulo = `${x.name} - ${x.artists[0].name ? x.artists[0].name : ""}`
-        return search_yt(titulo)
-      });
-
-      const artista = artists && artists.length > 0 ? artists.map((x, y, z) => {
-        return z.length - 1 == y ? `[${x.name}](${x.external_urls.spotify})` : `[${x.name}](${x.external_urls.spotify}), `
-      }) : '??'
-
-      let resultSongsYt = await Promise.all(resultado)
-      let durationTotal = 0
-
-      const songs = spotify.map((x, y) => {
-        const { name, external_urls, duration_ms } = spotify[y]
-        durationTotal += duration_ms
-        return {
-          title: name,
-          url: external_urls.spotify,
-          durationFormatted: Utils.secondsToText(duration_ms / 1000),
-          duration: duration_ms,
-          id: resultSongsYt[y].id
-        }
-      })
-
-      return {
-        artista,
-        name,
-        type,
-        total: total_tracks,
-        url: external_urls.spotify,
-        images,
-        songs,
-        duration: Utils.secondsToText(durationTotal / 1000),
-      }
-    }
-  }
-
-  return spotifyTypes[infoSpotify.type]()
-
-}
-
-async function vdSearch(client, msg, item) {
-
-  if (item.includes('youtube.com/watch?')) {
-    var song = await YouTube.getVideo(item)
-  } else {
-    const busca = await YouTube.search(item, { limit: 3 })
-    var song = busca[0]
-    if (busca && busca.length == 0) {
-      throw new Error('Música não encontrada')
-    }
-  }
-
-  const { id, url, duration, durationFormatted, title } = song
-
-  return {
-    id: id,
-    title: title,
-    url: url,
-    duration: duration,
-    durationFormatted: durationFormatted,
-  }
-
-}
-
-async function ytPlaylist(client, msg, item) {
-
-  const formatar = item.split("list=")
-  let idPlaylist = formatar[1]
-  let stringIndex = '&index'
-
-  if (idPlaylist.includes(stringIndex)) {
-    let formatar2 = idPlaylist.split(stringIndex)
-    idPlaylist = formatar2[0]
-  }
-
-  item = `https://www.youtube.com/playlist?list=${idPlaylist}`
-
-  const lista1 = await YouTube.getPlaylist(item)
-  const lista2 = await lista1.fetch()
-
-  const songs = lista2.videos.map(x => {
-    const { id, url, duration, durationFormatted, title } = x
-    return {
-      id: id,
-      title: title,
-      url: url,
-      duration: duration,
-      durationFormatted: durationFormatted,
-    }
-  })
-
-  const { title, videoCount, views, channel, url } = lista2
-
-  let string = 0
-  for (drt of songs) {
-    string += drt.duration
-  }
-
-  return {
-    title: title,
-    videoCount: videoCount,
-    views: views,
-    channel: channel,
-    url: url,
-    songs: songs,
-    total: string
-  }
-
 }
 
 function titulo_formatado(string) {
@@ -426,15 +429,12 @@ function musicVetor(client, msg) {
 }
 
 module.exports = {
-  vdSearch,
-  ytPlaylist,
+  songSearch,
   stopMusic,
   tocarPlaylist,
   backMusic,
-  spotifySearch,
   playSong,
   titulo_formatado,
   PushAndPlaySong,
   musicVetor,
-  soundCloudSearch
 }

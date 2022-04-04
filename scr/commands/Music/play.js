@@ -9,12 +9,12 @@ module.exports = {
     aliase: ["p"],
     execute: (client, msg, args, cor) => {
 
-        const { soundCloudSearch, tocarPlaylist, spotifySearch, vdSearch, ytPlaylist, PushAndPlaySong } = client.music
+        const { songSearch, tocarPlaylist, PushAndPlaySong } = client.music
         const s = args.join(" ");
         const incluso = item => { return s.toLowerCase().includes(item) }
         const spt = incluso('spotify.com')
-        const sdCloud = incluso('soundcloud.com')
-        const resultado = incluso('list=')
+        const sdCloud = incluso('soundcloud.')
+        const ytPlaylist = incluso('list=')
 
         if (!s || !msg.member.voice.channel) {
             const helpMsg = new MessageEmbed()
@@ -24,18 +24,19 @@ module.exports = {
             return msg.channel.send({ embeds: [helpMsg] })
         }
 
-        sdCloud ? playSoundCloud(s) : spt ? tocarSpotify(s) : resultado ? tocarPlaylistYt(s) : tocarVideoYt(s)
+        sdCloud ? playSoundCloud(s) : spt ? tocarSpotify(s) : ytPlaylist ? tocarPlaylistYt(s) : tocarVideoYt(s)
 
         async function playSoundCloud(item) {
 
             try {
-                const data = await soundCloudSearch(client, msg, item)
 
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`⏯️ Carregando Song(s)`)
                     .setAuthor({ name: '| SoundCloud Playlist/Track', iconURL: msg.author.displayAvatarURL() })
                 var msg_embed = await msg.channel.send({ embeds: [helpMsg20] })
+
+                const data = await songSearch(client, msg, item)
 
                 const soundCloudTypes = {
                     'playlist': async () => {
@@ -57,7 +58,6 @@ module.exports = {
                 soundCloudTypes[data.type]()
 
             } catch (e) {
-                console.log(e)
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)
                     .setDescription('Não achei oque você procura')
@@ -75,7 +75,7 @@ module.exports = {
                     .setAuthor({ name: '| Spotify Playlist/Track/Álbum', iconURL: msg.author.displayAvatarURL() })
                 var msg_embed = await msg.channel.send({ embeds: [helpMsg20] })
 
-                const spotify = await spotifySearch(client, msg, item)
+                const spotify = await songSearch(client, msg, item)
 
                 const spotifyObejcts = {
                     'playlist': async () => {
@@ -122,7 +122,7 @@ module.exports = {
         async function tocarPlaylistYt(item) {
 
             try {
-                const lista2 = await ytPlaylist(client, msg, item)
+                const lista2 = await songSearch(client, msg, item)
                 const { title, videoCount, views, channel, url, songs, total } = lista2
 
                 const helpMsg20 = new MessageEmbed()
@@ -152,7 +152,7 @@ module.exports = {
         async function tocarVideoYt(item) {
 
             try {
-                const song = await vdSearch(client, msg, item)
+                const song = await songSearch(client, msg, item)
                 PushAndPlaySong(client, msg, cor, song)
 
             } catch (e) {

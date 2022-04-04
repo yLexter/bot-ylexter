@@ -24,7 +24,7 @@ module.exports = {
       let quantidadePerPag = 10
       const pagsTotal = total_pags()
       let paginaAtual = 1
-      const finishCommmand = 120
+      const finishCommmand = 240
       const row = new MessageActionRow()
         .addComponents(
           new MessageButton()
@@ -98,7 +98,7 @@ module.exports = {
         return i.user.id == msg.author.id
       }
 
-      const collector = await msg_principal.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: finishCommmand * 1000, max: 15 });
+      const collector = await msg_principal.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: finishCommmand * 1000, max: 30 });
 
       collector.on('collect', async i => {
         try {

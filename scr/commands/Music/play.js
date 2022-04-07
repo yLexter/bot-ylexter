@@ -123,11 +123,10 @@ module.exports = {
 
             try {
                 const lista2 = await songSearch(client, msg, item)
-                const { title, videoCount, views, channel, url, songs, total } = lista2
-
+                const { owner, playlist, total, songs, videoCount, } = lista2
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)
-                    .setDescription(`Adicionando **${title}** com **${videoCount}** Song(s) a queue.`)
+                    .setDescription(`Adicionando **${playlist.name}** com **${videoCount}** Song(s) a queue.`)
                     .setAuthor({ name: `| 🎶 Playlist `, iconURL: msg.author.displayAvatarURL() })
                 let msg_embed = await msg.channel.send({ embeds: [helpMsg20] })
 
@@ -135,10 +134,9 @@ module.exports = {
 
                 const helpMsg = new MessageEmbed()
                     .setColor(cor)
-                    .setDescription(`🅿️ **Playlist: [${title}](${url})**\n🆔 **Autor: [${channel.name}](${channel.url})**\n📑 **Total: ${videoCount}**\n**❤️ Views: ${views}\n**🕑 **Duração: ${secondsToText(total / 1000)}**`)
+                    .setDescription(`🅿️ **Playlist: [${playlist.name}](${playlist.url})**\n🆔 **Autor: [${owner?.name}](${owner?.url})**\n📑 **Total: ${videoCount}**\n🕑 **Duração: ${secondsToText(total / 1000)}**`)
                     .setAuthor({ name: '| 🎶 Playlist adicionada', iconURL: msg.author.displayAvatarURL() })
                 return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
-
             } catch (e) {
                 const helpMsg20 = new MessageEmbed()
                     .setColor(cor)

@@ -33,6 +33,8 @@ module.exports = {
                 const game = channels.get(msg.channel.id)
                 const response = m.content.toLowerCase()
 
+                if (game.allWords.includes(response)) return;
+
                 wordArray.forEach((element, indice) => {
                     if (element == response) {
                         game.wordHidden.splice(indice, 1, response)
@@ -42,8 +44,6 @@ module.exports = {
 
                 const wordUpdated = game.wordHidden.join("")
 
-                if (game.allWords.includes(response)) return;
-
                 if (response == word) {
                     winnerGame(m.author.id)
                     return collector.stop();
@@ -52,17 +52,16 @@ module.exports = {
                 game.allWords.push(response)
                 channels.set(msg.channel.id, game)
 
-                if (contador == maximumAttempts) return collector.stop();
+                if (!word.includes(response)) {
+                    contador++
+                    if (contador == maximumAttempts) return collector.stop();
+                    editMessageEmbed(embedGame(wordUpdated, game.allWords.join(", ")))
+                    return collector.resetTimer()
+                }
 
                 if (game.rigthWords.length == word.length) {
                     winnerGame(m.author.id)
                     return collector.stop()
-                }
-
-                if (!word.includes(response)) {
-                    const embed = embedGame(wordUpdated, game.allWords.join(", "))
-                    contador++
-                    return editMessageEmbed(embed)
                 }
 
                 editMessageEmbed(embedGame(wordUpdated, game.allWords.join(", ")))
@@ -83,7 +82,7 @@ module.exports = {
                     channelId: channel,
                     rigthWords: [],
                     allWords: [],
-                    wordHidden: word.split("").map(x => { return "_" })
+                    wordHidden: wordArray.map(x => { return "_" })
                 }
                 channels.set(channel, game)
                 return channels.get(channel)

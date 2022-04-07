@@ -13,7 +13,6 @@ const {
 
 
 async function songSearch(client, msg, songName) {
-
   const incluso = item => { return songName.toLowerCase().includes(item) }
   const spTify = incluso('spotify.com')
   const sdCloud = incluso('soundcloud.')
@@ -26,25 +25,12 @@ async function songSearch(client, msg, songName) {
     const { type, name, url, durationInMs, durationInSec, user, tracksCount } = data
     const typesData = {
       'track': () => {
-        return {
-          id: url,
-          title: name,
-          url: songName,
-          type,
-          duration: durationInMs,
-          durationFormatted: Utils.secondsToText(durationInSec)
-        }
+        return newSong(url, name, songName, durationInMs, Utils.secondsToText(durationInSec))
       },
       'playlist': async () => {
         const songs = (await data.all_tracks()).map(song => {
           const { id, name, durationInMs } = song
-          return {
-            id: `https://api.soundcloud.com/tracks/${id}`,
-            title: name || '??',
-            url: songName,
-            duration: durationInMs || 0,
-            durationFormatted: durationInMs ? Utils.secondsToText(durationInMs / 1000) : '00:00'
-          }
+          return newSong(`https://api.soundcloud.com/tracks/${id}`, name, songName, durationInMs, Utils.secondsToText(durationInMs / 1000))
         })
         return {
           type,
@@ -76,46 +62,21 @@ async function songSearch(client, msg, songName) {
     }
 
     const { id, url, duration, durationFormatted, title } = song
-
-    return {
-      type: 'track',
-      id: id,
-      title: title,
-      url: url,
-      duration: duration,
-      durationFormatted: durationFormatted,
-    }
+    return newSong(id, title, url, duration, durationFormatted)
 
   }
 
   async function ytPlaylistSearch() {
 
-    const formatar = songName.split("list=")
-    let idPlaylist = formatar[1]
-    let stringIndex = '&index'
+    const playlist = await play.playlist_info(songName)
+    const msgError = '??'
 
-    if (idPlaylist.includes(stringIndex)) {
-      let formatar2 = idPlaylist.split(stringIndex)
-      idPlaylist = formatar2[0]
-    }
-
-    songName = `https://www.youtube.com/playlist?list=${idPlaylist}`
-
-    const lista1 = await YouTube.getPlaylist(songName)
-    const lista2 = await lista1.fetch()
-
-    const songs = lista2.videos.map(x => {
-      const { id, url, duration, durationFormatted, title } = x
-      return {
-        id: id,
-        title: title,
-        url: url,
-        duration: duration,
-        durationFormatted: durationFormatted,
-      }
+    const songs = playlist.videos.map(x => {
+      const { id, url, title, durationRaw, durationInSec } = x
+      return newSong(id, title, url, durationInSec * 1000, durationRaw)
     })
 
-    const { title, videoCount, views, channel, url } = lista2
+    const { type, title, channel, url } = playlist
 
     let string = 0
     for (drt of songs) {
@@ -123,14 +84,18 @@ async function songSearch(client, msg, songName) {
     }
 
     return {
-      type: 'playlist',
-      title: title,
-      videoCount: videoCount,
-      views: views,
-      channel: channel,
-      url: url,
+      type,
+      owner: {
+        name: channel.name || msgError,
+        url: channel.url || msgError
+      },
+      playlist: {
+        name: title,
+        url
+      },
+      total: string,
+      videoCount: songs.length,
       songs: songs,
-      total: string
     }
 
   }
@@ -141,24 +106,16 @@ async function songSearch(client, msg, songName) {
       const result = await YouTube.search(msc, { limit: 3 })
       return result[0] ? result[0] : null
     };
-
+    
     const spotify = await getTracks(songName)
     const infoSpotify = await getData(songName)
-
     const spotifyTypes = {
       'track': async () => {
-        let titulo = `${spotify[0].name} - ${spotify[0].artists[0].name}`
-        let msc = await search_yt(titulo)
+        const titulo = `${spotify[0].name} - ${spotify[0].artists[0].name}`
+        const msc = await search_yt(titulo)
         if (!msc) throw new Error('Música não Encontrada.');
         const { name, external_urls, duration_ms } = spotify[0]
-        return {
-          title: name,
-          type: 'track',
-          url: external_urls.spotify,
-          durationFormatted: Utils.secondsToText(duration_ms / 1000),
-          id: msc.id,
-          duration: duration_ms
-        }
+        return newSong(msc.id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
       },
       'playlist': async () => {
         const { owner, external_urls, followers, tracks, images, name, type } = infoSpotify
@@ -173,13 +130,7 @@ async function songSearch(client, msg, songName) {
         const songs = spotify.map((x, y) => {
           const { name, external_urls, duration_ms } = spotify[y]
           durationTotal += duration_ms
-          return {
-            title: name,
-            url: external_urls.spotify,
-            durationFormatted: Utils.secondsToText(duration_ms / 1000),
-            duration: duration_ms,
-            id: result_final[y].id
-          }
+          return newSong(result_final[y].id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
         })
 
         return {
@@ -198,19 +149,17 @@ async function songSearch(client, msg, songName) {
           duration: Utils.secondsToText(durationTotal / 1000),
           images: images
         }
+
       },
       'album': async () => {
-
         const { name, external_urls, images, total_tracks, artists } = infoSpotify
-
+        console.log(infoSpotify)
         const resultado = spotify.map(x => {
           let titulo = `${x.name} - ${x.artists[0].name ? x.artists[0].name : ""}`
           return search_yt(titulo)
         });
 
-        const artista = artists && artists.length > 0 ? artists.map(x => {
-          return `[${x.name}](${x.external_urls.spotify})`
-        }).join(", ") : '??'
+        const artista = artists && artists.length > 0 ? artists.map(x => { return `[${x.name}](${x.external_urls.spotify})` }).join(", ") : '??'
 
         let resultSongsYt = await Promise.all(resultado)
         let durationTotal = 0
@@ -218,19 +167,13 @@ async function songSearch(client, msg, songName) {
         const songs = spotify.map((x, y) => {
           const { name, external_urls, duration_ms } = spotify[y]
           durationTotal += duration_ms
-          return {
-            title: name,
-            url: external_urls.spotify,
-            durationFormatted: Utils.secondsToText(duration_ms / 1000),
-            duration: duration_ms,
-            id: resultSongsYt[y].id
-          }
+          return newSong(resultSongsYt[y].id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
         })
 
         return {
           artista,
           name,
-          type: 'playlist',
+          type: 'album',
           total: total_tracks,
           url: external_urls.spotify,
           images,
@@ -242,6 +185,17 @@ async function songSearch(client, msg, songName) {
 
     return spotifyTypes[infoSpotify.type]()
 
+  }
+
+  function newSong(id, title, url, duration, durationFormatted) {
+    return {
+      type: 'track',
+      id,
+      title,
+      url,
+      duration,
+      durationFormatted
+    }
   }
 
 }
@@ -406,15 +360,10 @@ function PushAndPlaySong(client, msg, cor, song) {
 }
 
 function musicVetor(client, msg) {
-  const barraMusic = []
-  const emoji = '🔵'
   const maxBarrinha = 10
+  const barraMusic = [...Array(maxBarrinha).keys()].map(x => { return "▬" })
+  const emoji = '🔵'
   const queue = client.queues.get(msg.guild.id)
-
-  for (let x = 0; x < maxBarrinha; x++) {
-    barraMusic.push("▬")
-  }
-
   const songPaused = queue.dispatcher._state.status == 'paused'
   const song = queue.songs[0]
   const time = songPaused ? Math.floor(queue.songPlay / 1000) : Math.floor((Date.now() - queue.songPlay) / 1000)
@@ -425,7 +374,6 @@ function musicVetor(client, msg) {
   barraMusic.splice(positionBola, 0, emoji)
 
   return `${barraMusic.join("")}\n${emojiPlay}  ${timeFormatado}/${song.durationFormatted}`
-
 }
 
 module.exports = {

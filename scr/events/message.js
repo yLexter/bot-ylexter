@@ -13,7 +13,7 @@ module.exports = {
 
       if (msg.author.bot || msg.channel.type === 'dm' || !msg.guild.me.permissions.has('ADMINISTRATOR')) return;
 
-      const { dados } = await Database.fecthGuild(client, msg)
+      const dados = await Database.fecthGuild(client, msg)
       const prefixBot = dados.prefix || process.env.PREFIX
       const verify = msg.mentions.members.first()
 

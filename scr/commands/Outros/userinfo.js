@@ -1,6 +1,6 @@
 const { MessageEmbed, Permissions } = require("discord.js");
-const moment = require('moment');
-const local = moment.locale('pt-br');
+const moment = require('moment-timezone')
+moment.locale('pt-br');
 
 module.exports = {
   name: "userinfo",
@@ -24,8 +24,8 @@ module.exports = {
         .setFields(
           { name: '#️⃣ Tag', value: `${user.tag}` },
           { name: '⭐ Dono', value: ownerGuild,  },
-          { name: '📅 Criação da Conta', value: String(moment(user.createdAt).format('LLLL')), inline: true },
-          { name: '📅 Entrou no Servidor', value: String(moment(guild.joinedAt).format('LLLL')), inline: true },
+          { name: '📅 Criação da Conta', value: String(moment(user.createdAt).tz('America/Sao_Paulo').format('LLLL')), inline: true },
+          { name: '📅 Entrou no Servidor', value: String(moment(guild.joinedAt).tz("America/Sao_Paulo").format('LLLL')), inline: true },
           { name: '⭐ Administrator', value: admin, },
           { name: '🛑 Roles', value: stringRoles }
         ).setAuthor({ name: `| Info's de ${user.username}`, iconURL: urlAvatar })

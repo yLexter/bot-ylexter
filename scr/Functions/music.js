@@ -9,6 +9,7 @@ const {
   createAudioPlayer,
   createAudioResource,
   joinVoiceChannel,
+  NoSubscriberBehavior
 } = require('@discordjs/voice');
 
 
@@ -22,32 +23,39 @@ async function songSearch(client, msg, songName) {
 
   async function soundCloudSearch() {
     const data = await play.soundcloud(songName)
-    const { type, name, url, durationInMs, durationInSec, user, tracksCount } = data
+    const { type, name, url, durationInMs, durationInSec, user } = data
     const typesData = {
       'track': () => {
-        return newSong(url, name, songName, durationInMs, Utils.secondsToText(durationInSec))
+        return newSong(
+          url,
+          name,
+          songName,
+          durationInMs,
+          Utils.secondsToText(durationInSec)
+        )
       },
       'playlist': async () => {
         const songs = (await data.all_tracks()).map(song => {
           const { id, name, durationInMs } = song
-          return newSong(`https://api.soundcloud.com/tracks/${id}`, name, songName, durationInMs, Utils.secondsToText(durationInMs / 1000))
-        })
-        return {
-          type,
-          owner: {
-            name: user.name,
-            url: user.url
-          },
-          playlist: {
+          return newSong(
+            `https://api.soundcloud.com/tracks/${id}`,
             name,
-            url: songName,
-          },
+            songName,
+            durationInMs,
+            Utils.secondsToText(durationInMs / 1000))
+        })
+
+        return newPlaylist(
+          name,
+          songName,
+          user.name,
+          user.url,
           songs,
-          total: tracksCount,
-          totalDuration: Utils.secondsToText(durationInSec)
-        }
+          durationInMs
+        )
       }
     }
+
     return typesData[type]()
   }
 
@@ -62,41 +70,40 @@ async function songSearch(client, msg, songName) {
     }
 
     const { id, url, duration, durationFormatted, title } = song
-    return newSong(id, title, url, duration, durationFormatted)
+
+    return newSong(
+      id,
+      title,
+      url,
+      duration,
+      durationFormatted
+    )
 
   }
 
   async function ytPlaylistSearch() {
 
     const playlist = await play.playlist_info(songName)
-    const msgError = '??'
-
     const songs = playlist.videos.map(x => {
       const { id, url, title, durationRaw, durationInSec } = x
       return newSong(id, title, url, durationInSec * 1000, durationRaw)
     })
 
-    const { type, title, channel, url } = playlist
+    const { title, channel, url } = playlist
 
-    let string = 0
+    let durationPlaylist = 0
     for (drt of songs) {
-      string += drt.duration
+      durationPlaylist += drt.duration
     }
 
-    return {
-      type,
-      owner: {
-        name: channel.name || msgError,
-        url: channel.url || msgError
-      },
-      playlist: {
-        name: title,
-        url
-      },
-      total: string,
-      videoCount: songs.length,
-      songs: songs,
-    }
+    return newPlaylist(
+      title,
+      url,
+      channel?.name,
+      channel?.url,
+      songs,
+      durationPlaylist
+    )
 
   }
 
@@ -106,19 +113,29 @@ async function songSearch(client, msg, songName) {
       const result = await YouTube.search(msc, { limit: 3 })
       return result[0] ? result[0] : null
     };
-    
+
     const spotify = await getTracks(songName)
     const infoSpotify = await getData(songName)
+
     const spotifyTypes = {
       'track': async () => {
         const titulo = `${spotify[0].name} - ${spotify[0].artists[0].name}`
         const msc = await search_yt(titulo)
+
         if (!msc) throw new Error('Música não Encontrada.');
+
         const { name, external_urls, duration_ms } = spotify[0]
-        return newSong(msc.id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
+
+        return newSong(
+          msc.id,
+          name,
+          external_urls.spotify,
+          duration_ms,
+          Utils.secondsToText(duration_ms / 1000)
+        )
       },
       'playlist': async () => {
-        const { owner, external_urls, followers, tracks, images, name, type } = infoSpotify
+        const { owner, external_urls, images, name, } = infoSpotify
         const resultado = spotify.map(x => {
           let titulo = `${x.name} - ${x.artists[0].name}`
           return search_yt(titulo)
@@ -130,36 +147,40 @@ async function songSearch(client, msg, songName) {
         const songs = spotify.map((x, y) => {
           const { name, external_urls, duration_ms } = spotify[y]
           durationTotal += duration_ms
-          return newSong(result_final[y].id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
+
+          return newSong(result_final[y].id,
+            name,
+            external_urls.spotify,
+            duration_ms,
+            Utils.secondsToText(duration_ms / 1000)
+          )
         })
 
-        return {
-          playlist: {
-            name: name,
-            url: external_urls.spotify
-          },
-          owner: {
-            name: owner.display_name,
-            url: external_urls.spotify
-          },
-          songs: songs,
-          type: type,
-          likes: followers.total,
-          total: tracks.total,
-          duration: Utils.secondsToText(durationTotal / 1000),
-          images: images
-        }
+        return newPlaylist(
+          name,
+          external_urls?.spotify,
+          owner?.display_name,
+          owner?.external_urls?.spotify,
+          songs,
+          durationTotal,
+          images[0]?.url
+        )
 
       },
       'album': async () => {
-        const { name, external_urls, images, total_tracks, artists } = infoSpotify
-        console.log(infoSpotify)
+        const { name, external_urls, images, artists } = infoSpotify
         const resultado = spotify.map(x => {
           let titulo = `${x.name} - ${x.artists[0].name ? x.artists[0].name : ""}`
           return search_yt(titulo)
         });
 
-        const artista = artists && artists.length > 0 ? artists.map(x => { return `[${x.name}](${x.external_urls.spotify})` }).join(", ") : '??'
+        const artista = artists && artists.length > 0 ? artists.map(artist => {
+          const { name, url } = artist
+          return {
+            name,
+            url
+          }
+        }) : []
 
         let resultSongsYt = await Promise.all(resultado)
         let durationTotal = 0
@@ -167,24 +188,49 @@ async function songSearch(client, msg, songName) {
         const songs = spotify.map((x, y) => {
           const { name, external_urls, duration_ms } = spotify[y]
           durationTotal += duration_ms
-          return newSong(resultSongsYt[y].id, name, external_urls.spotify, duration_ms, Utils.secondsToText(duration_ms / 1000))
+
+          return newSong(
+            resultSongsYt[y].id,
+            name,
+            external_urls.spotify,
+            duration_ms,
+            Utils.secondsToText(duration_ms / 1000)
+          )
         })
 
-        return {
-          artista,
+        return newPlaylist(
           name,
-          type: 'album',
-          total: total_tracks,
-          url: external_urls.spotify,
-          images,
+          external_urls.spotify,
+          artista[0]?.name,
+          artista[0]?.url,
           songs,
-          duration: Utils.secondsToText(durationTotal / 1000),
-        }
+          durationTotal,
+          images[0]?.url
+        )
+
       }
     }
 
     return spotifyTypes[infoSpotify.type]()
 
+  }
+
+  function newPlaylist(namePlaylist, urlPlaylist, onwerName, urlOwner, songs, durationPlaylist, images) {
+    return {
+      type: 'playlist',
+      playlist: {
+        name: namePlaylist,
+        url: urlPlaylist
+      },
+      owner: {
+        name: onwerName,
+        url: urlOwner
+      },
+      songs,
+      totalSongs: songs.length,
+      durationPlaylist: Utils.secondsToText(durationPlaylist / 1000),
+      images,
+    }
   }
 
   function newSong(id, title, url, duration, durationFormatted) {
@@ -225,7 +271,11 @@ async function playSong(client, msg, song) {
 
     if (!song) return stopMusic(client, msg, cor);
 
-    const player = createAudioPlayer();
+    const player = createAudioPlayer({
+      behaviors: {
+        noSubscriber: NoSubscriberBehavior.Pause,
+      },
+    });
     const stream = await play.stream(song.id)
     const resource = createAudioResource(stream.stream, { inputType: stream.type });
 

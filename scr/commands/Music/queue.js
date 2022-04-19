@@ -93,16 +93,17 @@ module.exports = {
         return msg_principal.edit({ embeds: [msgEmbed(number, pagsTotal)] }).catch(() => { })
       }
 
-      const filter = (i) => {
-        i.deferUpdate()
-        return i.user.id == msg.author.id
-      }
-
-      const collector = await msg_principal.createMessageComponentCollector({ filter, componentType: 'BUTTON', time: finishCommmand * 1000, max: 30 });
+      const collector = await msg_principal.createMessageComponentCollector({
+        filter: i => {
+          i.deferUpdate()
+          return i.user.id == msg.author.id
+        },
+        componentType: 'BUTTON',
+        time: finishCommmand * 1000, max: 30
+      });
 
       collector.on('collect', async i => {
         try {
-
           const queue = client.queues.get(msg.guild.id);
 
           if (!queue || queue.songs.length == 0) return collector.stop();

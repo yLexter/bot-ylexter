@@ -7,7 +7,7 @@ module.exports = {
   aliase: ["lp"],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic } = client.music
+    const { stop, loop } = client.music
 
     try {
 
@@ -20,10 +20,8 @@ module.exports = {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      var looping = !queue.loop ? true : false;
-      var setlooping = looping ? queue.loop = true : queue.loop = null;
-      var loopingatual = queue.loop ? 'Ativado.' : 'Desativado.'
-      client.queues.set(msg.guild.id, queue);
+      const looping = loop(client, msg)
+      const loopingatual = looping ? 'Ativado.' : 'Desativado.'
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
@@ -31,7 +29,7 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
 
-    } catch (e) { stopMusic(client, msg , cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
 
   }
 

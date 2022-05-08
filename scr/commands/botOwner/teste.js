@@ -5,6 +5,7 @@ module.exports = {
    aliase: ["t"],
    execute: async (client, msg, args, cor) => {
 
+      const classMusic = require('../../Functions/musicSettings')
       const { MessageEmbed, MessageCollector } = require("discord.js");
       const moment = require('moment')
       const Database = require('../../Database/moongose')
@@ -23,11 +24,21 @@ module.exports = {
          joinVoiceChannel,
       } = require('@discordjs/voice');
 
+
       try {
+         let song = {
+            "type": "track",
+            "id": "rn_YodiJO6k",
+            "title": "Red Hot Chili Peppers - Otherside [Official Music Video]",
+            "url": "https://www.youtube.com/watch?v=rn_YodiJO6k",
+            "duration": 256000,
+            "durationFormatted": "4:16"
+         }
+
          msg.delete().catch(() => { })
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
          console.log(resultado_ok)
-         const resultado = JSON.stringify(resultado_ok, null, '\t').substring(0 , 3000)
+         const resultado = JSON.stringify(resultado_ok, null, '\t')?.substring(0, 3000)
 
          const helpMsg = new MessageEmbed()
             .setColor(cor)

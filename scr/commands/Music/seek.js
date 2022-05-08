@@ -22,6 +22,7 @@ module.exports = {
 
         try {
             const queue = client.queues.get(msg.guild.id);
+            const { seek } = client.music
 
             if (!queue || !args[0]) {
                 const helpMsg = new MessageEmbed()
@@ -37,17 +38,8 @@ module.exports = {
             var msgPrincipal = await msg.channel.send({ embeds: [helpMsg] })
 
             const secondsFinal = await Utils.textToSeconds(args[0])
-            const song = queue.songs[0]
-
-            if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
-
-            const stream = await play.stream(song.id, { seek: secondsFinal })
-            const resource = createAudioResource(stream.stream, { inputType: stream.type });
-            queue.dispatcher.play(resource);
-            queue.connection.subscribe(queue.dispatcher)
-            queue.songPlay = Date.now() - secondsFinal * 1000
-            client.queues.set(msg.guild.id, queue);
-
+            
+            seek(client, msg, secondsFinal)
 
         } catch (e) {
             const helpMsg = new MessageEmbed()

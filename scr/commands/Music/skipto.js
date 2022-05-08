@@ -8,10 +8,10 @@ module.exports = {
   aliase: ['skt'],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic, backMusic, playSong } = client.music
+    const { stop, skipTo } = client.music
 
     try {
-      let queue = client.queues.get(msg.guild.id);
+      const queue = client.queues.get(msg.guild.id);
       const skipTO = Math.floor(Number(args[0]))
 
       if (!queue || skipTO <= 1 || !queue.songs[skipTO]) {
@@ -24,31 +24,12 @@ module.exports = {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      const principal10 = async () => {
-        const firstMusic = queue.songs[skipTO]
-        backMusic(client, msg)
+      skipTo(client, msg, skipTO)
 
-        queue.songs.splice(skipTO - 1, 1)
-        queue.songs.unshift(firstMusic)
-        client.queues.set(msg.guild.id, queue)
+    } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
 
-        const song = queue.songs[0]
-
-        playSong(client, msg, song);
-
-        if (queue.songs.length > 0) {
-          const helpMsg = new MessageEmbed()
-            .setColor(cor)
-            .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
-            .setAuthor({ name: `| ⏯️ Skipped `, iconURL: msg.author.displayAvatarURL() })
-          return msg.channel.send({ embeds: [helpMsg] })
-        } 
-      }
-
-      !queue.loop ? principal10() : playSong(client, msg, queue.songs[0])
-
-    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
+
 
 }
 

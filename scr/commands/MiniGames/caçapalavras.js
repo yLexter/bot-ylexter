@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const games = new Map();
 const wait = require('util').promisify(setTimeout);
-const allPalavras = require("../../Jsons/caçapalavras.json").palavras
+const allPalavras = require("../../Jsons/cacapalavras.json").palavras
 const { secondsToText } = require("../../Functions/Utils")
 
 module.exports = {

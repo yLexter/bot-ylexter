@@ -1,3 +1,6 @@
+const moment = require('moment-timezone')
+moment.locale('pt-br');
+
 class ClassUtils {
 
     async textToSeconds(minute) {
@@ -59,6 +62,10 @@ class ClassUtils {
         if (capsula2[0] == '00') capsula2.shift();
         if (capsula2[0] == '00') capsula2.shift();
         return capsula2.join(':')
+    }
+
+    formatDate(date){
+      return String(moment(date).tz('America/Sao_Paulo').format('LLLL'))  
     }
 }
 

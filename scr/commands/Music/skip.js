@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const Music = require('./../../Functions/musicSettings');
 
 module.exports = {
   name: "skip",
@@ -7,7 +8,7 @@ module.exports = {
   aliase: ["sk"],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic, backMusic, playSong } = client.music
+    const { skip, stop } = client.music
 
     try {
 
@@ -20,19 +21,10 @@ module.exports = {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      if (!queue.loop) backMusic(client, msg), client.queues.set(msg.guild.id, queue);
-      const song = queue.songs[0]
-      playSong(client, msg, song);
+      skip(client, msg)
 
-      if (queue.songs.length > 0) {
-        const helpMsg = new MessageEmbed()
-          .setColor(cor)
-          .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
-          .setAuthor({ name: `| ⏯️ Skipped `, iconURL: msg.author.displayAvatarURL() })
-        return msg.channel.send({ embeds: [helpMsg] })
-      }
+    } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
 
-    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 };
 

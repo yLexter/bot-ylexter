@@ -23,10 +23,10 @@ module.exports = {
             setTimeout(() => {
                 if (time.has(guild.id)) {
                     const queue = client.queues.get(guild.id)
-                    if (queue) {
-                        if (queue.connection) queue.connection.destroy();
-                        client.queues.delete(guild.id)
-                    }
+                    queue?.connection?.destroy();
+                    queue?.message?.delete()?.catch(() => { })
+                    queue?.collector?.stop()
+                    client.queues.delete(guild.id)
                 }
             }, timeToBack * 1000)
         }

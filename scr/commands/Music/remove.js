@@ -9,7 +9,7 @@ module.exports = {
   aliase: [],
   execute: async (client, msg, args, cor) => {
 
-    const { stopMusic } = client.music
+    const { stop } = client.music
 
     try {
       const queue = client.queues.get(msg.member.guild.id);
@@ -35,7 +35,7 @@ module.exports = {
         .setAuthor({ name: `| ✔️ Removida:`, iconURL: msg.author.displayAvatarURL() })
       msg.channel.send({ embeds: [helpMsg] })
 
-    } catch (e) { console.log(e), stopMusic(client, msg, cor) };
+    } catch (e) { console.log(e), stop(client, msg) };
 
   }
 }

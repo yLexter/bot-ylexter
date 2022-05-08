@@ -8,7 +8,7 @@ module.exports = {
     usage: '<Comando> + <Pesquisa>',
     execute: async (client, msg, args, cor) => {
 
-        const { stopMusic } = client.music
+        const { stop } = client.music
 
         try {
 
@@ -55,7 +55,7 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-        } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+        } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
     }
 };
 

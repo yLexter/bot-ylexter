@@ -7,7 +7,7 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic } = client.music
+    const { stop, resume } = client.music
 
     try {
 
@@ -22,9 +22,7 @@ module.exports = {
 
       if (queue.dispatcher._state.status == 'playing') return msg.delete().catch(() => { });
 
-      queue.dispatcher.unpause();
-      queue.songPlay = Date.now() - queue.songPlay
-      client.queues.set(msg.guild.id, queue);
+      resume(client, msg)
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
@@ -32,6 +30,6 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
 
-    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
   }
 }; // Execute end

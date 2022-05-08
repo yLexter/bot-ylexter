@@ -8,7 +8,7 @@ module.exports = {
     aliase: ["prs", "pms"],
     execute: async (client, msg, args, cor) => {
 
-        const { songSearch } = client.music
+        const { songSearch , move } = client.music
 
         try {
             const incluso = (x) => { return s.toLowerCase().includes(x) }
@@ -43,7 +43,7 @@ module.exports = {
                 queue.songs.shift()
                 queue.songs.unshift(x)
                 queue.songs.unshift(first)
-                return client.queues.set(msg.member.guild.id, queue);
+                return client.queues.set(msg.guild.id, queue);
             }
 
             async function queuePromisse(number) {
@@ -58,9 +58,8 @@ module.exports = {
                     if (number > limite) helpMsg.addFields({ name: "Número Incorreto", value: ` Você só pode colocar números maiores que **1** e menores ou igual a **${limite}**.` });
                     return msg.channel.send({ embeds: [helpMsg] })
                 }
-                await firstMusic(music)
-                queue.songs.splice(number + 1, 1)
-                client.queues.set(msg.guild.id, queue)
+                
+                move(client, msg, number, 1)
                 return embed(music)
             }
 

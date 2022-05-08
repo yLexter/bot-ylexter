@@ -7,7 +7,7 @@ module.exports = {
      aliase: ['nwp'],
      execute: (client, msg, args, cor) => {
 
-          const { stopMusic, musicVetor } = client.music
+          const { stop, musicVetor } = client.music
 
           try {
                const queue = client.queues.get(msg.member.guild.id)
@@ -20,14 +20,13 @@ module.exports = {
                     return msg.channel.send({ embeds: [helpMsg] })
                }
 
-
                const helpMsg = new MessageEmbed()
                     .setColor(cor)
                     .setDescription(`[${song.title}](${song.url})\n${musicVetor(client, msg)}`)
                     .setAuthor({ name: `| 🎶 Tocando Agora `, iconURL: msg.author.displayAvatarURL() })
                return msg.channel.send({ embeds: [helpMsg] })
 
-          } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+          } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
      }
 }
 

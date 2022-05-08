@@ -1,17 +1,19 @@
 const { MessageEmbed } = require("discord.js");
+const { getVoiceConnection } = require('@discordjs/voice');
 
 module.exports = {
     name: "fixqueue",
     help: "Deleta a queue atual e destroi a conexão do bot.",
-    type: 'music',
+    type: 'others',
     aliase: [],
     execute: (client, msg, args, cor) => {
 
-        const { stopMusic, playSong } = client.music
+        const { stop } = client.music
 
         try {
 
             const queue = client.queues.get(msg.guild.id);
+            const conn = getVoiceConnection(msg.guild.id)
 
             if (!queue) {
                 const helpMsg = new MessageEmbed()
@@ -20,16 +22,21 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            queue.connection.destroy();
-            client.queues.delete(msg.guild.id)
+            if (conn && conn.joinConfig.channelId != msg.member.voice.channel) {
+                return msg.reply('Você não está no mesmo canl que voz doque eu!')
+            }
 
+            queue?.message.delete().catch(() => { })
+            queue?.collector.stop()
+            client.queues.delete(msg.guild.id)
+            conn.destroy()
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| Queue fixada com sucesso.`, iconURL: msg.author.displayAvatarURL() })
             return msg.channel.send({ embeds: [helpMsg] })
 
-        } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+        } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
     }
 }; // Execute end
 

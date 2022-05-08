@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const channels = new Map();
-const words = require('../../Jsons/caçapalavras.json').palavras
+const words = require('../../Jsons/cacapalavras.json').palavras
 
 module.exports = {
     name: "forca",

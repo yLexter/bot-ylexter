@@ -16,7 +16,7 @@ client.commands = new Collection();
 client.queues = new Map();
 client.shuffles = new Map();
 client.slashs = new Collection();
-client.music = require('./scr/Functions/music')
+client.music = require('./scr/Functions/musicSettings')
 
 client.login(process.env.TOKEN)
 

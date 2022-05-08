@@ -1,6 +1,5 @@
 const { MessageEmbed, Permissions } = require("discord.js");
-const moment = require('moment-timezone')
-moment.locale('pt-br');
+const { formatDate } = require('../../Functions/Utils')
 
 module.exports = {
   name: "userinfo",
@@ -23,9 +22,9 @@ module.exports = {
         .setThumbnail(urlAvatar)
         .setFields(
           { name: '#️⃣ Tag', value: `${user.tag}` },
-          { name: '⭐ Dono', value: ownerGuild,  },
-          { name: '📅 Criação da Conta', value: String(moment(user.createdAt).tz('America/Sao_Paulo').format('LLLL')), inline: true },
-          { name: '📅 Entrou no Servidor', value: String(moment(guild.joinedAt).tz("America/Sao_Paulo").format('LLLL')), inline: true },
+          { name: '⭐ Dono', value: ownerGuild, },
+          { name: '📅 Criação da Conta', value: formatDate(user.createdAt), inline: true },
+          { name: '📅 Entrou no Servidor', value: formatDate(guild.joinedAt), inline: true },
           { name: '⭐ Administrator', value: admin, },
           { name: '🛑 Roles', value: stringRoles }
         ).setAuthor({ name: `| Info's de ${user.username}`, iconURL: urlAvatar })

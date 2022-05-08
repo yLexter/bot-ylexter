@@ -8,7 +8,7 @@ module.exports = {
     aliase: [],
     execute: async (client, msg, args, cor) => {
 
-        const { stopMusic } = client.music
+        const { stop, move } = client.music
 
         try {
             const queue = client.queues.get(msg.guild.id);
@@ -28,11 +28,9 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            const songMovida = queue.songs.splice(posicaoSong, 1)[0]
             const verifyPosition = newPosicaoSong > queue.songs.length ? `última [${queue.songs.length}°]` : `${newPosicaoSong}°`
 
-            queue.songs.splice(newPosicaoSong, 0, songMovida)
-            client.queues.set(msg.guild.id, queue)
+            move(client, msg, posicaoSong, newPosicaoSong)
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
@@ -40,7 +38,7 @@ module.exports = {
                 .setAuthor({ name: `| ✔️ Movida`, iconURL: msg.author.displayAvatarURL() })
             msg.channel.send({ embeds: [helpMsg] })
 
-        } catch (e) { console.log(e), stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) };
+        } catch (e) { console.log(e), stop(client, msg), msg.channel.send(`\`${e}\``) };
 
     }
 }

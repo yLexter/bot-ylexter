@@ -7,7 +7,7 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic, playSong } = client.music
+    const { stop, back } = client.music
 
     try {
 
@@ -20,14 +20,7 @@ module.exports = {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      const song = queue.back
-      let x = queue.songs.shift()
-      queue.songs.unshift(song)
-
-      playSong(client, msg, song)
-
-      queue.back = x
-      client.queues.set(msg.member.guild.id, queue);
+      back(client, msg)
 
       const helpMsg = new MessageEmbed()
         .setColor(cor)
@@ -36,7 +29,7 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
 
-    } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
 }; // Execute end
 

@@ -1,6 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const moment = require('moment-timezone')
-moment.locale('pt-br');
+const { formatDate } = require('../../Functions/Utils')
 
 module.exports = {
     name: "serverinfo",
@@ -18,8 +17,8 @@ module.exports = {
                 .setThumbnail(iconGuild)
                 .setFields(
                     { name: '🔰 Dono do Servidor', value: `<@${ownerId}>` },
-                    { name: '📅 Entrei em', value: String(moment(msg.guild.me.joinedAt).tz("America/Sao_Paulo").format('LLLL')), inline: true },
-                    { name: '📅 Servidor criado em', value: String(moment(createdAt).tz("America/Sao_Paulo").format('LLLL')), inline: true },
+                    { name: '📅 Entrei em', value: formatDate(msg.guild.me.joinedAt), inline: true },
+                    { name: '📅 Servidor criado em', value: formatDate(createdAt), inline: true },
                     { name: '🔱 Total de Membros', value: `${memberCount}` },
                     { name: '🛑 Roles', value: stringRoles }
                 ).setAuthor({ name: `| ${name} `, iconURL: iconGuild })

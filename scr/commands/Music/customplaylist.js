@@ -19,7 +19,7 @@ module.exports = {
          const argUser = args?.slice(1).join(" ")
          const objectMethod = {
             'adicionar': ['add', 'adicionar'],
-            'tocar': ['play', 'tocar', 'reproduzir'],
+            'tocar': ['p', 'play', 'tocar', 'reproduzir'],
             'deletar': ['delete', 'del', 'remove'],
             'ajuda': ['help', 'ajuda'],
             'deletarplaylist': ['delplaylist', 'deletarplaylist', 'delpl'],

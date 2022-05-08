@@ -7,7 +7,7 @@ module.exports = {
   aliase: [],
   execute: (client, msg, args, cor) => {
 
-    const { stopMusic } = client.music
+    const { stop } = client.music
 
     try {
 
@@ -20,9 +20,9 @@ module.exports = {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      stopMusic(client, msg, cor)
+      stop(client, msg, cor)
 
-    } catch (e) { stopMusic(client, msg), msg.channel.send(`\`${e}\``) }
+    } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
 
 
   }

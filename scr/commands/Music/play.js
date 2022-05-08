@@ -1,5 +1,4 @@
 const { MessageEmbed } = require('discord.js');
-const { secondsToText } = require("../../Functions/Utils")
 
 module.exports = {
     name: "play",
@@ -9,7 +8,7 @@ module.exports = {
     aliase: ["p"],
     execute: async (client, msg, args, cor) => {
         try {
-            const { songSearch, tocarPlaylist, PushAndPlaySong } = client.music
+            const { songSearch, tocarPlaylist, PushAndPlaySong, } = client.music
             const s = args.join(" ");
 
             if (!s || !msg.member.voice.channel) {
@@ -20,17 +19,11 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            const helpMsg20 = new MessageEmbed()
-                .setColor(cor)
-                .setDescription(`⏯️ Carregando...`)
-            var embedLoading = await msg.channel.send({ embeds: [helpMsg20] })
-
             const data = await songSearch(client, msg, s)
 
             const typesData = {
                 'track': () => {
                     PushAndPlaySong(client, msg, cor, data)
-                    return embedLoading.delete().catch(() => { })
                 },
 
                 'playlist': async () => {
@@ -42,13 +35,14 @@ module.exports = {
                         .setAuthor({ name: '| 🎶 Playlist adicionada', iconURL: msg.author.displayAvatarURL() })
                     if (images) helpMsg100.setThumbnail(images)
                     await tocarPlaylist(client, msg, songs)
-                    return embedLoading.edit({ embeds: [helpMsg100] }).catch(e => { })
+                    return msg.channel.send({ embeds: [helpMsg100] }).catch(e => { })
                 }
             }
 
             return typesData[data.type]()
 
         } catch (e) {
+            console.log(e)
             const helpMsg20 = new MessageEmbed()
                 .setColor(cor)
                 .setDescription('Não achei oque você procura')

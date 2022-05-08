@@ -7,7 +7,7 @@ module.exports = {
     aliase: ["sh"],
     execute: async (client, msg, args, cor) => {
 
-        const { stopMusic } = client.music
+        const { stop, shuffle } = client.music
 
         try {
             const queue = client.queues.get(msg.guild.id);
@@ -21,32 +21,14 @@ module.exports = {
                 return msg.channel.send({ embeds: [helpMsg] })
             }
 
-            const firstMusic = queue.songs.shift()
-            var backup = queue.songs
-            var numeros = []
-
-            while (true) {
-                var shuffle = Math.floor(Math.random() * queue.songs.length)
-                if (numeros.indexOf(shuffle) == -1) {
-                    numeros.push(shuffle)
-                } else if (queue.songs.length == numeros.length) break;
-            }
-
-            queue.songs = []
-
-            await numeros.forEach((element) => {
-                queue.songs.push(backup[element])
-            });
-
-            queue.songs.unshift(firstMusic)
-            client.queues.set(msg.guild.id, queue)
+            shuffle(client, msg)
 
             const helpMsg = new MessageEmbed()
                 .setColor(cor)
                 .setAuthor({ name: `| 🔀 Queue Embaralhada`, iconURL: msg.author.displayAvatarURL() })
             msg.channel.send({ embeds: [helpMsg] })
 
-        } catch (e) { stopMusic(client, msg, cor), msg.channel.send(`\`${e}\``) }
+        } catch (e) { stop(client, msg,), msg.channel.send(`\`${e}\``) }
 
     }
 };

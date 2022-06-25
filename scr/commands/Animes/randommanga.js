@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const Otaku = require('./../../Functions/animes')
+const Otaku = require('./../../classes/animes')
 
 module.exports = {
     name: "randommanga",
@@ -17,9 +17,28 @@ module.exports = {
         try {
 
             const finishCommmand = 600
-            const filter = (reaction, user) => {
-                return reaction.emoji.name == '🔁' && user.id == msg.author.id
-            };
+
+            await mudarMsgEmbed()
+            await msg_embed.react('🔁')
+
+            const collector = await msg_embed.createReactionCollector({
+                filter: (reaction, user) => reaction.emoji.name == '🔁' && user.id == msg.author.id, 
+                time: finishCommmand * 1000,
+                max: 8
+            });
+
+            collector.on('collect', async (reaction, user) => {
+                const reactions = {
+                    '🔁': () => mudarMsgEmbed()
+                }
+                
+                try {
+                    await reactions[reaction.emoji.name]()
+                    await reaction.users.remove(user.id)
+                } catch (e) {
+                    return
+                }
+            })
 
             function msgEmbedManga(info) {
                 const msgError = '???'
@@ -56,25 +75,6 @@ module.exports = {
                 const manga = msgEmbedManga(infoManga)
                 return msg_embed.edit({ embeds: [manga] }).catch(() => { })
             }
-
-            await mudarMsgEmbed()
-            await msg_embed.react('🔁')
-
-            const collector = await msg_embed.createReactionCollector({ filter, time: finishCommmand * 1000, max: 8 });
-
-            collector.on('collect', async (reaction, user) => {
-                const reactions = {
-                    '🔁': () => {
-                        return mudarMsgEmbed()
-                    }
-                }
-                try {
-                    await reactions[reaction.emoji.name]()
-                    await reaction.users.remove(user.id)
-                } catch (e) {
-                    return
-                }
-            })
 
         } catch (e) {
             const helpMsg = new MessageEmbed()

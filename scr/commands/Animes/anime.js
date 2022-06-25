@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const Otaku = require('./../../Functions/animes')
+const Otaku = require('./../../classes/animes')
 
 module.exports = {
   name: "anime",

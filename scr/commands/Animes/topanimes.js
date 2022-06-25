@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
-const Otaku = require('./../../Functions/animes')
+const Otaku = require('./../../classes/animes')
 
 module.exports = {
     name: "topanimes",
@@ -92,11 +92,13 @@ module.exports = {
                 return msg_embed.edit({ embeds: [pagAtual], components: [row] }).catch(() => { })
             }
 
-            const filter = i => {
-                return i.user.id === msg.author.id;
-            };
 
-            const collector = msg_embed.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', time: finishCommmand * 1000, max: 28 });
+            const collector = msg_embed.createMessageComponentCollector({
+                filter: i => i.user.id === msg.author.id,
+                componentType: 'SELECT_MENU',
+                time: finishCommmand * 1000,
+                max: 28
+            });
 
             collector.on('collect', async i => {
                 try {

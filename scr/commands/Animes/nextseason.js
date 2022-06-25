@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
-const Otaku = require('../../Functions/animes')
+const Otaku = require('../../classes/animes')
 
 module.exports = {
     name: "nextseason",
@@ -53,6 +53,25 @@ module.exports = {
 
             await msg_embed.edit({ embeds: [embedInicial], components: [row] })
 
+            const collector = msg_embed.createMessageComponentCollector({
+                filter: i => i.user.id === msg.author.id,
+                componentType: 'SELECT_MENU',
+                time: finishCommmand * 1000,
+                max: 28
+            });
+
+            collector.on('collect', async i => {
+                try {
+                    mudarMsg(i.values[0])
+                    i.deferUpdate();
+                } catch (e) {
+                    return console.log(e)
+                }
+            });
+
+            collector.on('end', collected => {
+                msg_embed.edit({ components: [] }).catch(() => { })
+            })
 
             function getAnimeByPosition(number) {
                 return seasonNextAnimes[number]
@@ -62,7 +81,7 @@ module.exports = {
                 const {
                     title, status, type,
                     synopsis, images, genres, trailer, rating,
-                    score, aired , favorites
+                    score, aired, favorites
                 } = info
                 const generos = genres && genres.length > 0 ? genres.map((x, y, z) => {
                     return y == z.length - 1 ? `${x.name}. ` : `${x.name}, `
@@ -92,25 +111,6 @@ module.exports = {
                 const pagAtual = msgEmbedAnime(atualAnime)
                 return msg_embed.edit({ embeds: [pagAtual], components: [row] }).catch(() => { })
             }
-
-            const filter = i => {
-                return i.user.id === msg.author.id;
-            };
-
-            const collector = msg_embed.createMessageComponentCollector({ filter, componentType: 'SELECT_MENU', time: finishCommmand * 1000, max: 28 });
-
-            collector.on('collect', async i => {
-                try {
-                    mudarMsg(i.values[0])
-                    i.deferUpdate();
-                } catch (e) {
-                    return console.log(e)
-                }
-            });
-
-            collector.on('end', collected => {
-                msg_embed.edit({ components: [] }).catch(() => { })
-            })
 
         } catch (e) {
             console.log(e)

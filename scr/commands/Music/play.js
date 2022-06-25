@@ -47,7 +47,7 @@ module.exports = {
                 .setColor(cor)
                 .setDescription('Não achei oque você procura')
                 .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
-            return embedLoading.edit({ embeds: [helpMsg20] }).catch(() => { })
+            return msg.channel.send({ embeds: [helpMsg20] }).catch(() => { })
         }
 
 

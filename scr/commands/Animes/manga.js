@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const Otaku = require('./../../Functions/animes')
+const Otaku = require('./../../classes/animes')
 
 module.exports = {
     name: "manga",
@@ -23,6 +23,7 @@ module.exports = {
                     .setAuthor({ name: `| Informe um Mangá.`, iconURL: msg.author.displayAvatarURL() })
                 return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
             }
+            
             const data = await Otaku.searchManga(s)
             const msgError = '???'
             const { posterImage, status,

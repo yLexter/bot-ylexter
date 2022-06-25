@@ -1,13 +1,21 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const games = new Map();
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "jokenpo",
-    help: "Jogo tradicional de pedra, papel e tesoura.",
-    type: "fun",
-    usage: '<Comando> + <Menção ao user ou ID>',
-    aliase: ["jkp"],
-    execute: async (client, msg, args, cor) => {
+class CommandJKP extends Command {
+    constructor() {
+        super({
+            name: "jokenpo",
+            help: "Jogo tradicional de pedra, papel e tesoura.",
+            type: "fun",
+            usage: '<Comando> + <Menção ao user ou ID>',
+            aliase: ["jkp"],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
         try {
             const adversario = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
             const timerCollector = 60
@@ -245,4 +253,6 @@ module.exports = {
 
         } catch (e) { return games.delete(msg.author.id), msg.channel.send(`\`${e}\``) }
     }
-};
+}
+
+module.exports = CommandJKP

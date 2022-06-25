@@ -1,6 +1,6 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const Database = require('../../Database/moongose')
-const { secondsToText } = require('../../Functions/Utils')
+const { secondsToText } = require('../../classes/Utils')
 
 module.exports = {
    name: "customplaylist",

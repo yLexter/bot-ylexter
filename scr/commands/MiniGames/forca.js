@@ -1,14 +1,21 @@
 const { MessageEmbed } = require("discord.js");
 const channels = new Map();
 const words = require('../../Jsons/cacapalavras.json').palavras
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "forca",
-    help: "Jogo tradicional da forca",
-    type: "fun",
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommandForca extends Command {
+    constructor() {
+        super({
+            name: "forca",
+            help: "Jogo tradicional da forca",
+            type: "fun",
+            aliase: [],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         try {
             const maximumAttempts = 7
             const alfabeto = 'abcdefghijklmnopqrstuvwxyzç'
@@ -109,5 +116,9 @@ module.exports = {
 
         } catch (e) { msg.channel.send(`\`${e}\``), channels.delete(msg.channel.id) };
 
-    } // Execute end;
+
+    }
 }
+
+module.exports = CommandForca
+

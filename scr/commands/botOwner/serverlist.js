@@ -1,15 +1,23 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const moment = require('moment')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "serverlist",
-    help: "Mostra a lista de servers do bot.",
-    type: 'ownerBot',
-    botOwner: true,
-    aliase: ["slist"],
-    execute: async (client, msg, args, cor) => {
+class CommandServerList extends Command {
+
+    constructor() {
+        super({
+            name: "serverlist",
+            help: "Mostra a lista de servers do bot.",
+            type: 'ownerBot',
+            botOwner: true,
+            aliase: ["slist"],
+        })
+    }
+
+    async execute(client, msg, args) {
 
         try {
+            const { cor } = client
             let contador = 0
             const finishCommand = 200
             let servidores = client.guilds.cache.map(x => {
@@ -104,7 +112,11 @@ module.exports = {
 
         } catch (e) { msg.channel.send(`\`${e}\``) }
     }
-};
+
+
+}
+
+module.exports = CommandServerList
 
 
 

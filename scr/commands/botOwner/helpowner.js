@@ -1,14 +1,20 @@
 const { MessageEmbed } = require("discord.js");
 const { cdCmd } = require("../../Jsons/config.json")
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "helpowner",
-    help: "Mostra todos os comandos que só podem ser usado pelo dono do bot.",
-    type: 'ownerBot',
-    aliase: ["howner", "ohelp"],
-    execute: async (client, msg, args, cor) => {
+class CommandHelpOwner extends Command {
+    constructor() {
+        super({
+            name: "helpowner",
+            help: "Mostra todos os comandos que só podem ser usado pelo dono do bot.",
+            type: 'ownerBot',
+            aliase: ["howner", "ohelp"],
+        })
+    }
 
+    async execute(client, msg, args) {
         try {
+            const { cor } = client
             const s = args.join(' ')
             const allCommands = [...client.commands.values()].filter(x => { return x.type == 'ownerBot' })
             const info = allCommands.find(y => y.name == s.toLowerCase()) || allCommands.find(x => x.aliase.find(y => y.toLowerCase() == s.toLowerCase()))
@@ -33,6 +39,13 @@ module.exports = {
             return msg.channel.send({ embeds: [helpMsg] })
 
         } catch (e) { msg.channel.send(`\`${e}\``) }
+
     }
-}; // Execute end
+
+}
+
+
+module.exports = CommandHelpOwner
+
+
 

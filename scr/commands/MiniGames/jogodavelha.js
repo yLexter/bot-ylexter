@@ -1,15 +1,22 @@
 const { MessageEmbed, MessageAttachment, MessageActionRow, MessageButton } = require("discord.js");
 const { createCanvas, loadImage } = require('canvas')
 const games = new Map();
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "jogodavelha",
-    help: "Jogo da Velha Tradicional.",
-    aliase: ['velha'],
-    usage: '<Comando> + <Menção ao user ou ID>',
-    type: "fun",
-    execute: async (client, msg, args, cor) => {
+class CommandJogoVelha extends Command {
+    constructor() {
+        super({
+            name: "jogodavelha",
+            help: "Jogo da Velha Tradicional.",
+            aliase: ['velha'],
+            usage: '<Comando> + <Menção ao user ou ID>',
+            type: "fun",
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         try {
             const jogadasPossiveis = ['1a', '2a', '3a', '1b', '2b', '3b', '1c', '2c', '3c']
             const timeResponse = 30
@@ -241,3 +248,5 @@ module.exports = {
         } catch (e) { console.log(e), msg.channel.send(`❌| Ops, Ocorreu um Erro ,Tente novamente.`) }
     }
 }
+
+module.exports = CommandJogoVelha

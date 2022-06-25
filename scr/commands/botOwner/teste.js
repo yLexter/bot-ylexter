@@ -1,15 +1,23 @@
-module.exports = {
-   name: "eval",
-   help: "Executa comando como caller",
-   type: "ownerBot",
-   aliase: ["t"],
-   execute: async (client, msg, args, cor) => {
+const Command = require('../../classes/command')
 
-      const classMusic = require('../../Functions/musicSettings')
+class CommandEval extends Command {
+   constructor() {
+      super({
+         name: "eval",
+         help: "Executa comando como caller",
+         type: "ownerBot",
+         aliase: ["t"],
+      })
+   }
+
+   async execute(client, msg, args) {
+
+      const { cor } = client
+      const classMusic = require('../../classes/musicSettings')
       const { MessageEmbed, MessageCollector } = require("discord.js");
       const moment = require('moment')
       const Database = require('../../Database/moongose')
-      const Otaku = require('../../Functions/animes')
+      const Otaku = require('../../classes/animes')
       const s = args.join(" ")
       const mongoose = require('mongoose');
       const Youtube = require("youtube-sr").default;
@@ -56,23 +64,8 @@ module.exports = {
 };
 
 
-/* const { MessageEmbed } = require("discord.js");
+module.exports = CommandEval
 
-module.exports = {
-   name: "",
-   help: "",
-   type: '',
-   aliase: [],
-   execute: async (client, msg, args, cor) => {
-
-      try {
-
-
-      } catch (e) {  msg.channel.send(`\`${e}\``) }
-   }
-}; // Execute end
-
- */
 
 
 

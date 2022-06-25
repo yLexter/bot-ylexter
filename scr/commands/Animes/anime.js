@@ -1,15 +1,22 @@
 const { MessageEmbed } = require("discord.js");
 const Otaku = require('./../../classes/animes')
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "anime",
-  help: "az uma busca por um anime",
-  type: "anime",
-  usage: '<Comando> + <Nome do anime>',
-  cooldown: 10,
-  aliase: [],
-  execute: async (client, msg, args, cor) => {
+class CommandAnime extends Command {
 
+  constructor() {
+    super({
+      name: "anime",
+      help: "az uma busca por um anime",
+      type: "anime",
+      usage: '<Comando> + <Nome do anime>',
+      cooldown: 10,
+      aliase: [],
+    })
+  }
+
+  async execute(client, msg, args,) {
+    const { cor } = client
     const helpMsg1 = new MessageEmbed()
       .setAuthor({ name: `| Procurando...`, iconURL: msg.author.displayAvatarURL() })
       .setColor(cor)
@@ -32,7 +39,7 @@ module.exports = {
         popularityRank, titles,
         synopsis, startDate, endDate,
         posterImage, status, description, canonicalTitle } = data.attributes
-    
+
       const synopsisTraduzida = await Otaku.translateSynopses(synopsis)
 
       function firstKeyUpper(string) {
@@ -63,4 +70,7 @@ module.exports = {
       return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
     }
   }
+
 }
+
+module.exports = CommandAnime

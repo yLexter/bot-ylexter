@@ -12,7 +12,8 @@ module.exports = (client) => {
         if (stat.isDirectory()) {
             const commands2 = fs.readdirSync(path.join(__dirname, `./scr/commands/${filename}`)).filter(file => file.endsWith('.js'))
             commands2.forEach(element => {
-                const command = require(`./scr/commands/${filename}/${element}`);
+                const readCommand = require(`./scr/commands/${filename}/${element}`);
+                const command = new readCommand()
                 client.commands.set(command.name, command);
             })
         }

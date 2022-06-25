@@ -1,11 +1,19 @@
-module.exports = {
-  name: "say",
-  help: "Cores: [ red , yellow ,  green , blue , orange , black , darkblue ] |  Use: say + cor + mensagem , para digitar colorido.",
-  type: "fun",
-  usage: '<Comando> + <Texto para o bot  falar>',
-  aliase: [],
-  execute: (client, msg, args, cor) => {
+const Command = require('../../classes/command')
+
+class CommandSay extends Command {
+  constructor() {
+    super({
+      name: "say",
+      help: "Cores: [ red , yellow ,  green , blue , orange , black , darkblue ] |  Use: say + cor + mensagem , para digitar colorido.",
+      type: "fun",
+      usage: '<Comando> + <Texto para o bot  falar>',
+      aliase: [],
+    })
+  }
+
+  async execute(client, msg, args) {
     try {
+      const { cor } = client
       var msg_user = args.join(" ")
       var corMsg = args[0].toLowerCase()
       var Msg_args = args.slice(1).join(' ')
@@ -37,7 +45,11 @@ module.exports = {
 
     } catch (e) { msg.channel.send(`\`${e}\``) };
 
-  } // Execute end;
+  } 
+
 }
+
+
+module.exports = CommandSay
 
 

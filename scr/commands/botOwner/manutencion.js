@@ -1,16 +1,23 @@
 const { MessageEmbed } = require("discord.js");
 const Database = require('./../../Database/moongose')
 const moment = require('moment')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "maintenance",
-    help: "Adiciona um comando a manuteção.",
-    type: 'ownerBot',
-    cooldown: 5,
-    aliase: ["man"],
-    execute: async (client, msg, args, cor) => {
+class CommandManutencion extends Command {
+    constructor() {
+        super({
+            name: "maintenance",
+            help: "Adiciona um comando a manuteção.",
+            type: 'ownerBot',
+            cooldown: 5,
+            aliase: ["man"],
+        })
+    }
+
+    async execute(client, msg, args) {
 
         try {
+            const { cor } = client
             const method = args[0]?.toLowerCase()
             const command = args[1]?.toLowerCase()
             const reason = args.slice(2).join(" ") || 'Não Informada'
@@ -83,5 +90,9 @@ module.exports = {
             }
 
         } catch (e) { msg.channel.send(`\`${e}\``) }
+
+
     }
-};
+}
+
+module.exports = CommandManutencion

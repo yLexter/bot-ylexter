@@ -2,16 +2,24 @@ const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const Database = require('./../../Database/moongose')
 const moment = require('moment')
 const { ownerBotId } = require("./../../Jsons/config.json")
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "blacklist",
-    help: "Adiciona um servidor ou um membro a blacklist.",
-    type: 'ownerBot',
-    cooldown: 5,
-    aliase: ["bl"],
-    execute: async (client, msg, args, cor) => {
+class CommandBlacklist extends Command {
+
+    constructor() {
+        super({
+            name: "blacklist",
+            help: "Adiciona um servidor ou um membro a blacklist.",
+            type: 'ownerBot',
+            cooldown: 5,
+            aliase: ["bl"],
+        })
+    }
+
+    async execute(client, msg, args) {
 
         try {
+            const { cor } = client
             const type = args[0]?.toLowerCase() // Guild ou Membro
             const method = args[1]?.toLowerCase() // Add  ou Remove
             const userOrServer = (msg.mentions.members.first())?.user.id || args[2] // usuário ou servidor
@@ -194,5 +202,11 @@ module.exports = {
 
 
         } catch (e) { msg.channel.send(`\`${e}\``) }
+
+
     }
-};
+
+
+}
+
+module.exports = CommandBlacklist

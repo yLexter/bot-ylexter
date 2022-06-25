@@ -1,14 +1,20 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
 const Otaku = require('./../../classes/animes')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "topanimes",
-    help: "Mostra a lista dos Top Animes do MyAnimeList.",
-    type: "anime",
-    aliase: ["tanimes"],
-    cooldown: 30,
-    execute: async (client, msg, args, cor) => {
+class CommandTopAnimes extends Command {
+    constructor() {
+        super({
+            name: "topanimes",
+            help: "Mostra a lista dos Top Animes do MyAnimeList.",
+            type: "anime",
+            aliase: ["tanimes"],
+            cooldown: 30,
+        })
+    }
 
+    async execute(client, msg, args) {
+        const { cor } = client
         const helpMsg1 = new MessageEmbed()
             .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
@@ -119,11 +125,33 @@ module.exports = {
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }
+
     }
 }
 
+module.exports = CommandTopAnimes
 
 
+/*
 
+const Command = require('../../classes/command')
+
+class CommandRandomManga extends Command {
+    constructor() {
+        super({
+
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
+        
+    }
+}
+
+module.exports = CommandRandomManga
+
+/*
 
 

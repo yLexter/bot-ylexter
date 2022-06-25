@@ -1,14 +1,22 @@
 const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
 const Otaku = require('../../classes/animes')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "seasonnow",
-    help: "Mostra a lista dos animes da temporada atual.",
-    type: "anime",
-    cooldown: 30,
-    aliase: ["snow"],
-    execute: async (client, msg, args, cor) => {
+class CommandSeasoNow extends Command {
+    constructor() {
+        super({
+            name: "seasonnow",
+            help: "Mostra a lista dos animes da temporada atual.",
+            type: "anime",
+            cooldown: 30,
+            aliase: ["snow"],
 
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
         const helpMsg1 = new MessageEmbed()
             .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
@@ -120,8 +128,12 @@ module.exports = {
                 .setAuthor({ name: `| Ops, Tente Novamente.`, iconURL: msg.author.displayAvatarURL() })
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }
+
     }
 }
+
+module.exports = CommandSeasoNow
+
 
 
 

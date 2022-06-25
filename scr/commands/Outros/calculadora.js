@@ -1,12 +1,20 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 
-module.exports = {
-    name: "calculadora",
-    help: "Calculadora tradicional.",
-    type: "others",
-    cooldown: 60,
-    aliase: ["calc"],
-    execute: async (client, msg, args, cor) => {
+class CommandCalculadora extends Command {
+    constructor() {
+        super({
+            name: "calculadora",
+            help: "Calculadora tradicional.",
+            type: "others",
+            cooldown: 60,
+            aliase: ["calc"],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
+
         try {
             const generateComponents = () => {
                 const row1 = new MessageActionRow().addComponents(
@@ -141,4 +149,6 @@ module.exports = {
             return msg.channel.send(`\`${e}\``)
         }
     }
-};
+}
+
+module.exports = CommandCalculadora

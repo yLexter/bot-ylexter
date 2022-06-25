@@ -1,13 +1,19 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "kiss",
-    help: "Exibe um mensagem de beijo com alguem aleatório(mucho cringe)",
-    type: "fun",
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommandKiss extends Command {
+    constructor() {
+        super({
+            name: "kiss",
+            help: "Exibe um mensagem de beijo com alguem aleatório(mucho cringe)",
+            type: "fun",
+            aliase: [],
+        })
+    }
 
+    async execute(client, msg, args, cor) {
         const fetch = require('node-fetch');
+        const { cor } = client
 
         try {
             const { url } = await fetch(`https://api.waifu.pics/sfw/kiss`).then(response => response.json())
@@ -37,4 +43,7 @@ module.exports = {
         } catch (e) { return msg.channel.send(`\`${e}\``) }
 
     }
-};
+
+}
+
+module.exports = CommandKiss

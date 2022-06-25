@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const Music = require('./../../Functions/musicSettings');
+const Music = require('./../../classes/musicSettings');
 
 module.exports = {
   name: "skip",

@@ -2,17 +2,26 @@ const { MessageEmbed } = require("discord.js");
 const games = new Map();
 const wait = require('util').promisify(setTimeout);
 const allPalavras = require("../../Jsons/cacapalavras.json").palavras
-const { secondsToText } = require("../../Functions/Utils")
+const { secondsToText } = require("../../classes/Utils")
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "caçapalavras",
-    help: "Caça palavras tradicional",
-    type: 'fun',
-    cooldown: 5,
-    aliase: ["cp"],
-    execute: async (client, msg, args, cor) => {
+class CommandCaçaPalavras extends Command {
+    constructor() {
+        super({
+            name: "caçapalavras",
+            help: "Caça palavras tradicional",
+            type: 'fun',
+            cooldown: 5,
+            aliase: ["cp"],
+
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
+
         try {
-
             const game = games.get(msg.author.id)
             const invativity = 2
             const timeToStart = 10
@@ -359,5 +368,7 @@ module.exports = {
         }
 
     }
-};
+}
+
+module.exports = CommandCaçaPalavras
 

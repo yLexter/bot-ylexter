@@ -7,7 +7,7 @@ const {
     joinVoiceChannel,
 } = require('@discordjs/voice');
 
-const Utils = require("../../Functions/Utils")
+const Utils = require("../../classes/Utils")
 const Youtube = require("youtube-sr").default;
 const play = require('play-dl')
 

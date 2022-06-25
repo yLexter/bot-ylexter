@@ -1,12 +1,20 @@
 const { MessageEmbed } = require("discord.js");
-const { formatDate } = require('../../Functions/Utils')
+const { formatDate } = require('../../classes/Utils')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "serverinfo",
-    help: "Exibe informações do Servidor.",
-    type: "others",
-    aliase: ["iserver"],
-    execute: async (client, msg, args, cor) => {
+class CommandServerInfo extends Command {
+    constructor() {
+        super({
+            name: "serverinfo",
+            help: "Exibe informações do Servidor.",
+            type: "others",
+            aliase: ["iserver"],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
         try {
             const { id, name, roles, ownerId, memberCount, createdAt } = msg.guild
             const stringRoles = ([...roles.cache.values()]).map((x, y, z) => { return z.length - 1 == y ? `${x.name}.` : `${x.name}, ` }).join('\n') || '??'
@@ -26,5 +34,9 @@ module.exports = {
             return msg.channel.send({ embeds: [helpMsg] })
         } catch (e) { return msg.channel.send(`\`${e}\``) }
     }
-};
+}
+
+module.exports = CommandServerInfo
+
+
 

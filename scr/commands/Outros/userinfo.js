@@ -1,14 +1,21 @@
 const { MessageEmbed, Permissions } = require("discord.js");
-const { formatDate } = require('../../Functions/Utils')
+const { formatDate } = require('../../classes/Utils')
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "userinfo",
-  help: "Exibe informações de um usuário",
-  type: "others",
-  usage: '<Comando> + <Menção ao User ou ID> || *Para ver o seu, use apenas <Comando>.',
-  aliase: ["iuser"],
-  execute: async (client, msg, args, cor) => {
+class CommandUserInfo extends Command {
+  constructor() {
+    super({
+      name: "userinfo",
+      help: "Exibe informações de um usuário",
+      type: "others",
+      usage: '<Comando> + <Menção ao User ou ID> || *Para ver o seu, use apenas <Comando>.',
+      aliase: ["iuser"],
+    })
+  }
 
+  async execute(client, msg, args) {
+
+    const { cor } = client
     try {
       const userInfos = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.member
       const { user, guild, roles } = userInfos
@@ -32,7 +39,8 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
 
     } catch (e) { return msg.channel.send(`\`${e}\``) }
-
   }
-};
+}
+
+module.exports = CommandUserInfo
 

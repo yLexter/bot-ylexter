@@ -1,16 +1,23 @@
 const translate = require("@iamtraction/google-translate");
 const { MessageEmbed } = require("discord.js");
 const { languages } = require('../../Jsons/laguages.json')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "tradutor",
-    help: "Traduz um texto para linguagem que desejar.",
-    type: "others",
-    usage: '<Comando> + <Linguagem> + <Texto> || Ex: Tradutor pt welcome',
-    cooldown: 10,
-    aliase: ["tr"],
-    execute: async (client, msg, args, cor) => {
+class CommandTradutor extends Command {
+    constructor() {
+        super({
+            name: "tradutor",
+            help: "Traduz um texto para linguagem que desejar.",
+            type: "others",
+            usage: '<Comando> + <Linguagem> + <Texto> || Ex: Tradutor pt welcome',
+            cooldown: 10,
+            aliase: ["tr"],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         try {
             const limit = 2000
             const language = args[0]
@@ -47,6 +54,9 @@ module.exports = {
         }
     }
 }
+
+module.exports = CommandTradutor
+
 
 
 

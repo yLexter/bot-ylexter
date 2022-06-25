@@ -1,5 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { secondsToText } = require("../../Functions/Utils")
+const { secondsToText } = require("../../classes/Utils")
 
 module.exports = {
   name: "queue",

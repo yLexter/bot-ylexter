@@ -1,14 +1,22 @@
 const { MessageEmbed } = require("discord.js");
 const Otaku = require('./../../classes/animes')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "randomanime",
-    help: "O Darius irá recomendar um anime para você.",
-    type: "anime",
-    cooldown: 30,
-    aliase: ["ranime"],
-    execute: async (client, msg, args, cor) => {
+class CommandRandomAnime extends Command {
 
+    constructor() {
+        super({
+            name: "randomanime",
+            help: "O Darius irá recomendar um anime para você.",
+            type: "anime",
+            cooldown: 30,
+            aliase: ["ranime"],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
         const helpMsg1 = new MessageEmbed()
             .setColor(cor)
             .setAuthor({ name: `| Aguarde...`, iconURL: msg.author.displayAvatarURL() })
@@ -23,15 +31,15 @@ module.exports = {
 
             const collector = await msg_embed.createReactionCollector({
                 filter: (reaction, user) => reaction.emoji.name == '🔁' && user.id == msg.author.id,
-                 time: finishCommmand * 1000,
+                time: finishCommmand * 1000,
                 max: 8
             });
 
             collector.on('collect', async (reaction, user) => {
                 const reactions = {
-                    '🔁': () => mudarMsgEmbed()    
+                    '🔁': () => mudarMsgEmbed()
                 }
-                
+
                 try {
                     await reactions[reaction.emoji.name]()
                     await reaction.users.remove(user.id)
@@ -86,7 +94,9 @@ module.exports = {
             return msg_embed.edit({ embeds: [helpMsg] }).catch(() => { })
         }
     }
-};
+}
+
+module.exports = CommandRandomAnime
 
 
 

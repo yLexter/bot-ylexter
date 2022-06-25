@@ -1,15 +1,21 @@
 const { MessageEmbed } = require("discord.js");
 const fetch = require('node-fetch');
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "waifu",
-    help: "Mostra uma waifu aleatória",
-    type: 'fun',
-    cooldown: 8,
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommandSay extends Command {
+    constructor() {
+        super({
+            name: "waifu",
+            help: "Mostra uma waifu aleatória",
+            type: 'fun',
+            cooldown: 8,
+            aliase: [],
+        })
+    }
 
+    async execute(client, msg, args) {
         try {
+            const { cor } = client
             const { url } = await fetch('https://api.waifu.pics/sfw/waifu').then(response => response.json())
             const randomNumero = Math.floor(Math.random() * 101)
             const footer = randomNumero > 50 ? `${randomNumero}%, Que Sorte hein... Já Pode Jogar Na Loteria.` : `Que Azar hein...  Só ${randomNumero}% kk.`
@@ -28,3 +34,4 @@ module.exports = {
     }
 }
 
+module.exports = CommandSay

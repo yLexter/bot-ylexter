@@ -1,15 +1,23 @@
 const { MessageEmbed } = require("discord.js");
 const Otaku = require('./../../classes/animes')
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "manga",
-    help: "Faz uma busca por um mangá",
-    type: "anime",
-    usage: '<Comando> + <Nome do mangá>',
-    cooldown: 10,
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommandAnime extends Command {
 
+    constructor() {
+        super({
+            name: "manga",
+            help: "Faz uma busca por um mangá",
+            type: "anime",
+            usage: '<Comando> + <Nome do mangá>',
+            cooldown: 10,
+            aliase: [],
+        })
+    }
+
+    async execute(client, msg, args,) {
+
+        const { cor } = client
         const helpMsg1 = new MessageEmbed()
             .setAuthor({ name: `| Procurando...`, iconURL: msg.author.displayAvatarURL() })
             .setColor(cor)
@@ -23,7 +31,7 @@ module.exports = {
                     .setAuthor({ name: `| Informe um Mangá.`, iconURL: msg.author.displayAvatarURL() })
                 return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
             }
-            
+
             const data = await Otaku.searchManga(s)
             const msgError = '???'
             const { posterImage, status,
@@ -60,7 +68,9 @@ module.exports = {
             return msg_embed.edit({ embeds: [helpMsg] }).catch(e => { })
         }
     }
-}
+ }   
+
+module.exports = CommandAnime
 
 
 

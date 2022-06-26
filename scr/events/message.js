@@ -1,7 +1,5 @@
-const { MessageEmbed, Permissions } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 const Database = require("../Database/moongose")
-const cooldown = new Map();
-const cor = process.env.COR
 const config = require("./../Jsons/config.json")
 
 module.exports = {
@@ -11,8 +9,10 @@ module.exports = {
 
     try {
 
-      if (msg.author.bot || msg.channel.type === 'dm' || !msg.guild.me.permissions.has('ADMINISTRATOR')) return;
 
+      if (msg.author.bot || msg.channel.type === 'dm' || !msg.guild.me.permissions.has('ADMINISTRATOR')) return;
+      
+      const { cor, cooldwon } = client
       const dados = await Database.fecthGuild(client, msg)
       const prefixBot = dados.prefix || process.env.PREFIX
       const verify = msg.mentions.members.first()
@@ -70,11 +70,11 @@ module.exports = {
         if (commandMan) {
           return msg.reply(`**⚠️| Este comando está em manutenção , desculpe.\nMotivo \`${commandMan.reason}\`** `)
         }
-        if (command.onlyOwner) {
-          let dono = msg.guild.ownerID == msg.author.id
-          if (!dono) return;
+
+        if (command.onlyOwner && msg.guild.ownerID == msg.author.id) {
           return executeCmd();
         }
+
         return executeCmd()
       }
 

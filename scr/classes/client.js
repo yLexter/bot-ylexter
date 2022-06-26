@@ -15,6 +15,9 @@ class customClient extends Client {
         super(settings)
         this.queues = new Collection()
         this.commands = new Collection()
+        this.cooldown = new Map()
+        this.prefix = '+'
+        this.cor = '#4B0082'
     }
 
     async startBot(){

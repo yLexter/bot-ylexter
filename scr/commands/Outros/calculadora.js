@@ -1,4 +1,5 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const Command = require('../../classes/command')
 
 class CommandCalculadora extends Command {
     constructor() {

@@ -11,7 +11,7 @@ class CommandKiss extends Command {
         })
     }
 
-    async execute(client, msg, args, cor) {
+    async execute(client, msg, args) {
         const fetch = require('node-fetch');
         const { cor } = client
 

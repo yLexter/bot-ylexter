@@ -1,13 +1,21 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "promisse",
-    help: "Coloca uma música em 1° lugar da Queue.",
-    type: 'music',
-    usage: '<Comando> + <Pesquisa ou Posição da Queue> || Ex: <promisse 10> ou <promisse industry baby>',
-    aliase: ["prs", "pms"],
-    execute: async (client, msg, args, cor) => {
+class CommandPromisse extends Command {
+    constructor() {
+        super({
+            name: "promisse",
+            help: "Coloca uma música em 1° lugar da Queue.",
+            type: 'music',
+            usage: '<Comando> + <Pesquisa ou Posição da Queue> || Ex: <promisse 10> ou <promisse industry baby>',
+            aliase: ["prs", "pms"],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
+        
         const { songSearch , move } = client.music
 
         try {
@@ -73,9 +81,11 @@ module.exports = {
             }
 
         } catch (e) { return msg.reply({ content: '`❌ Ocorreu um erro ao usar o promisse , tente novamente.`' }) };
-
-    } // execute end
+        
+    }
 }
+
+module.exports = CommandPromisse
 
 
 

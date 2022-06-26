@@ -1,13 +1,20 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "move",
-    help: "Move uma música para determinada posição da fila.",
-    type: 'music',
-    usage: '<Comando> + <Posição da Música que deseja mover> + <Nova Posiçãp> || Ex: move 10 5, muda a 10° música para 5° posição.',
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommandMove extends Command {
+    constructor() {
+        super({
+            name: "move",
+            help: "Move uma música para determinada posição da fila.",
+            type: 'music',
+            usage: '<Comando> + <Posição da Música que deseja mover> + <Nova Posiçãp> || Ex: move 10 5, muda a 10° música para 5° posição.',
+            aliase: [],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         const { stop, move } = client.music
 
         try {
@@ -42,3 +49,5 @@ module.exports = {
 
     }
 }
+
+module.exports =  CommandMove

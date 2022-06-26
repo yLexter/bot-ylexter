@@ -1,13 +1,20 @@
 const { MessageEmbed } = require("discord.js");
 const { getVoiceConnection } = require('@discordjs/voice');
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "fixqueue",
-    help: "Deleta a queue atual e destroi a conexão do bot.",
-    type: 'others',
-    aliase: [],
-    execute: (client, msg, args, cor) => {
+class CommadFixQueue extends Command {
+    constructor() {
+        super({
+            name: "fixqueue",
+            help: "Deleta a queue atual e destroi a conexão do bot.",
+            type: 'others',
+            aliase: [],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         const { stop } = client.music
 
         try {
@@ -37,6 +44,8 @@ module.exports = {
             return msg.channel.send({ embeds: [helpMsg] })
 
         } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
-    }
-}; // Execute end
 
+    }
+}
+
+module.exports = CommadFixQueue

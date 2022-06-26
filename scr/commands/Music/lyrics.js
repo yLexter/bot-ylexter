@@ -1,14 +1,22 @@
 const { MessageEmbed } = require("discord.js");
 const Youtube = require("youtube-sr").default;
 const lyricsFinder = require('lyrics-finder');
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "lyrics",
-    help: "Busca a lyrics de uma música desejada",
-    usage: '<Comando> + <Pesquisa>.',
-    type: 'music',
-    aliase: [],
-    execute: async (client, msg, args, cor) => {
+class CommadLyrics extends Command {
+    constructor() {
+        super({
+            name: "lyrics",
+            help: "Busca a lyrics de uma música desejada",
+            usage: '<Comando> + <Pesquisa>.',
+            type: 'music',
+            aliase: [],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
 
         const { titulo_formatado } = client.music
 
@@ -53,13 +61,10 @@ module.exports = {
             msg.delete().catch(() => { })
             msg_embed.delete().catch(() => { })
         }
-
     }
-
-
 }
 
-
+module.exports = CommadLyrics 
 
 
 

@@ -131,7 +131,7 @@ class CommandCaçaPalavras extends Command {
                         "21": [],
                         "22": [],
                     }
-                    for (indice in colunas) {
+                    for (let indice in colunas) {
                         let colunaAtual = colunas[indice]
                         for (let x = 0; x < maxCaractere; x++) {
                             let fill = element || getRandomCaractere()
@@ -145,7 +145,7 @@ class CommandCaçaPalavras extends Command {
                 }
 
                 async function injectWordVertical(word, column, position) {
-                    for (indice in structure) {
+                    for (let indice in structure) {
                         const colunaAtual = structure[column]
                         const colunaAtualX = structureFillX[column]
                         const letra = word[indice]
@@ -159,7 +159,7 @@ class CommandCaçaPalavras extends Command {
                 async function injectWordHorizontal(word, column, position) {
                     const columnAtual = structure[column]
                     const columnAtualX = structureFillX[column]
-                    for (indice in word) {
+                    for (let indice in word) {
                         columnAtual.splice(position, 1, word[indice])
                         columnAtualX.splice(position, 1, word[indice])
                         position++
@@ -230,7 +230,7 @@ class CommandCaçaPalavras extends Command {
                         allPosition: []
                     }
                     type == idHorizontal ? position : position = column
-                    for (x = position; x < position + word.length; x++) {
+                    for (let x = position; x < position + word.length; x++) {
                         object.allPosition.push(x)
                     }
                     positionWords.push(object)
@@ -245,8 +245,8 @@ class CommandCaçaPalavras extends Command {
 
                             if (position - word.length < 0 || position + word.length > maxCaractere) return true
 
-                            for (element of equivalentColumn) {
-                                for (x = position; x <= position + word.length; x++) {
+                            for (let element of equivalentColumn) {
+                                for (let x = position; x <= position + word.length; x++) {
                                     if (element?.allPosition.includes(x)) {
                                         verify = true
                                         break
@@ -266,8 +266,8 @@ class CommandCaçaPalavras extends Command {
 
                             if (column - word.length < 0 || column + word.length > sizeColumn || position > maxCaractere) return true
 
-                            for (element of equivalentColumn) {
-                                for (x = column; x <= column + word.length; x++) {
+                            for (let element of equivalentColumn) {
+                                for (let x = column; x <= column + word.length; x++) {
                                     if (element?.allPosition.includes(x)) {
                                         verify = true
                                         break
@@ -304,12 +304,12 @@ class CommandCaçaPalavras extends Command {
                 const objectFunctions = {
                     'horizontal': () => {
                         const column = structure[letterColumn]
-                        for (x = firstPosition; x < firstPosition + sizeWord; x++) {
+                        for (let x = firstPosition; x < firstPosition + sizeWord; x++) {
                             column.splice(x, 1, elementDisable)
                         }
                     },
                     'vertical': () => {
-                        for (x = letterColumn; x < letterColumn + sizeWord; x++) {
+                        for (let x = letterColumn; x < letterColumn + sizeWord; x++) {
                             const atualColumn = structure[x]
                             atualColumn.splice(firstPosition, 1, elementDisable)
                         }
@@ -320,9 +320,9 @@ class CommandCaçaPalavras extends Command {
 
             function getStringStructure(structure) {
                 let allCaracteres = [""]
-                for (indice in structure) {
+                for (let indice in structure) {
                     const colunaAtual = structure[indice]
-                    for (caractere of colunaAtual) {
+                    for (let caractere of colunaAtual) {
                         allCaracteres.push(caractere)
                     }
                 }

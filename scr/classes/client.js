@@ -17,7 +17,7 @@ class customClient extends Client {
         this.commands = new Collection()
     }
 
-    async startLogin(){
+    async startBot(){
         super.login(process.env.TOKEN)
     }
 

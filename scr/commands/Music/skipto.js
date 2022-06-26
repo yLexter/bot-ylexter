@@ -1,13 +1,20 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "skipto",
-  help: "	Pula para uma determinada música na fila de músicas",
-  type: 'music',
-  usage: '<Comando> + <Posição da música> || Ex: skipto 10 , Skipa para 10° música.',
-  aliase: ['skt'],
-  execute: (client, msg, args, cor) => {
+class CommandSkipTo extends Command {
+  constructor() {
+    super({
+      name: "skipto",
+      help: "	Pula para uma determinada música na fila de músicas",
+      type: 'music',
+      usage: '<Comando> + <Posição da música> || Ex: skipto 10 , Skipa para 10° música.',
+      aliase: ['skt'],
+    })
+  }
 
+  async execute(client, msg, args) {
+
+    const { cor } = client
     const { stop, skipTo } = client.music
 
     try {
@@ -29,8 +36,11 @@ module.exports = {
     } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
 
   }
-
-
 }
+
+module.exports = CommandSkipTo
+
+
+
 
 

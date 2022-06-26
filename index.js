@@ -7,6 +7,8 @@ for (let load of ['commands', 'events']) {
   require(`./scr/structures/${load}`)(client)
 }
 
+client.startBot()
+
 process.on('unhandledRejection', err => {
   console.log(err);
 });

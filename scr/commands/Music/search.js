@@ -1,12 +1,20 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "search",
-    help: "Procura uma música da queue",
-    type: 'music',
-    aliase: ["sch"],
-    usage: '<Comando> + <Pesquisa>',
-    execute: async (client, msg, args, cor) => {
+class CommandSearch extends Command {
+    constructor() {
+        super({
+            name: "search",
+            help: "Procura uma música da queue",
+            type: 'music',
+            aliase: ["sch"],
+            usage: '<Comando> + <Pesquisa>',
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
 
         const { stop } = client.music
 
@@ -37,7 +45,7 @@ module.exports = {
                 let musica = queue.songs[index]
                 if (titulo_formated.includes(s)) resultado10.push(`**${index}**. [${musica.title}](${musica.url}) [${musica.durationFormatted}]`)
             });
-            for (i = 0; i < resultado10.length; i++) {
+            for (let i = 0; i < resultado10.length; i++) {
                 string += `${resultado10[i]}\n`
                 if (i == maxSongsEmbed) break;
             }
@@ -57,7 +65,10 @@ module.exports = {
 
         } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
     }
-};
+}
+
+module.exports = CommandSearch
+
 
 
 

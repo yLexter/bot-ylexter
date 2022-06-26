@@ -1,12 +1,19 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "loopqueue",
-  help: "Deixa a queue atual em looping",
-  type: 'music',
-  aliase: ["lpq"],
-  execute: (client, msg, args, cor) => {
+class CommandLoopQueue extends Command {
+  constructor() {
+    super({
+      name: "loopqueue",
+      help: "Deixa a queue atual em looping",
+      type: 'music',
+      aliase: ["lpq"],
+    })
+  }
 
+  async execute(client, msg, args) {
+
+    const { cor } = client
     const { stop } = client.music
 
     try {
@@ -20,7 +27,7 @@ module.exports = {
       }
 
       const queueSaved = []
-      for (x of queue.songs) {
+      for (let x of queue.songs) {
         queueSaved.push(x)
       }
 
@@ -35,4 +42,6 @@ module.exports = {
       return msg.channel.send({ embeds: [helpMsg] })
     } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
   }
-};
+}
+
+module.exports = CommandLoopQueue

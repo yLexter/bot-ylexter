@@ -3,13 +3,22 @@ const moment = require('moment');
 const Database = require('../../Database/moongose')
 moment.locale('pt-br');
 
-module.exports = {
-  name: "kick",
-  help: "Kicka um usuário do servidor.",
-  aliase: ['kck'],
-  usage: '<Comando> + <Menção ao user ou ID> + <Motivo: Opcional>',
-  type: "admin",
-  execute: async (client, msg, args, cor) => {
+const Command = require('../../classes/command')
+
+class CommandKick extends Command {
+  constructor() {
+    super({
+      name: "kick",
+      help: "Kicka um usuário do servidor.",
+      aliase: ['kck'],
+      usage: '<Comando> + <Menção ao user ou ID> + <Motivo: Opcional>',
+      type: "admin",
+    })
+  }
+
+  async execute(client, msg, args) {
+
+    const { cor } = client
 
     try {
       const memberM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
@@ -49,3 +58,4 @@ module.exports = {
   }
 }
 
+module.exports = CommandKick

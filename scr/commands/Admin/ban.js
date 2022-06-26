@@ -3,14 +3,22 @@ const moment = require('moment');
 const Database = require('../../Database/moongose')
 moment.locale('pt-br');
 
-module.exports = {
-  name: "ban",
-  help: "Bane um usuário do servidor",
-  usage: '<Comando> + <Menção ao User ou ID> + <Motivo: Opcional>',
-  aliase: ['b'],
-  type: "admin",
-  execute: async (client, msg, args, cor) => {
+const Command = require('../../classes/command')
 
+class CommandBan extends Command {
+  constructor() {
+    super({
+      name: "ban",
+      help: "Bane um usuário do servidor",
+      usage: '<Comando> + <Menção ao User ou ID> + <Motivo: Opcional>',
+      aliase: ['b'],
+      type: "admin",
+    })
+  }
+
+  async execute(client, msg, args) {
+
+    const { cor } = client
     try {
       const memberM = msg.mentions.members.first() || msg.guild.members.cache.get(args[0])
       const reason = args.slice(1).join(' ') || 'Não Informada.'
@@ -47,4 +55,6 @@ module.exports = {
     } catch (e) { msg.channel.send(`\`${e}\``) }
   }
 }
+
+module.exports = CommandBan
 

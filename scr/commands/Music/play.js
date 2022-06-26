@@ -1,12 +1,21 @@
 const { MessageEmbed } = require('discord.js');
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "play",
-    help: "Reproduz a música desejada no canal atual do usuário",
-    type: 'music',
-    usage: '<Comando> + <Pesquisa>',
-    aliase: ["p"],
-    execute: async (client, msg, args, cor) => {
+class CommandPlay extends Command {
+    constructor() {
+        super({
+            name: "play",
+            help: "Reproduz a música desejada no canal atual do usuário",
+            type: 'music',
+            usage: '<Comando> + <Pesquisa>',
+            aliase: ["p"],
+        })
+    }
+
+    async execute(client, msg, args) {
+
+        const { cor } = client
+
         try {
             const { songSearch, tocarPlaylist, PushAndPlaySong, } = client.music
             const s = args.join(" ");
@@ -20,12 +29,10 @@ module.exports = {
             }
 
             const data = await songSearch(client, msg, s)
-
             const typesData = {
                 'track': () => {
                     PushAndPlaySong(client, msg, cor, data)
                 },
-
                 'playlist': async () => {
                     const error = '??'
                     const { playlist, owner, songs, totalSongs, durationPlaylist, images } = data
@@ -49,9 +56,7 @@ module.exports = {
                 .setAuthor({ name: `| ❌ Erro: `, iconURL: msg.author.displayAvatarURL() })
             return msg.channel.send({ embeds: [helpMsg20] }).catch(() => { })
         }
-
-
-
     }
 }
 
+module.exports = CommandPlay

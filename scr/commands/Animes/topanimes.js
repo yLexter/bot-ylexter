@@ -132,26 +132,6 @@ class CommandTopAnimes extends Command {
 module.exports = CommandTopAnimes
 
 
-/*
 
-const Command = require('../../classes/command')
-
-class CommandRandomManga extends Command {
-    constructor() {
-        super({
-
-        })
-    }
-
-    async execute(client, msg, args) {
-
-        const { cor } = client
-        
-    }
-}
-
-module.exports = CommandRandomManga
-
-/*
 
 

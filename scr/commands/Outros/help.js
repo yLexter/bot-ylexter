@@ -44,7 +44,7 @@ class CommandHelp extends Command {
             }, {});
           }
     
-          for (x in ordenados) {
+          for (let x in ordenados) {
             let key = ordenados[x]
             let total = key.length
             let nome = x[0].toUpperCase() + x.slice(1, x.length) + ' commands'

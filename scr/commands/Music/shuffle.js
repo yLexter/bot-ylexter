@@ -1,12 +1,19 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-    name: "shuffle",
-    help: "Embaralha a queue atual",
-    type: 'music',
-    aliase: ["sh"],
-    execute: async (client, msg, args, cor) => {
+class CommandShuffle extends Command {
+    constructor() {
+        super({
+            name: "shuffle",
+            help: "Embaralha a queue atual",
+            type: 'music',
+            aliase: ["sh"],
+        })
+    }
 
+    async execute(client, msg, args) {
+
+        const { cor } = client
         const { stop, shuffle } = client.music
 
         try {
@@ -28,7 +35,10 @@ module.exports = {
                 .setAuthor({ name: `| 🔀 Queue Embaralhada`, iconURL: msg.author.displayAvatarURL() })
             msg.channel.send({ embeds: [helpMsg] })
 
-        } catch (e) { stop(client, msg,), msg.channel.send(`\`${e}\``) }
-
+        } catch (e) { stop(client, msg,), msg.channel.send(`\`${e}\``) }        
     }
-};
+}
+
+module.exports = CommandShuffle
+
+

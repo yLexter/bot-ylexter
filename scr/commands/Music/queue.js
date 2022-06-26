@@ -1,14 +1,21 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { secondsToText } = require("../../classes/Utils")
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "queue",
-  help: "Mostra as músicas da fila",
-  type: 'music',
-  cooldown: 20,
-  aliase: [],
-  execute: async (client, msg, args, cor) => {
+class CommandQueue extends Command {
+  constructor() {
+    super({
+      name: "queue",
+      help: "Mostra as músicas da fila",
+      type: 'music',
+      cooldown: 20,
+      aliase: [],
+    })
+  }
 
+  async execute(client, msg, args) {
+
+    const { cor } = client
     const { musicVetor } = client.music
 
     try {
@@ -56,7 +63,7 @@ module.exports = {
         const { songs } = queue
         let string = `🔊 **Tocando agora**\n[${songs[0].title}](${songs[0].url})\n${musicVetor(client, msg)}\n\n`
         let pagAtual = number == 1 ? 1 : number * quantidadePerPag - quantidadePerPag + 1
-        for (i = pagAtual; i < pagAtual + quantidadePerPag; i++) {
+        for (let i = pagAtual; i < pagAtual + quantidadePerPag; i++) {
           if (!songs[i]) break;
           string += `**${i}**. [${songs[i].title}](${songs[i].url}) [${songs[i].durationFormatted}]\n`
         }
@@ -72,7 +79,7 @@ module.exports = {
       function somarDuration() {
         const queue = client.queues.get(msg.guild.id);
         let string = 0
-        for (msc of queue.songs) {
+        for (let msc of queue.songs) {
           string += msc.duration
         };
         return string / 1000
@@ -157,3 +164,8 @@ module.exports = {
     } catch (e) { console.log(e) }
   }
 }
+
+module.exports = CommandQueue
+
+
+

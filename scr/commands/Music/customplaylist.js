@@ -1,17 +1,24 @@
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const Database = require('../../Database/moongose')
 const { secondsToText } = require('../../classes/Utils')
+const Command = require('../../classes/command')
 
-module.exports = {
-   name: "customplaylist",
-   help: "Maneja sua playlist personalizada",
-   type: 'music',
-   usage: '<Comando> + Método + <Args> , use <comando> + help para ver todos os métodos',
-   cooldown: 5,
-   aliase: ["ctp"],
-   execute: async (client, msg, args, cor) => {
+class CommandCustomPlaylist extends Command {
+    constructor() {
+        super({
+         name: "customplaylist",
+         help: "Maneja sua playlist personalizada",
+         type: 'music',
+         usage: '<Comando> + Método + <Args> , use <comando> + help para ver todos os métodos',
+         cooldown: 5,
+         aliase: ["ctp"],
+        })
+    }
 
-      try {
+    async execute(client, msg, args) {
+
+        const { cor } = client
+        try {
          const { songSearch, tocarPlaylist } = client.music
          const userDices = await Database.fecthUser(client, msg)
          const { customPlaylist } = userDices
@@ -148,7 +155,7 @@ module.exports = {
             function queuePags(number) {
                let string = `**0**. [${customPlaylist[0].title}](${customPlaylist[0].url}) [${customPlaylist[0].durationFormatted}]\n`
                const pagAtual = number == 1 ? 1 : number * quantidadePerPag - quantidadePerPag + 1
-               for (i = pagAtual; i < pagAtual + quantidadePerPag; i++) {
+               for (let i = pagAtual; i < pagAtual + quantidadePerPag; i++) {
                   if (!customPlaylist[i]) break;
                   string += `**${i}**. [${customPlaylist[i].title}](${customPlaylist[i].url}) [${customPlaylist[i].durationFormatted}]\n`
                }
@@ -174,7 +181,7 @@ module.exports = {
 
             function totalDuration() {
                let string = 0
-               for (music of customPlaylist) {
+               for (let music of customPlaylist) {
                   string += music.duration
                }
                return secondsToText(string / 1000)
@@ -231,8 +238,8 @@ module.exports = {
       } catch (e) {
          console.log(e)
          msg.channel.send(`\`${e}\``)
-      }
-   }
+      }        
+    }
+}
 
-
-}; 
+module.exports = CommandCustomPlaylist

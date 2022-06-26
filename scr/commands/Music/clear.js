@@ -1,16 +1,20 @@
 const { MessageEmbed } = require("discord.js");
+const Command = require('../../classes/command')
 
-module.exports = {
-     name: "clear",
-     help: "Limpa todas as musicas da queue",
-     type: 'music',
-     aliase: ["cl"],
-     execute: (client, msg, args, cor) => {
+class CommandClear extends Command {
+     constructor() {
+          super({
+               name: "clear",
+               help: "Limpa todas as musicas da queue",
+               type: 'music',
+               aliase: ["cl"],
+          })
+     }
 
-          const { stop } = client.music
+     async execute(client, msg, args) {
 
+          const { cor } = client
           try {
-
                const queue = client.queues.get(msg.guild.id);
 
                if (!queue) {
@@ -30,5 +34,7 @@ module.exports = {
 
           } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
      }
-};
+}
+
+module.exports = CommandClear
 

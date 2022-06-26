@@ -1,12 +1,20 @@
 const { MessageEmbed } = require("discord.js");
 
-module.exports = {
-  name: "back",
-  help: "Volta a tocar a música anterior",
-  type: 'music',
-  aliase: [],
-  execute: (client, msg, args, cor) => {
+const Command = require('../../classes/command')
 
+class CommandBack extends Command {
+  constructor() {
+    super({
+      name: "back",
+      help: "Volta a tocar a música anterior",
+      type: 'music',
+      aliase: [],
+    })
+  }
+
+  async execute(client, msg, args) {
+
+    const { cor } = client
     const { stop, back } = client.music
 
     try {
@@ -31,5 +39,7 @@ module.exports = {
 
     } catch (e) { stop(client, msg, cor), msg.channel.send(`\`${e}\``) }
   }
-}; // Execute end
+}
+
+module.exports = CommandBack
 

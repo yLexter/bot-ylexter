@@ -1,13 +1,19 @@
 const { MessageEmbed } = require("discord.js");
-const Music = require('./../../classes/musicSettings');
+const Command = require('../../classes/command')
 
-module.exports = {
-  name: "skip",
-  help: "Pula para a proxima música.",
-  type: 'music',
-  aliase: ["sk"],
-  execute: (client, msg, args, cor) => {
+class CommandSkip extends Command {
+  constructor() {
+    super({
+      name: "skip",
+      help: "Pula para a proxima música.",
+      type: 'music',
+      aliase: ["sk"],
+    })
+  }
 
+  async execute(client, msg, args) {
+
+    const { cor } = client
     const { skip, stop } = client.music
 
     try {
@@ -24,9 +30,13 @@ module.exports = {
       skip(client, msg)
 
     } catch (e) { stop(client, msg), msg.channel.send(`\`${e}\``) }
-
   }
-};
+}
+
+module.exports = CommandSkip
+
+
+
 
 
 

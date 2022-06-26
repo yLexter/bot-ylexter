@@ -14,9 +14,9 @@ class CommandPing extends Command {
         const { cor } = client
 
         try {
-            const msgInicial = await msg.channel.send('🏓 Pong')
-            const pingApi = Math.abs(msgInicial.createdTimestamp - Date.now())
-            msgInicial.edit(`**🏓 Pong! <@${msg.author.id}>\n  📡 Ping da Api: ${pingApi}ms.\n  📡 Ping do Bot: ${client.ws.ping}ms.**`)
+            const pingApi = Date.now() - msg.createdTimestamp
+            msg.channel.send(`**🏓 Pong! <@${msg.author.id}>\n  📡 Ping da Api: ${pingApi}ms.\n  📡 Ping do Bot: ${client.ws.ping}ms.**`)
+      
         } catch (e) { return msg.channel.send(`\`${e}\``).catch(() => { }) }
     }
 }

@@ -63,6 +63,4 @@ class ClassOtaku {
     }
 }
 
-const Otaku = new ClassOtaku()
-
-module.exports = Otaku
+module.exports = new ClassOtaku()

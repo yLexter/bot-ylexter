@@ -3,18 +3,18 @@ moment.locale('pt-br');
 
 class ClassUtils {
 
-    async textToSeconds(minute) {
+    static async textToSeconds(minute) {
         async function formatar(numeros) {
             const arrayNumeros = numeros.split(":").map(x => {
                 let number = Number(x)
                 if (isNaN(number)) throw new Error('Use Horas:Minutos:Segundos.');
                 return Math.floor(Math.abs(number))
             })
-            for (let x = 0; x < arrayNumeros.length;) {
-                if (arrayNumeros[x] === 0) {
-                    arrayNumeros.shift()
-                } else { break }
+
+            while (arrayNumeros[0] == 0) {
+                arrayNumeros.shift()
             }
+
             return arrayNumeros
         }
         const tempo = await formatar(minute)
@@ -46,7 +46,7 @@ class ClassUtils {
         return objects[quantidade]()
     }
 
-    secondsToText(segundos) {
+    static secondsToText(segundos) {
         let dia = Math.floor(segundos / 86400)
         let restoDia = Math.floor(segundos % 86400)
         let horas = Math.floor(restoDia / 3600)
@@ -64,11 +64,9 @@ class ClassUtils {
         return capsula2.join(':')
     }
 
-    formatDate(date){
-      return String(moment(date).tz('America/Sao_Paulo').format('LLLL'))  
+    static formatDate(date) {
+        return String(moment(date).tz('America/Sao_Paulo').format('LLLL'))
     }
 }
 
-const utils = new ClassUtils()
-
-module.exports = utils
+module.exports = ClassUtils

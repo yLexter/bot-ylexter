@@ -4,21 +4,21 @@ const { secondsToText } = require('../../classes/Utils')
 const Command = require('../../classes/command')
 
 class CommandCustomPlaylist extends Command {
-    constructor() {
-        super({
+   constructor() {
+      super({
          name: "customplaylist",
          help: "Maneja sua playlist personalizada",
          type: 'music',
          usage: '<Comando> + Método + <Args> , use <comando> + help para ver todos os métodos',
          cooldown: 5,
          aliase: ["ctp"],
-        })
-    }
+      })
+   }
 
-    async execute(client, msg, args) {
+   async execute(client, msg, args) {
 
-        const { cor } = client
-        try {
+      const { cor } = client
+      try {
          const { songSearch, tocarPlaylist } = client.music
          const userDices = await Database.fecthUser(client, msg)
          const { customPlaylist } = userDices
@@ -78,6 +78,7 @@ class CommandCustomPlaylist extends Command {
             if (!msg.member.voice.channel) return msg.reply('Você precisa está em um canal de voz primeiro.')
             if (!customPlaylist.length) return msg.reply('Não exite nenhuma música em sua custom playlist.');
             await tocarPlaylist(client, msg, customPlaylist)
+            return msg.channel.send('A Custom playlist foi adicionado a queue.')
          }
 
          async function deleteSong() {
@@ -238,8 +239,8 @@ class CommandCustomPlaylist extends Command {
       } catch (e) {
          console.log(e)
          msg.channel.send(`\`${e}\``)
-      }        
-    }
+      }
+   }
 }
 
 module.exports = CommandCustomPlaylist

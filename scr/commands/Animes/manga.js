@@ -15,7 +15,7 @@ class CommandAnime extends Command {
         })
     }
 
-    async execute(client, msg, args,) {
+    async execute(client, msg, args) {
 
         const { cor } = client
         const helpMsg1 = new MessageEmbed()

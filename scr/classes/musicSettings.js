@@ -357,7 +357,7 @@ class MusicSettings {
 
     static skip(client, msg) {
         const queue = client.queues.get(msg.guild.id)
-        if (queue.loop) return playSong(client, msg, queue.songs[0]);
+        if (queue.loop) return MusicSettings.playSong(client, msg, queue.songs[0]);
         MusicSettings.backMusic(client, msg)
         MusicSettings.playSong(client, msg, queue.songs[0]);
     }
@@ -382,16 +382,16 @@ class MusicSettings {
         const numeros = []
 
         while (queue.songs.length != numeros.length) {
-            var shuffle = Math.floor(Math.random() * queue.songs.length)
+            let shuffle = Math.floor(Math.random() * queue.songs.length)
             if (numeros.indexOf(shuffle) == -1) {
                 numeros.push(shuffle)
             }
-
-            queue.songs = []
-            numeros.forEach(element => queue.songs.push(backup[element]))
-            queue.songs.unshift(firstMusic)
-            client.queues.set(msg.guild.id, queue)
         }
+
+        queue.songs = []
+        numeros.forEach(element => queue.songs.push(backup[element]))
+        queue.songs.unshift(firstMusic)
+        client.queues.set(msg.guild.id, queue)
 
     }
 

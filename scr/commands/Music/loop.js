@@ -27,9 +27,8 @@ class CommandLoop extends Command {
         return msg.channel.send({ embeds: [helpMsg] })
       }
 
-      const looping = loop(client, msg)
-      const loopingatual = looping ? 'Ativado.' : 'Desativado.'
-
+      const loopingatual = loop(client, msg) ? 'Ativado.' : 'Desativado.'
+      
       const helpMsg = new MessageEmbed()
         .setColor(cor)
         .setAuthor({ name: `| ♾️ Loop ${loopingatual} `, iconURL: msg.author.displayAvatarURL() })

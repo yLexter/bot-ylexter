@@ -14,9 +14,9 @@
         "__Secure-3PSID": "LgiXvDXHqymovCLZGnRZxCqXJSTkvyzzxHD8bDgOqM54GdolzpxRPbs5HSnXrVIGipkXsA.",
         "PREF": "volume=10&tz=America.Fortaleza&f6=40000000&f5=30000",
         "YSC": "qSxWPJT0Ll0",
-        "SIDCC": "AJi4QfH7F1sk7Qq7MpNxGp_2ePyOjUpLBXOkzPy86hLdW4gY_x-JQt8Q3R8eglHNj3skYQho290",
-        "__Secure-3PSIDCC": "AJi4QfHXDGW_gOV5y8QYd-Hiby5ikHxXrOpdyTqqbs62V-dvnoXJt-B9SwW2CE-z70EJXmBXflUC",
-        "expires": "Mon, 26-Jun-2023 04:14:28 GMT",
+        "SIDCC": "AJi4QfFj3AcN_PRv_x90MdmiimvbAZJeNyL_TciDQfSGhUv_56OPpymGAhsHdlsbiw71u0csE9o",
+        "__Secure-3PSIDCC": "AJi4QfE-75_1n9xqKBzXYHYqoaqpyu1SYmpfQxUierpMawI-tAf_6WWg63SfUHUgApCKY_GDELG-",
+        "expires": "Mon, 26-Jun-2023 06:53:50 GMT",
         "path": "/",
         "domain": ".youtube.com",
         "priority": "high",
@@ -25,7 +25,7 @@
         "Expires": "Tue, 25-Jun-2024 04:09:56 GMT",
         "Path": "/",
         "Priority": "HIGH",
-        "__Secure-1PSIDCC": "AJi4QfF0vB1yY1AU0cWxibsXRoNFIT-hqccKYYEeVGAvyhhm2Spl1Vn0PDfLImPr6KtC9EVm"
+        "__Secure-1PSIDCC": "AJi4QfEdvafftlVUS64V-bYffLhMJ5NrSrQGGO76Mp_Mnjxl0T6hZD-usrklv8tncbCWyrgv"
     },
     "file": true
 }

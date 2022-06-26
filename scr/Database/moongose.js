@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-class DatabaseClass {
-
+class Database {
+    
     constructor() {
         this.guild = require("./Shemas/Guild")
         this.user = require("./Shemas/user")
@@ -53,9 +53,9 @@ class DatabaseClass {
     }
 }
 
-const Database = new DatabaseClass();
+ 
+module.exports = new Database();
 
-module.exports = Database
 
 
 

@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Database = require('./../Database/moongose')
 const play = require('play-dl')
 
@@ -8,7 +7,7 @@ module.exports = {
     execute: async (client) => {
 
         console.log(`o bot ${client.user.username} está online`)
-        client.user.setActivity(`Darius Jogando | ${process.env.PREFIX}Help`, { type: 'WATCHING' })
+        client.user.setActivity(`Darius Jogando | ${client.prefix}Help`, { type: 'WATCHING' })
         Database.connect()
 
         play.getFreeClientID().then((clientID) => {

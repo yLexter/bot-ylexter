@@ -18,6 +18,7 @@ class customClient extends Client {
         this.cooldown = new Map()
         this.prefix = '+'
         this.cor = '#4B0082'
+        this.music = require('../classes/musicSettings')
     }
 
     async startBot(){

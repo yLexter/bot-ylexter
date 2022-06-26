@@ -1,154 +1,45 @@
 const { MessageEmbed, } = require('discord.js');
+const YouTube = require("youtube-sr").default;
 const {
     AudioPlayerStatus,
-    StreamType,
     createAudioPlayer,
     createAudioResource,
     joinVoiceChannel,
     NoSubscriberBehavior
 } = require('@discordjs/voice');
+
 const play = require('play-dl')
-const YouTube = require("youtube-sr").default;
 const Utils = require("./Utils")
 const { getData, getTracks } = require('spotify-url-info');
 const { secondsToText } = require("./Utils")
 
 class MusicSettings {
 
-    move(client, msg, oldPosition, newPosition){
-        const queue = client.queues.get(msg.guild.id);
-        const songMovida = queue.songs.splice(oldPosition, 1)[0]
-        queue.songs.splice(newPosition, 0, songMovida)
-        client.queues.set(msg.guild.id, queue)
-    }
-
-    loop(client, msg) {
-        const queue = client.queues.get(msg.guild.id)
-        const looping = queue.loop = !queue.loop
-
-        client.queues.set(msg.guild.id, queue)
-        return looping
-    }
-
-    async seek(client, msg, secondsFinal) {
-        const queue = client.queues.get(msg.guild.id)
-        const song = queue.songs[0]
-
-        if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
-
-        const stream = await play.stream(song.id, { seek: secondsFinal })
-        const resource = createAudioResource(stream.stream, { inputType: stream.type });
-        queue.dispatcher.play(resource);
-        queue.connection.subscribe(queue.dispatcher)
-        queue.songPlay = Date.now() - secondsFinal * 1000
-        client.queues.set(msg.guild.id, queue);
-    }
-
-    back(client, msg) {
-        const queue = client.queues.get(msg.guild.id)
-        const song = queue.back
-        queue.songs.shift()
-        queue.songs.unshift(song)
-        client.queues.set(msg.guild.id, queue);
-        playSong(client, msg, song)
-    }
-
-    PushAndPlaySong(client, msg, cor, song) {
-        const queue = client.queues.get(msg.guild.id);
+    static backMusic(client, msg) {
+        let queue = client.queues.get(msg.guild.id)
         if (queue) {
-            queue.songs.push(song);
+            queue.back = queue.songs.shift()
             client.queues.set(msg.guild.id, queue);
-            const helpMsg = new MessageEmbed()
-                .setColor(cor)
-                .setAuthor({ name: `| 🎶 Adicionado a ${queue.songs.length - 1}° posição da queue.`, iconURL: msg.author.displayAvatarURL() })
-                .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
-            return msg.channel.send({ embeds: [helpMsg] })
         }
-        return playSong(client, msg, song)
     }
 
-    skip(client, msg) {
-        const queue = client.queues.get(msg.guild.id)
-        if (queue.loop) return playSong(client, msg, queue.songs[0]);
-        backMusic(client, msg)
-        playSong(client, msg, queue.songs[0]);
-    }
-
-    skipTo(client, msg, number) {
-        const queue = client.queues.get(msg.guild.id)
-        const firstMusic = queue.songs[number]
-
-        if (queue.loop) return playSong(client, msg, queue.songs[0]);
-
-        backMusic(client, msg)
-        queue.songs.splice(number - 1, 1)
-        queue.songs.unshift(firstMusic)
-        client.queues.set(msg.guild.id, queue)
-        playSong(client, msg, firstMusic);
-    }
-
-    shuffle(client, msg) {
-        const queue = client.queues.get(msg.guild.id)
-        const firstMusic = queue.songs.shift()
-        const backup = queue.songs
-        const numeros = []
-        while (true) {
-            var shuffle = Math.floor(Math.random() * queue.songs.length)
-            if (numeros.indexOf(shuffle) == -1) {
-                numeros.push(shuffle)
-            } else if (queue.songs.length == numeros.length) break;
-        }
-        queue.songs = []
-        numeros.forEach((element) => { queue.songs.push(backup[element]) });
-        queue.songs.unshift(firstMusic)
-        client.queues.set(msg.guild.id, queue)
-    }
-
-    pause(client, msg) {
-        const queue = client.queues.get(msg.guild.id);
-        queue.dispatcher.pause()
-        queue.songPlay = Date.now() - queue.songPlay
-        client.queues.set(msg.guild.id, queue);
-    }
-
-    resume(client, msg) {
-        const queue = client.queues.get(msg.guild.id);
-        queue.dispatcher.unpause();
-        queue.songPlay = Date.now() - queue.songPlay
-        client.queues.set(msg.guild.id, queue);
-    }
-
-    stop(client, msg = null) {
-        const queue = client.queues.get(msg.guild.id)
-        if (!queue) return;
-        queue?.connection.destroy();
-        queue?.message?.delete().catch(() => { })
-        queue?.collector.stop()
-        client.queues.delete(msg.guild.id)
-
-        if(!msg) return;
-
-        const helpMsg = new MessageEmbed()
-            .setColor('RED')
-            .setAuthor({ name: ' | ⏹️ Stopped Queue.', iconURL: client.user.displayAvatarURL() })
-        return msg.channel.send({ embeds: [helpMsg] }).catch(() => { })
-    }
-
-    async tocarPlaylist(client, msg, item) {
+    static async tocarPlaylist(client, msg, item) {
         let queue = client.queues.get(msg.guild.id);
+
         function videosInject(playlist) {
             playlist.forEach(song => { queue.songs.push(song) })
             client.queues.set(msg.guild.id, queue)
         }
+
         if (queue) return videosInject(item);
-        await playSong(client, msg, item[0])
+        await MusicSettings.playSong(client, msg, item[0])
         queue = client.queues.get(msg.guild.id)
         videosInject(item)
         queue.songs.shift()
         client.queues.set(msg.guild.id, queue)
     }
 
-    musicVetor(client, msg) {
+    static musicVetor(client, msg) {
         const maxBarrinha = 10
         const barraMusic = [...Array(maxBarrinha).keys()].map(x => { return "▬" })
         const emoji = '🔵'
@@ -163,7 +54,7 @@ class MusicSettings {
         return `${barraMusic.join("")}\n${emojiPlay}  ${timeFormatado}/${song.durationFormatted}`
     }
 
-    async songSearch(client, msg, songName) {
+    static async songSearch(client, msg, songName) {
         const incluso = item => { return songName.toLowerCase().includes(item) }
         const spTify = incluso('spotify.com')
         const sdCloud = incluso('soundcloud.')
@@ -396,7 +287,7 @@ class MusicSettings {
 
     }
 
-    titulo_formatado(string) {
+    static titulo_formatado(string) {
         let remover = ["Oficial", "oficial", '[', ']'
             , '(', ')', "Music", 'music',
             "Official", "Video", "Soundtrack",
@@ -409,298 +300,415 @@ class MusicSettings {
             string = formated
         })
         return string
+
     }
-}
 
-const Class = new MusicSettings()
-
-function backMusic(client, msg) {
-    let queue = client.queues.get(msg.guild.id)
-    if (queue) {
-        queue.back = queue.songs.shift()
-        client.queues.set(msg.guild.id, queue);
+    static move(client, msg, oldPosition, newPosition) {
+        const queue = client.queues.get(msg.guild.id);
+        const songMovida = queue.songs.splice(oldPosition, 1)[0]
+        queue.songs.splice(newPosition, 0, songMovida)
+        client.queues.set(msg.guild.id, queue)
     }
-}
 
-async function playSong(client, msg, song) {
-    const cor = process.env.COR
-    let icone
+    static loop(client, msg) {
+        const queue = client.queues.get(msg.guild.id)
+        const looping = queue.loop = !queue.loop
 
-    try {
-        let queue = client.queues.get(msg.guild.id);
+        client.queues.set(msg.guild.id, queue)
+        return looping
+    }
 
-        if (msg.type == 'APPLICATION_COMMAND') {
-            icone = msg.user.displayAvatarURL()
-        } else {
-            icone = msg.author.displayAvatarURL()
-        }
+    static async seek(client, msg, secondsFinal) {
+        const queue = client.queues.get(msg.guild.id)
+        const song = queue.songs[0]
 
-        const embedNowPlay = (songNow) => {
-            return new MessageEmbed()
-                .setColor(cor)
-                .setDescription(`[${songNow.title}](${songNow.url}) [${songNow.durationFormatted}]`)
-                .setAuthor({ name: `| 🎶 Tocando Agora`, iconURL: icone })
-        }
+        if (secondsFinal >= song.duration / 1000) throw new Error('Duração maior do que o vídeo.')
 
-        const rowElements = () => {
-            const queue = client.queues.get(msg.guild.id);
-            let object = {
-                "type": 1,
-                "components": [
-                    {
-                        "type": 2,
-                        "label": "Skip",
-                        "style": 1,
-                        "custom_id": "skip",
-                        "emoji": "⏩"
-                    },
-                    {
-                        "type": 2,
-                        "label": "Shuffle",
-                        "style": 1,
-                        "custom_id": "shuffle",
-                        "emoji": "🔀"
-                    },
-                    {
-                        "type": 2,
-                        "label": "Stop",
-                        "style": 4,
-                        "custom_id": "stop",
-                        "emoji": "⏹️"
-                    },
-                    {
-                        "type": 2,
-                        "label": "Queue",
-                        "style": 2,
-                        "custom_id": "queue",
-                        "emoji": "📝"
-                    },
-
-                ],
-            }
-
-            if (['playing', 'buffering'].includes(queue.dispatcher._state.status)) {
-                object.components.unshift({
-                    "type": 2,
-                    "label": "Pause",
-                    "style": 4,
-                    "custom_id": "pause",
-                    "emoji": "⏸"
-                })
-            } else {
-                object.components.unshift({
-                    "type": 2,
-                    "label": "Resume",
-                    "style": 3,
-                    "custom_id": "resume",
-                    "emoji": "▶"
-                })
-            }
-
-            let object2 = {
-                "type": 1,
-                "components": [
-                    {
-                        "type": 2,
-                        "label": "Back",
-                        "style": 1,
-                        "custom_id": "back",
-                        "emoji": "⏪"
-                    },
-                ]
-            }
-
-            let loop = queue.loop ? 'Loop: On' : 'Loop: Off'
-            let styleLoop = queue.loop ? 3 : 4
-
-            object2.components.unshift({
-                "type": 2,
-                "label": `${loop}`,
-                "style": styleLoop,
-                "custom_id": "loop",
-                "emoji": "♾️"
-            })
-
-            return [object, object2]
-        }
-
-        if (!song) return Class.stop(client, msg);
-
-        const player = createAudioPlayer({
-            behaviors: {
-                noSubscriber: NoSubscriberBehavior.Pause,
-            },
-        });
-        const stream = await play.stream(song.id)
+        const stream = await play.stream(song.id, { seek: secondsFinal })
         const resource = createAudioResource(stream.stream, { inputType: stream.type });
-
-        if (!queue) {
-            var conn = joinVoiceChannel({
-                channelId: msg.member.voice.channel.id,
-                guildId: msg.guild.id,
-                adapterCreator: msg.guild.voiceAdapterCreator
-            });
-            queue = {
-                volume: 0.2,
-                connection: conn,
-                dispatcher: null,
-                songs: [song],
-                loop: false,
-                back: null,
-                loopQueue: false,
-                songPlay: null,
-                message: null,
-                collector: null
-            }
-        };
-
-        if (queue.loopQueue && queue.songs.length == 1) Class.tocarPlaylist(client, msg, queue.loopQueue);
-
-        player.play(resource);
-
-        queue.connection.subscribe(player)
-        queue.dispatcher = player
-        queue.songPlay = Date.now()
-
+        queue.dispatcher.play(resource);
+        queue.connection.subscribe(queue.dispatcher)
+        queue.songPlay = Date.now() - secondsFinal * 1000
         client.queues.set(msg.guild.id, queue);
+    }
 
-        if (queue.message) queue.message.delete().catch(() => { })
-        if (queue.collector) queue.collector.stop()
+    static back(client, msg) {
+        const queue = client.queues.get(msg.guild.id)
+        const song = queue.back
+        queue.songs.shift()
+        queue.songs.unshift(song)
+        client.queues.set(msg.guild.id, queue);
+        playSong(client, msg, song)
+    }
 
-        queue.message = await msg.channel.send({ embeds: [embedNowPlay(song)], components: rowElements() }).catch((e) => { console.log(e), queue.message = null })
-        queue.collector = queue.message.createMessageComponentCollector({
-            filter: i => { return i.member.voice.channel },
-            componentType: 'BUTTON',
-        });
+    static PushAndPlaySong(client, msg, cor, song) {
+        const queue = client.queues.get(msg.guild.id);
+        if (queue) {
+            queue.songs.push(song);
+            client.queues.set(msg.guild.id, queue);
+            const helpMsg = new MessageEmbed()
+                .setColor(cor)
+                .setAuthor({ name: `| 🎶 Adicionado a ${queue.songs.length - 1}° posição da queue.`, iconURL: msg.author.displayAvatarURL() })
+                .setDescription(`[${song.title}](${song.url}) [${song.durationFormatted}]`)
+            return msg.channel.send({ embeds: [helpMsg] })
+        }
+        return MusicSettings.playSong(client, msg, song)
+    }
 
-        queue.collector.on('collect', i => {
+    static skip(client, msg) {
+        const queue = client.queues.get(msg.guild.id)
+        if (queue.loop) return playSong(client, msg, queue.songs[0]);
+        MusicSettings.backMusic(client, msg)
+        MusicSettings.playSong(client, msg, queue.songs[0]);
+    }
 
-            const queue = client.queues.get(msg.guild.id);
+    static skipTo(client, msg, number) {
+        const queue = client.queues.get(msg.guild.id)
+        const firstMusic = queue.songs[number]
 
-            if (i.member.voice.channel != queue?.connection?.joinConfig.channelId) {
-                const helpMsg = new MessageEmbed()
-                    .setColor(cor)
-                    .setAuthor({ name: `| ❌ Você precisa estar no mesmo canal de voz que eu!`, iconURL: i.user.displayAvatarURL() })
-                return i.reply({ embeds: [helpMsg], ephemeral: true })
+        if (queue.loop) return playSong(client, msg, queue.songs[0]);
+
+        MusicSettings.backMusic(client, msg)
+        queue.songs.splice(number - 1, 1)
+        queue.songs.unshift(firstMusic)
+        client.queues.set(msg.guild.id, queue)
+        MusicSettings.playSong(client, msg, firstMusic);
+    }
+
+    static shuffle(client, msg) {
+        const queue = client.queues.get(msg.guild.id)
+        const firstMusic = queue.songs.shift()
+        const backup = queue.songs
+        const numeros = []
+
+        while (queue.songs.length != numeros.length) {
+            var shuffle = Math.floor(Math.random() * queue.songs.length)
+            if (numeros.indexOf(shuffle) == -1) {
+                numeros.push(shuffle)
             }
 
-            if (!queue) return i.deferUpdate();
-            if (queue?.dispatcher?._state?.status == 'idle') return;
+            queue.songs = []
+            numeros.forEach(element => queue.songs.push(backup[element]))
+            queue.songs.unshift(firstMusic)
+            client.queues.set(msg.guild.id, queue)
+        }
 
-            const objects = {
-                'pause': () => {
-                    Class.pause(client, msg)
-                    i.update({ components: rowElements() })
+    }
+
+    static pause(client, msg) {
+        const queue = client.queues.get(msg.guild.id);
+        queue.dispatcher.pause()
+        queue.songPlay = Date.now() - queue.songPlay
+        client.queues.set(msg.guild.id, queue);
+    }
+
+    static resume(client, msg) {
+        const queue = client.queues.get(msg.guild.id);
+        queue.dispatcher.unpause();
+        queue.songPlay = Date.now() - queue.songPlay
+        client.queues.set(msg.guild.id, queue);
+    }
+
+    static stop(client, msg = null) {
+        const queue = client.queues.get(msg.guild.id)
+
+        if (!queue) return;
+
+        queue?.connection.destroy();
+        queue?.message?.delete().catch(() => { })
+        queue?.collector.stop()
+        client.queues.delete(msg.guild.id)
+
+        if (!msg) return;
+
+        const helpMsg = new MessageEmbed()
+            .setColor('RED')
+            .setAuthor({ name: ' | ⏹️ Stopped Queue.', iconURL: client.user.displayAvatarURL() })
+        return msg.channel.send({ embeds: [helpMsg] }).catch(() => { })
+    }
+
+    static async playSong(client, msg, song) {
+        const { cor } = client
+        const icone = msg.author.displayAvatarURL()
+
+        try {
+            let queue = client.queues.get(msg.guild.id);
+
+            const embedNowPlay = (songNow) => {
+                return new MessageEmbed()
+                    .setColor(cor)
+                    .setDescription(`[${songNow.title}](${songNow.url}) [${songNow.durationFormatted}]`)
+                    .setAuthor({ name: `| 🎶 Tocando Agora`, iconURL: icone })
+            }
+
+            const rowElements = () => {
+                const queue = client.queues.get(msg.guild.id);
+                let object = {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 2,
+                            "label": "Skip",
+                            "style": 1,
+                            "custom_id": "skip",
+                            "emoji": "⏩"
+                        },
+                        {
+                            "type": 2,
+                            "label": "Shuffle",
+                            "style": 1,
+                            "custom_id": "shuffle",
+                            "emoji": "🔀"
+                        },
+                        {
+                            "type": 2,
+                            "label": "Stop",
+                            "style": 4,
+                            "custom_id": "stop",
+                            "emoji": "⏹️"
+                        },
+                        {
+                            "type": 2,
+                            "label": "Queue",
+                            "style": 2,
+                            "custom_id": "queue",
+                            "emoji": "📝"
+                        },
+
+                    ],
+                }
+
+                if (['playing', 'buffering'].includes(queue.dispatcher._state.status)) {
+                    object.components.unshift({
+                        "type": 2,
+                        "label": "Pause",
+                        "style": 4,
+                        "custom_id": "pause",
+                        "emoji": "⏸"
+                    })
+                } else {
+                    object.components.unshift({
+                        "type": 2,
+                        "label": "Resume",
+                        "style": 3,
+                        "custom_id": "resume",
+                        "emoji": "▶"
+                    })
+                }
+
+                let object2 = {
+                    "type": 1,
+                    "components": [
+                        {
+                            "type": 2,
+                            "label": "Back",
+                            "style": 1,
+                            "custom_id": "back",
+                            "emoji": "⏪"
+                        },
+                    ]
+                }
+
+                let loop = queue.loop ? 'Loop: On' : 'Loop: Off'
+                let styleLoop = queue.loop ? 3 : 4
+
+                object2.components.unshift({
+                    "type": 2,
+                    "label": `${loop}`,
+                    "style": styleLoop,
+                    "custom_id": "loop",
+                    "emoji": "♾️"
+                })
+
+                return [object, object2]
+            }
+
+            if (!song) return MusicSettings.stop(client, msg);
+
+            const player = createAudioPlayer({
+                behaviors: {
+                    noSubscriber: NoSubscriberBehavior.Pause,
                 },
-                'resume': () => {
-                    Class.resume(client, msg)
-                    i.update({ components: rowElements() })
-                },
-                'queue': () => {
-                    const quantidadeSongs = queue.songs.length - 1 == 0 ? 1 : queue.songs.length - 1
-                    const pags = () => {
-                        const total = queue.songs.length - 1
-                        return total < 10 ? 1 : Math.ceil((total / 10))
-                    }
-                    const songsString = () => {
-                        const { musicVetor } = client.music
-                        let string = `🔊 **Tocando agora**\n[${queue.songs[0].title}](${queue.songs[0].url})\n${musicVetor(client, msg)}\n\n`
-                        let string2 = queue.songs.map((x, y) => {
-                            return `**${y}.** [${x.title}](${x.url}) [${x.durationFormatted}]`
-                        }).slice(1, 10).join("\n")
-                        return string + string2
-                    }
+            });
+            const stream = await play.stream(song.id)
+            const resource = createAudioResource(stream.stream, { inputType: stream.type });
 
-                    const somarDuration = () => {
-                        const queue = client.queues.get(msg.guild.id);
-                        let string = 0
-                        queue.songs.forEach(x => {
-                            string += x.duration
-                        })
-                        return string / 1000
-                    }
+            if (!queue) {
+                var conn = joinVoiceChannel({
+                    channelId: msg.member.voice.channel.id,
+                    guildId: msg.guild.id,
+                    adapterCreator: msg.guild.voiceAdapterCreator
+                });
+                queue = {
+                    volume: 0.2,
+                    connection: conn,
+                    dispatcher: null,
+                    songs: [song],
+                    loop: false,
+                    back: null,
+                    loopQueue: false,
+                    songPlay: null,
+                    message: null,
+                    collector: null
+                }
+            };
 
+            if (queue.loopQueue && queue.songs.length == 1) {
+                MusicSettings.tocarPlaylist(client, msg, queue.loopQueue);
+            }
+
+            player.play(resource);
+            queue.connection.subscribe(player)
+            queue.dispatcher = player
+            queue.songPlay = Date.now()
+
+            client.queues.set(msg.guild.id, queue);
+
+            if (queue.message) queue.message.delete().catch(() => { })
+            if (queue.collector) queue.collector.stop()
+
+            queue.message = await msg.channel.send({
+                embeds: [embedNowPlay(song)],
+                components: rowElements()
+            }).catch((e) => { console.log(e), queue.message = null })
+
+            queue.collector = queue.message.createMessageComponentCollector({
+                filter: i => i.member.voice.channel,
+                componentType: 'BUTTON',
+            });
+
+            queue.collector.on('collect', i => {
+
+                const queue = client.queues.get(msg.guild.id);
+
+                if (i.member.voice.channel != queue?.connection?.joinConfig.channelId) {
                     const helpMsg = new MessageEmbed()
                         .setColor(cor)
-                        .setDescription(songsString())
-                        .setAuthor({ name: `| 📑 Queue`, iconURL: i.user.displayAvatarURL() })
-                        .setFooter({ text: `Músicas: ${quantidadeSongs} | Pag's: 1/${pags()} | Tempo: ${secondsToText(somarDuration())} ` })
+                        .setAuthor({ name: `| ❌ Você precisa estar no mesmo canal de voz que eu!`, iconURL: i.user.displayAvatarURL() })
                     return i.reply({ embeds: [helpMsg], ephemeral: true })
+                }
 
-                },
-                'skip': async () => {
-                    await Class.skip(client, msg)
-                    i.deferUpdate()
-                },
-                'shuffle': () => {
-                    let minimo = 3
-                    if (queue.songs.length <= minimo) {
+                if (!queue) return i.deferUpdate();
+                if (queue?.dispatcher?._state?.status == 'idle') return;
+
+                const objects = {
+                    'pause': () => {
+                        MusicSettings.pause(client, msg)
+                        i.update({ components: rowElements() })
+                    },
+                    'resume': () => {
+                        MusicSettings.resume(client, msg)
+                        i.update({ components: rowElements() })
+                    },
+                    'queue': () => {
+                        const quantidadeSongs = queue.songs.length - 1 == 0 ? 1 : queue.songs.length - 1
+                        const pags = () => {
+                            const total = queue.songs.length - 1
+                            return total < 10 ? 1 : Math.ceil((total / 10))
+                        }
+                        const songsString = () => {
+                            const { musicVetor } = client.music
+                            let string = `🔊 **Tocando agora**\n[${queue.songs[0].title}](${queue.songs[0].url})\n${musicVetor(client, msg)}\n\n`
+                            let string2 = queue.songs.map((x, y) => {
+                                return `**${y}.** [${x.title}](${x.url}) [${x.durationFormatted}]`
+                            }).slice(1, 10).join("\n")
+                            return string + string2
+                        }
+
+                        const somarDuration = () => {
+                            const queue = client.queues.get(msg.guild.id);
+                            let string = 0
+                            queue.songs.forEach(x => {
+                                string += x.duration
+                            })
+                            return string / 1000
+                        }
+
                         const helpMsg = new MessageEmbed()
                             .setColor(cor)
-                            .setAuthor({ name: `| ❌ Quantidade de músicas da queue menor que ${minimo}`, iconURL: i.user.displayAvatarURL() })
+                            .setDescription(songsString())
+                            .setAuthor({ name: `| 📑 Queue`, iconURL: i.user.displayAvatarURL() })
+                            .setFooter({ text: `Músicas: ${quantidadeSongs} | Pag's: 1/${pags()} | Tempo: ${secondsToText(somarDuration())} ` })
                         return i.reply({ embeds: [helpMsg], ephemeral: true })
-                    }
-                    Class.shuffle(client, msg)
-                    return i.reply({
-                        embeds: [
-                            new MessageEmbed().
-                                setAuthor({ name: '| 🔀 Queue Embaralhada Com Sucesso.', iconURL: i.user.displayAvatarURL() }).
-                                setColor(cor)
-                        ]
-                        , ephemeral: true
-                    })
-                },
-                'stop': () => {
-                    i.deferUpdate()
-                    Class.stop(client, msg)
-                },
-                'back': async () => {
-                    if (!queue.back) {
+
+                    },
+                    'skip': async () => {
+                        await MusicSettings.skip(client, msg)
+                        i.deferUpdate()
+                    },
+                    'shuffle': () => {
+                        let minimo = 3
+                        if (queue.songs.length <= minimo) {
+                            const helpMsg = new MessageEmbed()
+                                .setColor(cor)
+                                .setAuthor({ name: `| ❌ Quantidade de músicas da queue menor que ${minimo}`, iconURL: i.user.displayAvatarURL() })
+                            return i.reply({ embeds: [helpMsg], ephemeral: true })
+                        }
+                        MusicSettings.shuffle(client, msg)
                         return i.reply({
                             embeds: [
                                 new MessageEmbed().
-                                    setAuthor({ name: '| Não existe música para voltar', iconURL: i.user.displayAvatarURL() }).
+                                    setAuthor({ name: '| 🔀 Queue Embaralhada Com Sucesso.', iconURL: i.user.displayAvatarURL() }).
                                     setColor(cor)
                             ]
                             , ephemeral: true
                         })
+                    },
+                    'stop': () => {
+                        i.deferUpdate()
+                        MusicSettings.stop(client, msg)
+                    },
+                    'back': async () => {
+                        if (!queue.back) {
+                            return i.reply({
+                                embeds: [
+                                    new MessageEmbed().
+                                        setAuthor({ name: '| Não existe música para voltar', iconURL: i.user.displayAvatarURL() }).
+                                        setColor(cor)
+                                ]
+                                , ephemeral: true
+                            })
+                        }
+                        await MusicSettings.back(client, msg)
+                        i.deferUpdate()
+                    },
+                    'loop': () => {
+                        MusicSettings.loop(client, msg)
+                        i.update({ components: rowElements() })
                     }
-                    await Class.back(client, msg)
-                    i.deferUpdate()
-                },
-                'loop': () => {
-                    Class.loop(client, msg)
-                    i.update({ components: rowElements() })
                 }
-            }
 
-            try {
-                objects[i.customId]()
-            } catch (e) { }
+                try {
+                    objects[i.customId]()
+                } catch (e) { }
 
-        })
+            })
 
-        player.on(AudioPlayerStatus.Idle, async () => {
-            let queue = client.queues.get(msg.guild.id);
-            if (!queue.loop) backMusic(client, msg)
+            player.on(AudioPlayerStatus.Idle, async () => {
+                let queue = client.queues.get(msg.guild.id);
+                if (!queue.loop) MusicSettings.backMusic(client, msg)
 
-            queue.message.delete().catch(() => { })
+                queue.message.delete().catch(() => { })
 
-            playSong(client, msg, queue?.songs[0])
-        });
+                MusicSettings.playSong(client, msg, queue?.songs[0])
+            });
 
-        player.on("error", (e) => {
+            player.on("error", (e) => {
+                console.log(e)
+                MusicSettings.stop(client, msg)
+            });
+
+            client.queues.set(msg.guild.id, queue);
+
+        } catch (e) {
             console.log(e)
-            Class.stop(client, msg)
-        });
+            MusicSettings.stop(client, msg)
+        }
 
-        client.queues.set(msg.guild.id, queue);
+    };
 
-    } catch (e) {
-        console.log(e)
-        Class.stop(client, msg)
-    }
 
-};
+}
 
-module.exports = Class
+
+module.exports = MusicSettings

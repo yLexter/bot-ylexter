@@ -34,14 +34,6 @@ class CommandEval extends Command {
 
 
       try {
-         let song = {
-            "type": "track",
-            "id": "rn_YodiJO6k",
-            "title": "Red Hot Chili Peppers - Otherside [Official Music Video]",
-            "url": "https://www.youtube.com/watch?v=rn_YodiJO6k",
-            "duration": 256000,
-            "durationFormatted": "4:16"
-         }
 
          msg.delete().catch(() => { })
          const resultado_ok = await eval(`(async () => { return ${s}})()`)
@@ -56,7 +48,7 @@ class CommandEval extends Command {
       } catch (e) {
          const helpMsg3 = new MessageEmbed()
             .setColor(cor)
-            .setDescription(`📥 **Entrada**\n\n` + `\`\`\`txt\n${s}\n\`\`\`` + `\n\n📤 **Saída**\n\n` + '```Diff\n' + `- ${e}\n` + '```')
+            .setDescription(`📥 **Entrada**\n\n` + `\`\`\`txt\n${s}\n\`\`\`` + `\n\n📤 **Saída**\n\n` + '```js\n' + `- ${e.stack}\n` + '```')
          return msg.channel.send({ embeds: [helpMsg3] }).catch(() => { })
       }
 

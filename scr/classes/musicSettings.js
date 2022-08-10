@@ -123,7 +123,6 @@ class MusicSettings {
         }
 
         async function ytPlaylistSearch() {
-
             const playlist = await play.playlist_info(songName)
             const songs = playlist.videos.map(x => {
                 const { id, url, title, durationRaw, durationInSec } = x

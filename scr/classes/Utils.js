@@ -39,7 +39,7 @@ class ClassUtils {
                 const minutos = tempo[1]
                 const segundos = tempo[2]
                 if (segundos > 59 || minutos > 59 || horas > 23) throw new Error('Número Invalido')
-                return horas * 60 * 60 + minutos * 60 + segundos
+                return horas * 3600 + minutos * 60 + segundos
             }
         }
         if (!objects[quantidade]) throw new Error('Só é permitido , Horas Minutos e Segundos.');

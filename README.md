@@ -1,6 +1,6 @@
-## Bot Feito em JavaScript
+## Bot Para Discord Em Javascript
 
-Bot de música com discord.js v13 
-Discord: yLexter#1687
-Twitter: @yLexter1
+- Bot com comandos de música, minigames, administração para um servidor de amigos
+- Meu primeiro contato e projeto com progamação
+- Discord JS V.13
 

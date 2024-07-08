@@ -1,217 +1,210 @@
-# Bot yLexter (Legado)
+# Bot Darius (Legacy)
 
-O Bot Darius oferece uma variedade de comandos para aprimorar a experiência de um servidor Discord. Abaixo estão os comandos organizados por categorias para facilitar o uso.
+The Darius Bot offers a variety of commands to enhance the experience of a Discord server. Below are the commands organized by categories for ease of use.
 
-## Instalação
-- Após baixar os arquivos e instalar as dependências, criar um arquivo .env na raiz do projeto
-- Colocar dois parametros, "TOKEN" e "MONGOURL" que serão o token do bot e a url para o acesso ao mongo respectivamente.
+## Installation
+- After downloading the files and installing the dependencies, create a .env file in the project root
+- Enter two parameters, "TOKEN" and "MONGOURL" which will be the bot token and the url for accessing mongo respectively.
 
-# Comandos do Bot Darius para Discord
+# Darius Bot Commands for Discord
 
-## Administração
-Esses comandos são destinados a administradores do servidor.
+## Administration
+These commands are intended for server administrators.
 
 - `!ban`
-  - Bane um usuário do servidor.
+ - Ban a user from the server.
 
 - `!hidechannel`
-  - Esconde o canal dos usuários.
+ - Hides the channel from users.
 
 - `!kick`
-  - Kicka um usuário do servidor.
+ - Kicks a user from the server.
 
 - `!lock`
-  - Impede os usuários de enviarem mensagens no canal.
+ - Prevents users from sending messages in the channel.
 
 - `!logs`
-  - Mostra os logs do servidor.
+ - Shows server logs.
 
 - `!removechannelmusic`
-  - Remove o canal de música.
+ - Removes the music channel.
 
 - `!setchannelmusic`
-  - Seta um canal para ser o canal de música. Todos os comandos de música só podem ser usados no canal de música.
+ - Set a channel to be the music channel. All music commands can only be used on the music channel.
 
 - `!setprefix`
-  - Muda o prefixo do bot.
+ - Change the bot prefix.
 
 - `!unhidechannel`
-  - Permite que os usuários vejam o canal.
+ - Allows users to view the channel.
 
 - `!unlock`
-  - Permite que os usuários voltem a enviar mensagens no canal.
+ - Allows users to repost messages on the channel.
 
 ## Anime
-Esses comandos são voltados para os amantes de anime.
+These commands are aimed at anime lovers.
 
 - `!anime`
-  - Faz uma busca por um anime.
+ - Search for an anime.
 
 - `!manga`
-  - Faz uma busca por um mangá.
+ - Search for a manga.
 
 - `!nextseason`
-  - Mostra a lista dos animes da próxima temporada.
+ - Shows the list of animes for the next season.
 
 - `!randomanime`
-  - O Darius irá recomendar um anime para você.
+ - Darius will recommend an anime for you.
 
 - `!randommanga`
-  - O Darius irá recomendar um mangá para você.
+ - Darius will recommend a manga for you.
 
 - `!seasonnow`
-  - Mostra a lista dos animes da temporada atual.
+ - Shows the list of animes from the current season.
 
 - `!topanimes`
-  - Mostra a lista dos Top Animes do MyAnimeList.
+ - Shows the list of Top Animes from MyAnimeList.
 
-## Proprietário do Bot
-Esses comandos só podem ser utilizados pelo proprietário do bot.
+## Bot Owner
+These commands can only be used by the bot owner.
 
 - `!blacklist`
-  - Adiciona um servidor ou um membro à blacklist.
+ - Add a server or member to the blacklist.
 
 - `!botname`
-  - Altera o nome do bot.
+ - Change the bot name.
 
 - `!helpowner`
-  - Mostra todos os comandos que só podem ser usados pelo dono do bot.
+ - Shows all commands that can only be used by the bot owner.
 
 - `!maintenance`
-  - Adiciona um comando à manutenção.
+ - Adds a command to maintenance.
 
 - `!serverlist`
-  - Mostra a lista de servidores do bot.
+ - Shows the list of bot servers.
 
 - `!eval`
-  - Executa um comando como caller.
+ - Executes a command as caller.
 
-## Diversão
-Estes comandos oferecem diversão e entretenimento.
+## Fun
+These commands offer fun and entertainment.
 
 - `!cat`
-  - Exibe a foto de um gatinho.
+ - Displays a photo of a kitten.
 
 - `!kiss`
-  - Exibe uma mensagem de beijo com alguém aleatório (muito cringe).
+ - Displays a kiss message with someone random (very cringe).
 
 - `!say`
-  - Cores disponíveis: red, yellow, green, blue, orange, black, darkblue. Use: say + cor + mensagem para digitar colorido.
+ - Available colors: red, yellow, green, blue, orange, black, darkblue. Use: say + color + message to type in color.
 
 - `!waifu`
-  - Mostra uma waifu aleatória.
+ - Shows a random waifu.
 
-- `!caçapalavras`
-  - Caça-palavras tradicional.
+- `!word search`
+ - Traditional word search.
 
-- `!forca`
-  - Jogo tradicional da forca.
+- `!gallows`
+ - Traditional hangman game.
 
-- `!jogodavelha`
-  - Jogo da Velha tradicional.
+- `!jogodavellha`
+ - Traditional tic-tac-toe game.
 
 - `!jokenpo`
-  - Jogo tradicional de pedra, papel e tesoura.
+ - Traditional game of rock, paper and scissors.
 
 - `!gameshuffle`
-  - Inicia o jogo do embaralhamento.
+ - Start the shuffling game.
 
-## Música
-Estes comandos permitem controlar a reprodução de música no servidor.
+## Music
+These commands allow you to control music playback on the server.
 
 - `!back`
-  - Volta a tocar a música anterior.
+ - Play the previous song again.
 
 - `!clear`
-  - Limpa todas as músicas da fila.
+ - Clears all songs in the queue.
 
 - `!customplaylist`
-  - Maneja sua playlist personalizada.
+ - Manage your personalized playlist.
 
 - `!loop`
-  - Deixa a música atual em looping.
+ - Leaves the current song on loop.
 
 - `!loopqueue`
-  - Deixa a fila atual em looping.
+ - Leaves the current queue in a loop.
 
 - `!lyrics`
-  - Busca a letra de uma música desejada.
+ - Search for the lyrics of a desired song.
 
 - `!move`
-  - Move uma música para uma posição específica na fila.
+ - Moves a song to a specific position in the queue.
 
 - `!nowplaying`
-  - Mostra a música que está sendo tocada atualmente.
+ - Shows the song currently playing.
 
 - `!pause`
-  - Pausa a música atual.
+ - Pause the current song.
 
 - `!play`
-  - Reproduz a música desejada no canal atual do usuário.
+ - Plays the desired song on the user's current channel.
 
-- `!promisse`
-  - Coloca uma música em primeiro lugar na fila.
+- `!promise`
+ - Put a song first in the queue.
 
 - `!queue`
-  - Mostra as músicas da fila.
+ - Shows the songs in the queue.
 
 - `!remove`
-  - Remove uma música desejada da fila.
+ - Remove a desired song from the queue.
 
 - `!resume`
-  - Volta a tocar a música pausada.
+ - Play the paused song again.
 
 - `!search`
-  - Procura uma música na fila.
+ - Search for a song in the queue.
 
 - `!searchyt`
-  - Faz uma pesquisa no YouTube e toca a música desejada.
+ - Search YouTube and play the desired song.
 
 - `!seek`
-  - Avança ou retrocede para a minutagem desejada.
+ - Advance or rewind to the desired minute.
 
 - `!shuffle`
-  - Embaralha a fila atual.
+ - Shuffles the current queue.
 
 - `!skip`
-  - Pula para a próxima música.
+ - Skip to the next song.
 
 - `!skipto`
-  - Pula para uma determinada música na fila de músicas.
+ - Skip to a specific song in the song queue.
 
 - `!stop`
-  - Para a reprodução de músicas no servidor.
+ - For playing music on the server.
 
-## Outros
-Estes são comandos diversos para diferentes finalidades.
+## Others
+These are different commands for different purposes.
 
 - `!fixqueue`
-  - Deleta a fila atual e destrói a conexão do bot.
+ - Deletes the current queue and destroys the bot connection.
 
 - `!avatar`
-  - Exibe o seu avatar.
+ - Displays your avatar.
 
-- `!calculadora`
-  - Calculadora tradicional.
+- `!calculator`
+ - Traditional calculator.
 
 - `!help`
-  - Exibe uma lista de todos os comandos.
+ - Displays a list of all commands.
 
 - `!ping`
-  - Exibe o ping.
+ - Displays ping.
 
 - `!serverinfo`
-  - Exibe informações do servidor.
+ - Displays server information.
 
-- `!tradutor`
-  - Traduz um texto para a linguagem desejada.
+- `!translator`
+ - Translates a text into the desired language.
 
 - `!userinfo`
-  - Exibe informações de um usuário.
-
-
-# Créditos
-
-O Bot yLexter foi desenvolvido com paixão e dedicação por [yLexter](https://github.com/yLexter).
-
-
+ - Displays information about a user.
